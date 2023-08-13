@@ -69,7 +69,7 @@ matching_data = data_sorted[
 ]
 
 # Display the filtered data table (faltaría mejorar nombre de campos, y permitir descarga a xls)
-if st.button("Ver datos históricos del pozo: " + selected_sigla):
+if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
     st.write(matching_data)
 
@@ -87,18 +87,20 @@ matching_data['counter'] = range(1, len(matching_data) + 1)
 matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
 
 # Calculate max peak rates for the selected_sigla
-max_gas_rate = int(matching_data['gas_rate'].max())
-max_oil_rate = int(matching_data['oil_rate'].max())
-max_water_rate = int(matching_data['water_rate'].max())
+max_gas_rate = matching_data['gas_rate'].max()
+max_oil_rate = matching_data['oil_rate'].max()
+max_water_rate = matching_data['water_rate'].max()
 
-# Para calcular el delta, necesito el max de cada pozo y comparar los que tienen mismo tipo. se podrían rankear todos los pozos por su peak rate
+# Round the maximum rates to one decimal place
+max_gas_rate_rounded = round(max_gas_rate, 1)
+max_oil_rate_rounded = round(max_oil_rate, 1)
+max_water_rate_rounded = round(max_water_rate, 1)
 
 st.header(selected_sigla)
 col1, col2, col3 = st.columns(3)
-col1.metric(label=":red[Max Gas Peak Rate (km3/d)]", value=max_gas_rate)
-col2.metric(label=":green[Max Oil Peak Rate (m3/d)]", value=max_oil_rate)
-col3.metric(label=":blue[Max Water Peak Rate (m3/d)]", value=max_water_rate)
-
+col1.metric(label=":red[Max Peak Gas Rate (km3/d)]", value=max_gas_rate_rounded)
+col2.metric(label=":green[Max Peak Oil Rate (m3/d)]", value=max_oil_rate_rounded)
+col3.metric(label=":blue[Max Peak Water Rate (m3/d)]", value=max_water_rate_rounded)
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
