@@ -69,7 +69,7 @@ matching_data = data_sorted[
 ]
 
 # Display the filtered data table (faltaría mejorar nombre de campos, y permitir descarga a xls)
-if st.button("Ver datos históricos del pozo: "+ selected_sigla):
+if st.button("Ver datos históricos del pozo: {selected_sigla}":
     st.write("Filtered Data:")
     st.write(matching_data)
 
