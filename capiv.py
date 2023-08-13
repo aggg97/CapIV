@@ -2,7 +2,7 @@ import streamlit as st # en la terminal de Mac O escribir streamlit run capiv.py
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
-from scipy.optimize import curve_fit
+# from scipy.optimize import curve_fit
 
 # En caso de querer un color de fondo uso formato css de la siguiente manera:
 # style_sidebar="""
