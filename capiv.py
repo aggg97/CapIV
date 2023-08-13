@@ -31,12 +31,7 @@ data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + dat
 # Convert the "date" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
-st.markdown(
-    """
-    ## Capítulo IV Dataset - Producción No Convencional
-    """,
-    style={"color": "blue"},
-)
+
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
