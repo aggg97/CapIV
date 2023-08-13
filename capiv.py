@@ -32,7 +32,7 @@ data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + dat
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
 
-st.header(":blue[Capítulo IV Dataset - Producción No Convencional]")
+st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
@@ -98,9 +98,9 @@ max_water_rate_rounded = round(max_water_rate, 1)
 
 st.header(selected_sigla)
 col1, col2, col3 = st.columns(3)
-col1.metric(label=":red[Max Peak Gas Rate (km3/d)]", value=max_gas_rate_rounded)
-col2.metric(label=":green[Max Peak Oil Rate (m3/d)]", value=max_oil_rate_rounded)
-col3.metric(label=":blue[Max Peak Water Rate (m3/d)]", value=max_water_rate_rounded)
+col1.metric(label=f":red[Max Peak Gas Rate (km3/d)]", value=max_gas_rate_rounded)
+col2.metric(label=f":green[Max Peak Oil Rate (m3/d)]", value=max_oil_rate_rounded)
+col3.metric(label=f":blue[Max Peak Water Rate (m3/d)]", value=max_water_rate_rounded)
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
