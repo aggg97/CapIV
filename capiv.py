@@ -14,7 +14,7 @@ from PIL import Image
 # """
 #st.markdown(style_sidebar, unsafe_allow_html=True)
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url)
     data_sorted = df.sort_values(by='fecha_data', ascending=True)
