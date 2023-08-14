@@ -1,10 +1,10 @@
-import streamlit as st # en la terminal de Mac O escribir streamlit run capiv.py para abrir url
+import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
 # from scipy.optimize import curve_fit
 
-# En caso de querer un color de fondo uso formato css de la siguiente manera:
+# In case you want a background color, use the css format as follows:
 # style_sidebar="""
 # <style>
 # [data-testid="stSidebar"]{
@@ -37,7 +37,7 @@ st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a multiselect widget for 'tipo pozo'
-# clasificar por GOR segun McCain
+# soon... type fluid classification by GOR (McCain)
 tipos_pozo = data_sorted['tipopozo'].unique()
 selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
 
@@ -67,7 +67,8 @@ matching_data = data_sorted[
     (data_sorted['sigla'] == selected_sigla)
 ]
 
-# Display the filtered data table (faltaría mejorar nombre de campos, y permitir descarga a xls)
+# Display the filtered data table
+# soon... download to .xls 
 if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
     st.write(matching_data)
@@ -164,9 +165,8 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
-# DCA 
-# DCA Quicklook Analysis (SI ES PET O GAS)
 
+# soon... DCA Quicklook Analysis 
 # st.sidebar.subheader(":blue[DCA Quicklook Analysis:] " + selected_sigla)
 # st.sidebar.caption("EUR @ 6m")
 # st.sidebar.caption("EUR @ 1y")
