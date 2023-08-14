@@ -116,7 +116,7 @@ gas_rate_fig.add_trace(
 )
 
 gas_rate_fig.update_layout(
-    title=f"Producción de Gas del pozo: {selected_sigla}",
+    title=f"Historia de Producción de Gas del pozo: {selected_sigla}",
     xaxis_title="Meses",
     yaxis_title="Caudal de Gas (km3/d)"
 )
@@ -137,7 +137,7 @@ oil_rate_fig.add_trace(
 )
 
 oil_rate_fig.update_layout(
-    title=f"Producción de Petróleo del pozo: {selected_sigla}",
+    title=f"Historia de Producción de Petróleo del pozo: {selected_sigla}",
     xaxis_title="Meses",
     yaxis_title="Caudal de Petróleo (m3/d)"
 )
@@ -158,7 +158,7 @@ water_rate_fig.add_trace(
 )
 
 water_rate_fig.update_layout(
-    title=f"Producción de Agua del pozo: {selected_sigla}",
+    title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
     xaxis_title="Meses",
     yaxis_title="Caudal de Agua (m3/d)"
 )
