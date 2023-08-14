@@ -97,9 +97,9 @@ max_water_rate_rounded = round(max_water_rate, 1)
 
 st.header(selected_sigla)
 col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Max Peak Gas Rate (km3/d)]", value=max_gas_rate_rounded)
-col2.metric(label=f":green[Max Peak Oil Rate (m3/d)]", value=max_oil_rate_rounded)
-col3.metric(label=f":blue[Max Peak Water Rate (m3/d)]", value=max_water_rate_rounded)
+col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rounded)
+col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
+col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
@@ -115,9 +115,9 @@ gas_rate_fig.add_trace(
 )
 
 gas_rate_fig.update_layout(
-    title=f"Gas Rate vs. Time for: {selected_sigla}",
-    xaxis_title="Months",
-    yaxis_title="Gas Rate (km3/d)"
+    title=f"Producción de Gas del pozo: {selected_sigla}",
+    xaxis_title="Meses",
+    yaxis_title="Caudal de Gas (km3/d)"
 )
 gas_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(gas_rate_fig)
@@ -136,9 +136,9 @@ oil_rate_fig.add_trace(
 )
 
 oil_rate_fig.update_layout(
-    title=f"Oil Rate vs. Time for: {selected_sigla}",
-    xaxis_title="Months",
-    yaxis_title="Oil Rate (m3/d)"
+    title=f"Producción de Petróleo del pozo: {selected_sigla}",
+    xaxis_title="Meses",
+    yaxis_title="Caudal de Petróleo (m3/d)"
 )
 oil_rate_fig.update_yaxes(rangemode='tozero')
 st.plotly_chart(oil_rate_fig)
@@ -157,9 +157,9 @@ water_rate_fig.add_trace(
 )
 
 water_rate_fig.update_layout(
-    title=f"Water Rate vs. Time for: {selected_sigla}",
-    xaxis_title="Months",
-    yaxis_title="Water Rate (m3/d)"
+    title=f"Producción de Agua del pozo: {selected_sigla}",
+    xaxis_title="Meses",
+    yaxis_title="Caudal de Agua (m3/d)"
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
