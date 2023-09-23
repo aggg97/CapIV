@@ -1,19 +1,9 @@
-import streamlit as st # run in terminal $ streamlit run capiv.py to open url
+import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
-# from scipy.optimize import curve_fit
 
-# In case you want a background color, use the css format as follows:
-# style_sidebar="""
-# <style>
-# [data-testid="stSidebar"]{
-# background-color:#748CAB;
-# }
-# </style>
-# """
-#st.markdown(style_sidebar, unsafe_allow_html=True)
-
+# Define a function to load and sort the data
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url)
@@ -37,7 +27,6 @@ st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a multiselect widget for 'tipo pozo'
-# soon... type fluid classification by GOR (McCain)
 tipos_pozo = data_sorted['tipopozo'].unique()
 selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
 
@@ -60,14 +49,6 @@ selected_sigla = st.sidebar.selectbox("Seleccionar sigla del pozo", siglas_for_s
 # Filter data for matching 'empresa' and 'sigla'
 matching_data = matching_data[matching_data['sigla'] == selected_sigla]
 
-
-# Filter data for matching 'empresa' and 'sigla'
-matching_data = data_sorted[
-    (data_sorted['empresa'] == selected_empresa) &
-    (data_sorted['sigla'] == selected_sigla)
-]
-
-
 # Calculate gas rate for the filtered data
 matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
 
@@ -75,11 +56,26 @@ matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
 matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
 matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
 
-# Create a counter column for x-axis
-matching_data['counter'] = range(1, len(matching_data) + 1)
+# Calculate max peak rates for the selected_sigla
+max_gas_rate = matching_data['gas_rate'].max()
+max_oil_rate = matching_data['oil_rate'].max()
 
-# Filter data for matching 'tipo pozo'
-matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
+# Check the conditions to determine the fluid type
+if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
+    fluid_type = 'Gas'
+else:
+    fluid_type = 'Petróleo'
+
+# Add the calculated values to the DataFrame as new columns
+matching_data['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
+matching_data['Tipo de Fluido según McCain'] = fluid_type
+
+# Now, you can proceed with the rest of your code below.
+
+# Display the filtered data table
+if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
+    st.write("Filtered Data:")
+    st.write(matching_data)
 
 # Calculate max peak rates for the selected_sigla
 max_gas_rate = matching_data['gas_rate'].max()
@@ -99,7 +95,6 @@ col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
-
 gas_rate_fig.add_trace(
     go.Scatter(
         x=matching_data['counter'],
@@ -109,7 +104,6 @@ gas_rate_fig.add_trace(
         line=dict(color='red')
     )
 )
-
 gas_rate_fig.update_layout(
     title=f"Historia de Producción de Gas del pozo: {selected_sigla}",
     xaxis_title="Meses",
@@ -120,7 +114,6 @@ st.plotly_chart(gas_rate_fig)
 
 # Plot oil rate using Plotly
 oil_rate_fig = go.Figure()
-
 oil_rate_fig.add_trace(
     go.Scatter(
         x=matching_data['counter'],
@@ -130,56 +123,9 @@ oil_rate_fig.add_trace(
         line=dict(color='green')
     )
 )
-
 oil_rate_fig.update_layout(
     title=f"Historia de Producción de Petróleo del pozo: {selected_sigla}",
     xaxis_title="Meses",
     yaxis_title="Caudal de Petróleo (m3/d)"
 )
-oil_rate_fig.update_yaxes(rangemode='tozero')
-st.plotly_chart(oil_rate_fig)
-
-# Plot water rate using Plotly
-water_rate_fig = go.Figure()
-
-water_rate_fig.add_trace(
-    go.Scatter(
-        x=matching_data['counter'],
-        y=matching_data['water_rate'],
-        mode='lines+markers',
-        name='Water Rate',
-        line=dict(color='blue')
-    )
-)
-
-water_rate_fig.update_layout(
-    title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
-    xaxis_title="Meses",
-    yaxis_title="Caudal de Agua (m3/d)"
-)
-water_rate_fig.update_yaxes(range=[0, None])
-st.plotly_chart(water_rate_fig)
-
-# Check if the maximum oil rate is zero
-if max_oil_rate == 0:
-    matching_data['GOR'] = 0
-else:
-    # Calculate GOR (Gas-Oil Ratio)
-    matching_data['GOR'] = max_gas_rate / max_oil_rate
-
-# Check the conditions to determine the fluid type
-if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
-    fluid_type = 'Gas'
-else:
-    fluid_type = 'Petróleo'
-
-# Add the calculated values to the DataFrame as new columns
-matching_data['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
-matching_data['Tipo de Fluido según McCain'] = fluid_type
-
-# Display the filtered data table
-# soon... download to .xls 
-if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
-    st.write("Filtered Data:")
-    st.write(matching_data)
-
+oil_rate_fig.update_yaxes(rangemode
