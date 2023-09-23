@@ -1,9 +1,9 @@
-import streamlit as st
+import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
 
-# Define a function to load and sort the data
+# save in cache to run faster
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url)
@@ -21,33 +21,13 @@ data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + dat
 # Convert the "date" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
-# Calculate gas rate for the filtered data
-data_sorted['gas_rate'] = data_sorted['prod_gas'] / data_sorted['tef']
-
-# Calculate oil rate and water rate for the filtered data
-data_sorted['oil_rate'] = data_sorted['prod_pet'] / data_sorted['tef']
-data_sorted['water_rate'] = data_sorted['prod_agua'] / data_sorted['tef']
-
-# Calculate max peak rates for the selected_sigla
-max_gas_rate = data_sorted['gas_rate'].max()
-max_oil_rate = data_sorted['oil_rate'].max()
-
-# Check the conditions to determine the fluid type
-if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
-    fluid_type = 'Gas'
-else:
-    fluid_type = 'Petróleo'
-
-# Add the calculated values to the DataFrame as new columns
-data_sorted['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
-data_sorted['Tipo de Fluido según McCain'] = fluid_type
-
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a multiselect widget for 'tipo pozo'
+# soon... type fluid classification by GOR (McCain)
 tipos_pozo = data_sorted['tipopozo'].unique()
 selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
 
@@ -70,12 +50,31 @@ selected_sigla = st.sidebar.selectbox("Seleccionar sigla del pozo", siglas_for_s
 # Filter data for matching 'empresa' and 'sigla'
 matching_data = matching_data[matching_data['sigla'] == selected_sigla]
 
-# Now, you can proceed with the rest of your code below.
+
+# Filter data for matching 'empresa' and 'sigla'
+matching_data = data_sorted[
+    (data_sorted['empresa'] == selected_empresa) &
+    (data_sorted['sigla'] == selected_sigla)
+]
 
 # Display the filtered data table
+# soon... download to .xls 
 if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
     st.write(matching_data)
+
+# Calculate gas rate for the filtered data
+matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
+
+# Calculate oil rate and water rate for the filtered data
+matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
+matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
+
+# Create a counter column for x-axis
+matching_data['counter'] = range(1, len(matching_data) + 1)
+
+# Filter data for matching 'tipo pozo'
+matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
 
 # Calculate max peak rates for the selected_sigla
 max_gas_rate = matching_data['gas_rate'].max()
@@ -95,6 +94,7 @@ col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
+
 gas_rate_fig.add_trace(
     go.Scatter(
         x=matching_data['counter'],
@@ -104,6 +104,7 @@ gas_rate_fig.add_trace(
         line=dict(color='red')
     )
 )
+
 gas_rate_fig.update_layout(
     title=f"Historia de Producción de Gas del pozo: {selected_sigla}",
     xaxis_title="Meses",
@@ -114,6 +115,7 @@ st.plotly_chart(gas_rate_fig)
 
 # Plot oil rate using Plotly
 oil_rate_fig = go.Figure()
+
 oil_rate_fig.add_trace(
     go.Scatter(
         x=matching_data['counter'],
@@ -123,6 +125,7 @@ oil_rate_fig.add_trace(
         line=dict(color='green')
     )
 )
+
 oil_rate_fig.update_layout(
     title=f"Historia de Producción de Petróleo del pozo: {selected_sigla}",
     xaxis_title="Meses",
@@ -133,6 +136,7 @@ st.plotly_chart(oil_rate_fig)
 
 # Plot water rate using Plotly
 water_rate_fig = go.Figure()
+
 water_rate_fig.add_trace(
     go.Scatter(
         x=matching_data['counter'],
@@ -142,6 +146,7 @@ water_rate_fig.add_trace(
         line=dict(color='blue')
     )
 )
+
 water_rate_fig.update_layout(
     title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
     xaxis_title="Meses",
@@ -149,3 +154,5 @@ water_rate_fig.update_layout(
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
+
+ 
