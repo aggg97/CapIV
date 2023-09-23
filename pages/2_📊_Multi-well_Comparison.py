@@ -61,6 +61,10 @@ if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
 else:
     matching_data['Tipo de Fluido según McCain'] = 'Petróleo'
 
+# Add the calculated values to the DataFrame as new columns
+matching_data['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
+matching_data['Tipo de Fluido según McCain'] = fluid_type
+
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
@@ -69,7 +73,7 @@ st.sidebar.title("Por favor filtrar aquí: ")
 # Create a multiselect widget for 'tipo pozo'
 # soon... type fluid classification by GOR (McCain)
 tipos_pozo = data_sorted['Tipo de Fluido según McCain'].unique()
-selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
+selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", fluid_type)
 
 # Create a dropdown list for 'empresa'
 empresas = data_sorted['empresa'].unique()
