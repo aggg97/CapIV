@@ -14,7 +14,7 @@ from PIL import Image
 # """
 #st.markdown(style_sidebar, unsafe_allow_html=True)
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url)
     data_sorted = df.sort_values(by='fecha_data', ascending=True)
@@ -102,20 +102,6 @@ col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rou
 col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
 col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
 
-
-# Check if the maximum oil rate is zero
-if max_oil_rate == 0:
-    matching_data['GOR'] = 0
-else:
-    # Calculate GOR (Gas-Oil Ratio)
-    matching_data['GOR'] = max_gas_rate / max_oil_rate
-
-# Check the conditions to determine the fluid type
-if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
-    matching_data['Tipo de Fluido según McCain'] = 'Gas'
-else:
-    matching_data['Tipo de Fluido según McCain'] = 'Petróleo'
-
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
 
@@ -179,3 +165,10 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
+
+# soon... DCA Quicklook Analysis 
+# st.sidebar.subheader(":blue[DCA Quicklook Analysis:] " + selected_sigla)
+# st.sidebar.caption("EUR @ 6m")
+# st.sidebar.caption("EUR @ 1y")
+# st.sidebar.caption("b")
+# st.sidebar.caption("Dn") 
