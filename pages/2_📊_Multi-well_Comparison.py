@@ -128,4 +128,24 @@ oil_rate_fig.update_layout(
     xaxis_title="Meses",
     yaxis_title="Caudal de Petróleo (m3/d)"
 )
-oil_rate_fig.update_yaxes(rangemode
+oil_rate_fig.update_yaxes(rangemode='tozero')
+st.plotly_chart(oil_rate_fig)
+
+# Plot water rate using Plotly
+water_rate_fig = go.Figure()
+water_rate_fig.add_trace(
+    go.Scatter(
+        x=matching_data['counter'],
+        y=matching_data['water_rate'],
+        mode='lines+markers',
+        name='Water Rate',
+        line=dict(color='blue')
+    )
+)
+water_rate_fig.update_layout(
+    title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
+    xaxis_title="Meses",
+    yaxis_title="Caudal de Agua (m3/d)"
+)
+water_rate_fig.update_yaxes(range=[0, None])
+st.plotly_chart(water_rate_fig)
