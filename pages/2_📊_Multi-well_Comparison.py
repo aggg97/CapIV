@@ -1,10 +1,18 @@
-Streamlit capiv 
-
 import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
+# from scipy.optimize import curve_fit
 
+# In case you want a background color, use the css format as follows:
+# style_sidebar="""
+# <style>
+# [data-testid="stSidebar"]{
+# background-color:#748CAB;
+# }
+# </style>
+# """
+#st.markdown(style_sidebar, unsafe_allow_html=True)
 
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
@@ -157,3 +165,10 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
+
+# soon... DCA Quicklook Analysis 
+# st.sidebar.subheader(":blue[DCA Quicklook Analysis:] " + selected_sigla)
+# st.sidebar.caption("EUR @ 6m")
+# st.sidebar.caption("EUR @ 1y")
+# st.sidebar.caption("b")
+# st.sidebar.caption("Dn") 
