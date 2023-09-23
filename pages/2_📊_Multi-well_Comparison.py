@@ -68,7 +68,7 @@ st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a multiselect widget for 'tipo pozo'
 # soon... type fluid classification by GOR (McCain)
-tipos_pozo = data_sorted['tipopozo'].unique()
+tipos_pozo = data_sorted['Tipo de Fluido según McCain'].unique()
 selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
 
 # Create a dropdown list for 'empresa'
