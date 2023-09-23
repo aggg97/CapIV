@@ -67,11 +67,6 @@ matching_data = data_sorted[
     (data_sorted['sigla'] == selected_sigla)
 ]
 
-# Display the filtered data table
-# soon... download to .xls 
-if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
-    st.write("Filtered Data:")
-    st.write(matching_data)
 
 # Calculate gas rate for the filtered data
 matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
@@ -181,3 +176,10 @@ else:
 # Add the calculated values to the DataFrame as new columns
 matching_data['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
 matching_data['Tipo de Fluido según McCain'] = fluid_type
+
+# Display the filtered data table
+# soon... download to .xls 
+if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
+    st.write("Filtered Data:")
+    st.write(matching_data)
+
