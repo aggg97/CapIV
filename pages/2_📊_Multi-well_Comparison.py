@@ -174,7 +174,10 @@ else:
 
 # Check the conditions to determine the fluid type
 if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
-    matching_data['Tipo de Fluido según McCain'] = 'Gas'
+    fluid_type = 'Gas'
 else:
-    matching_data['Tipo de Fluido según McCain'] = 'Petróleo'
+    fluid_type = 'Petróleo'
 
+# Add the calculated values to the DataFrame as new columns
+matching_data['GOR'] = max_gas_rate / max_oil_rate if max_oil_rate != 0 else 0
+matching_data['Tipo de Fluido según McCain'] = fluid_type
