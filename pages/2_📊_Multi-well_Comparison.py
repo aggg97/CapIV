@@ -31,6 +31,36 @@ data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + dat
 # Convert the "date" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
+# Calculate gas rate for the filtered data
+matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
+
+# Calculate oil rate and water rate for the filtered data
+matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
+matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
+
+# Create a counter column for x-axis
+matching_data['counter'] = range(1, len(matching_data) + 1)
+
+# Filter data for matching 'tipo pozo'
+matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
+
+# Calculate max peak rates for the selected_sigla
+max_gas_rate = matching_data['gas_rate'].max()
+max_oil_rate = matching_data['oil_rate'].max()
+max_water_rate = matching_data['water_rate'].max()
+
+# Round the maximum rates to one decimal place
+max_gas_rate_rounded = round(max_gas_rate, 1)
+max_oil_rate_rounded = round(max_oil_rate, 1)
+max_water_rate_rounded = round(max_water_rate, 1)
+
+
+# Check the conditions to determine the fluid type
+if max_oil_rate == 0 or (max_gas_rate / max_oil_rate) > 3000:
+    matching_data['Tipo de Fluido según McCain'] = 'Gas'
+else:
+    matching_data['Tipo de Fluido según McCain'] = 'Petróleo'
+
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
@@ -73,28 +103,8 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
     st.write(matching_data)
 
-# Calculate gas rate for the filtered data
-matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
 
-# Calculate oil rate and water rate for the filtered data
-matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
-matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
 
-# Create a counter column for x-axis
-matching_data['counter'] = range(1, len(matching_data) + 1)
-
-# Filter data for matching 'tipo pozo'
-matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
-
-# Calculate max peak rates for the selected_sigla
-max_gas_rate = matching_data['gas_rate'].max()
-max_oil_rate = matching_data['oil_rate'].max()
-max_water_rate = matching_data['water_rate'].max()
-
-# Round the maximum rates to one decimal place
-max_gas_rate_rounded = round(max_gas_rate, 1)
-max_oil_rate_rounded = round(max_oil_rate, 1)
-max_water_rate_rounded = round(max_water_rate, 1)
 
 st.header(selected_sigla)
 col1, col2, col3 = st.columns(3)
