@@ -26,9 +26,9 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load and sort the data using the cached function
 data_sorted = load_and_sort_data(dataset_url)
 
-# Add a new column "date" by combining year and month
+# Add a new column "Fecha" by combining year and month
 data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
-# Convert the "date" column to datetime format
+# Convert the "Fecha" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
@@ -56,10 +56,6 @@ siglas_for_selected_empresa = matching_data['sigla'].unique()
 
 # Create a dropdown list for 'sigla'
 selected_sigla = st.sidebar.selectbox("Seleccionar sigla del pozo", siglas_for_selected_empresa)
-
-# Filter data for matching 'empresa' and 'sigla'
-matching_data = matching_data[matching_data['sigla'] == selected_sigla]
-
 
 # Filter data for matching 'empresa' and 'sigla'
 matching_data = data_sorted[
@@ -102,12 +98,12 @@ col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rou
 col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
 col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
 
-# Plot gas rate using Plotly
+# Plot gas rate using Plotly with 'date' as x-axis
 gas_rate_fig = go.Figure()
 
 gas_rate_fig.add_trace(
     go.Scatter(
-        x=matching_data['counter'],
+        x=matching_data['date'],  
         y=matching_data['gas_rate'],
         mode='lines+markers',
         name='Gas Rate',
@@ -117,18 +113,18 @@ gas_rate_fig.add_trace(
 
 gas_rate_fig.update_layout(
     title=f"Historia de Producción de Gas del pozo: {selected_sigla}",
-    xaxis_title="Meses",
+    xaxis_title="Fecha",  
     yaxis_title="Caudal de Gas (km3/d)"
 )
 gas_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(gas_rate_fig)
 
-# Plot oil rate using Plotly
+# Plot oil rate using Plotly with 'date' as x-axis
 oil_rate_fig = go.Figure()
 
 oil_rate_fig.add_trace(
     go.Scatter(
-        x=matching_data['counter'],
+        x=matching_data['date'],  
         y=matching_data['oil_rate'],
         mode='lines+markers',
         name='Oil Rate',
@@ -138,18 +134,18 @@ oil_rate_fig.add_trace(
 
 oil_rate_fig.update_layout(
     title=f"Historia de Producción de Petróleo del pozo: {selected_sigla}",
-    xaxis_title="Meses",
+    xaxis_title="Fecha",  
     yaxis_title="Caudal de Petróleo (m3/d)"
 )
 oil_rate_fig.update_yaxes(rangemode='tozero')
 st.plotly_chart(oil_rate_fig)
 
-# Plot water rate using Plotly
+# Plot water rate using Plotly with 'date' as x-axis
 water_rate_fig = go.Figure()
 
 water_rate_fig.add_trace(
     go.Scatter(
-        x=matching_data['counter'],
+        x=matching_data['date'],  
         y=matching_data['water_rate'],
         mode='lines+markers',
         name='Water Rate',
@@ -159,20 +155,8 @@ water_rate_fig.add_trace(
 
 water_rate_fig.update_layout(
     title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
-    xaxis_title="Meses",
+    xaxis_title="Fecha",  
     yaxis_title="Caudal de Agua (m3/d)"
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
-
-
-# soon... DCA Quicklook Analysis 
-# st.sidebar.subheader(":blue[DCA Quicklook Analysis:] " + selected_sigla)
-# st.sidebar.caption("EUR @ 6m")
-# st.sidebar.caption("EUR @ 1y")
-# st.sidebar.caption("b")
-# st.sidebar.caption("Dn") 
-
-
-
-
