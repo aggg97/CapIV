@@ -113,7 +113,11 @@ filtered_data = data_sorted[
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
 
-for sigla in selected_sigla:
+# Define a list of red shades
+
+red_shades = ['#FF0000', '#FF3333', '#FF6666', '#FF9999', '#FFCCCC', '#FF4D4D', '#FF8080', '#FFB2B2', '#FFD6D6']
+
+for i, sigla in enumerate(selected_sigla):
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
@@ -127,7 +131,8 @@ for sigla in selected_sigla:
             x=filtered_well_data['counter'],  # Use the counter as x-axis
             y=filtered_well_data['gas_rate'],
             mode='lines+markers',
-            name=f'Gas Rate - {sigla}'
+            name=f'Gas Rate - {sigla}',
+            line=dict(color=red_shades[i % len(red_shades)]),  # Set the line color to pink or orange
         )
     )
 
@@ -136,7 +141,11 @@ gas_rate_fig.update_layout(
     xaxis_title="Meses",
     yaxis_title="Caudal de Gas (km3/d)",
 )
+
+# Display the gas rate Plotly figure in the Streamlit app
 st.plotly_chart(gas_rate_fig)
+
+
 
 # Plot oil rate using Plotly
 oil_rate_fig = go.Figure()
