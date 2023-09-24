@@ -117,7 +117,7 @@ for sigla in selected_sigla:
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Np'] != 0]
+    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
     
     # Add a counter column to the filtered data
     filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
@@ -145,7 +145,7 @@ for sigla in selected_sigla:
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Np'] != 0]
+    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
     
     # Add a counter column to the filtered data
     filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
@@ -173,7 +173,7 @@ for sigla in selected_sigla:
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Np'] != 0]
+    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
     
     # Add a counter column to the filtered data
     filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
