@@ -93,7 +93,7 @@ st.sidebar.title("Por favor filtrar aquí: ")
 selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
 
 # Create a multiselect list for 'sigla'
-selected_sigla = st.sidebar.checkbox("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
 
 # Filter data for matching 'sigla'
 filtered_data = data_sorted[
