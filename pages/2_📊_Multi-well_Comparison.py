@@ -115,7 +115,7 @@ gas_rate_fig = go.Figure()
 
 # Define a list of red shades
 
-red_shades = ['#FF0000', '#FF3333', '#FF6666', '#FF9999', '#FFCCCC', '#FF4D4D', '#FF8080', '#FFB2B2', '#FFD6D6']
+red_shades = ['#FF0000', '#FF69B4', '#FFA500', '#EE82EE', '#FF6347', '#FF4500', '#FF1493', '#FFD700', '#8A2BE2']
 
 for i, sigla in enumerate(selected_sigla):
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
