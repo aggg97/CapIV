@@ -18,6 +18,14 @@ from PIL import Image
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url)
     data_sorted = df.sort_values(by='fecha_data', ascending=True)
+     # Add a new column "Np" with the cumulative sum of "prod_pet" for each 'sigla'
+    data_sorted['Np'] = data_sorted.groupby('sigla')['prod_pet'].cumsum()
+
+    # Add a new column "Gp" with the cumulative sum of "prod_gas" for each 'sigla'
+    data_sorted['Gp'] = data_sorted.groupby('sigla')['prod_gas'].cumsum()
+
+    # Add a new column "Wp" with the cumulative sum of "prod_agua" for each 'sigla'
+    data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum
     return data_sorted
 
 # URL of the dataset
@@ -76,6 +84,11 @@ matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
 matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
 matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
 
+# Calculate cumulative Gp, Np, and Wp for the selected well
+matching_data['cumulative_gas'] = matching_data['Gp']
+matching_data['cumulative_oil'] = matching_data['Np']
+matching_data['cumulative_water'] = matching_data.groupby('sigla')['prod_agua'].cumsum()
+
 # Create a counter column for x-axis
 matching_data['counter'] = range(1, len(matching_data) + 1)
 
@@ -97,6 +110,8 @@ col1, col2, col3 = st.columns(3)
 col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rounded)
 col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
 col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
+
+
 
 # Plot gas rate using Plotly with 'date' as x-axis
 gas_rate_fig = go.Figure()
@@ -160,3 +175,66 @@ water_rate_fig.update_layout(
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
+
+# Plot cumulative gas production (Gp) using Plotly with 'date' as x-axis
+cumulative_gas_fig = go.Figure()
+
+cumulative_gas_fig.add_trace(
+    go.Scatter(
+        x=matching_data['date'],  
+        y=matching_data['cumulative_gas'],
+        mode='lines+markers',
+        name='Cumulative Gas Production (Gp)',
+        line=dict(color='red')
+    )
+)
+
+cumulative_gas_fig.update_layout(
+    title=f"Acumulada de Gas (Gp) del pozo: {selected_sigla}",
+    xaxis_title="Fecha",  
+    yaxis_title="Gp (km3)"
+)
+cumulative_gas_fig.update_yaxes(range=[0, None])
+st.plotly_chart(cumulative_gas_fig)
+
+# Plot cumulative oil production (Np) using Plotly with 'date' as x-axis
+cumulative_oil_fig = go.Figure()
+
+cumulative_oil_fig.add_trace(
+    go.Scatter(
+        x=matching_data['date'],  
+        y=matching_data['cumulative_oil'],
+        mode='lines+markers',
+        name='Cumulative Oil Production (Np)',
+        line=dict(color='green')
+    )
+)
+
+cumulative_oil_fig.update_layout(
+    title=f"Acumulada de Petróleo (Np) del pozo: {selected_sigla}",
+    xaxis_title="Fecha",  
+    yaxis_title="Np (m3)"
+)
+cumulative_oil_fig.update_yaxes(range=[0, None])
+st.plotly_chart(cumulative_oil_fig)
+
+# Plot cumulative water production (Wp) using Plotly with 'date' as x-axis
+cumulative_water_fig = go.Figure()
+
+cumulative_water_fig.add_trace(
+    go.Scatter(
+        x=matching_data['date'],  
+        y=matching_data['cumulative_water'],
+        mode='lines+markers',
+        name='Cumulative Water Production (Wp)',
+        line=dict(color='blue')
+    )
+)
+
+cumulative_water_fig.update_layout(
+    title=f"Acumulada de Agua (Wp) del pozo: {selected_sigla}",
+    xaxis_title="Fecha",  
+    yaxis_title="Wp (m3)"
+)
+cumulative_water_fig.update_yaxes(range=[0, None])
+st.plotly_chart(cumulative_water_fig)
