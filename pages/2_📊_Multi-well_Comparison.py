@@ -115,7 +115,8 @@ gas_rate_fig = go.Figure()
 
 # Define a list of red shades
 
-red_shades = ['#FF0000', '#FF69B4', '#FFA500', '#EE82EE', '#FF6347', '#FF4500', '#FF1493', '#FFD700', '#8A2BE2']
+red_shades =  [ '#FF0000','#FFA07A', '#FA8072', '#E9967A', '#F08080', '#CD5C5C', '#DC143C', '#B22222', '#8B0000']
+
 
 for i, sigla in enumerate(selected_sigla):
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
@@ -145,12 +146,12 @@ gas_rate_fig.update_layout(
 # Display the gas rate Plotly figure in the Streamlit app
 st.plotly_chart(gas_rate_fig)
 
+# Define a list of specific colors for oil rate plots
+oil_color_list = ['#008000', '#006400', '#90EE90', '#98FB98', '#8FBC8F', '#3CB371', '#2E8B57', '#808000', '#556B2F', '#6B8E23']
 
-
-# Plot oil rate using Plotly
 oil_rate_fig = go.Figure()
 
-for sigla in selected_sigla:
+for i, sigla in enumerate(selected_sigla):
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
@@ -165,6 +166,7 @@ for sigla in selected_sigla:
             y=filtered_well_data['oil_rate'],
             mode='lines+markers',
             name=f'Oil Rate - {sigla}',
+            line=dict(color=oil_color_list[i % len(oil_color_list)]),  # Cycle through the specific oil colors
         )
     )
 
@@ -173,12 +175,17 @@ oil_rate_fig.update_layout(
     xaxis_title="Meses",
     yaxis_title="Caudal de Petróleo (m3/d)",
 )
+
+# Display the oil rate Plotly figure in the Streamlit app
 st.plotly_chart(oil_rate_fig)
 
-# Plot water rate using Plotly
+
+# Define a list of specific colors for water rate plots
+water_color_list = ['#0000FF', '#0000CD', '#00008B', '#000080', '#191970', '#7B68EE', '#6A5ACD', '#483D8B', '#B0E0E6', '#ADD8E6', '#87CEFA', '#87CEEB', '#00BFFF', '#B0C4DE', '#1E90FF', '#6495ED']
+
 water_rate_fig = go.Figure()
 
-for sigla in selected_sigla:
+for i, sigla in enumerate(selected_sigla):
     filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
     
     # Filter data to start when 'Np' is different from zero
@@ -193,6 +200,7 @@ for sigla in selected_sigla:
             y=filtered_well_data['water_rate'],
             mode='lines+markers',
             name=f'Water Rate - {sigla}',
+            line=dict(color=water_color_list[i % len(water_color_list)]),  # Cycle through the specific water colors
         )
     )
 
@@ -201,4 +209,7 @@ water_rate_fig.update_layout(
     xaxis_title="Meses",
     yaxis_title="Caudal de Agua (m3/d)",
 )
+
+# Display the water rate Plotly figure in the Streamlit app
 st.plotly_chart(water_rate_fig)
+
