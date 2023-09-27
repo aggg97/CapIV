@@ -100,9 +100,9 @@ st.sidebar.image(image)
 #selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
 
 # Filter data for matching 'sigla'
-filtered_data = data_sorted[
-    (data_sorted['sigla'].isin(selected_sigla))
-]
+#filtered_data = data_sorted[
+#    (data_sorted['sigla'].isin(selected_sigla))
+#]
 
 # Filter max_rates_df to exclude wells with max oil and gas rates above 10,000,000
 max_rates_df_filtered = max_rates_df[(max_rates_df['oil_rate'] <= 10000000) & (max_rates_df['gas_rate'] <= 10000000)]
