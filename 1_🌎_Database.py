@@ -95,10 +95,10 @@ matching_data['counter'] = range(1, len(matching_data) + 1)
 # Filter data for matching 'tipo pozo'
 matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
 
-# Calculate max peak rates for the selected_sigla
-max_gas_rate = matching_data['gas_rate'].max()
-max_oil_rate = matching_data['oil_rate'].max()
-max_water_rate = matching_data['water_rate'].max()
+# Calculate maximum values below 1,000,000 for gas, oil, and water rates
+max_gas_rate = matching_data[matching_data['gas_rate'] <= 1000000]['gas_rate'].max()
+max_oil_rate = matching_data[matching_data['oil_rate'] <= 1000000]['oil_rate'].max()
+max_water_rate = matching_data[matching_data['water_rate'] <= 1000000]['water_rate'].max()
 
 # Round the maximum rates to one decimal place
 max_gas_rate_rounded = round(max_gas_rate, 1)
