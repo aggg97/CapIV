@@ -114,11 +114,11 @@ top_petroleo_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'
 top_gas_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'] == 'Gas'].nlargest(10, 'gas_rate')
 
 # Create a bar plot for the top gas wells
-st.subheader("Top Gas Wells")
-fig_gas = px.bar(top_gas_wells, x='sigla', y='gas_rate', color='sigla', title="Top Gas Wells")
+st.subheader("Ranking mejores pozos de Gas según caudales máximos")
+fig_gas = px.bar(top_gas_wells, x='Sigla del pozo', y='Caudal de gas (km3/d)', color='sigla', title="Top Gas Wells")
 st.plotly_chart(fig_gas)
 
 # Create a bar plot for the top petroleo wells
-st.subheader("Top Petroleo Wells")
-fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Top Petroleo Wells")
+st.subheader("Ranking mejores pozos de Petróleo según caudales máximos")
+fig_oil = px.bar(top_petroleo_wells, x='Sigla del pozo', y='Caudal de petróleo (m3/d)', color='sigla', title="Top Petroleo Wells")
 st.plotly_chart(fig_oil)
