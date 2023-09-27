@@ -90,7 +90,7 @@ max_rates_df['Fluido McCain'] = max_rates_df.apply(
 
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
-st.sidebar.image(image)
+#st.sidebar.image(image)
 #st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a dropdown list for "Fluido McCain"
