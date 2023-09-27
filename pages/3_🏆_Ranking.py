@@ -90,19 +90,19 @@ max_rates_df['Fluido McCain'] = max_rates_df.apply(
 
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
-#st.sidebar.image(image)
-#st.sidebar.title("Por favor filtrar aquí: ")
+st.sidebar.image(image)
+st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a dropdown list for "Fluido McCain"
-#selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
+selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
 
 # Create a multiselect list for 'sigla'
-#selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
 
 # Filter data for matching 'sigla'
-#filtered_data = data_sorted[
-#    (data_sorted['sigla'].isin(selected_sigla))
-#]
+filtered_data = data_sorted[
+    (data_sorted['sigla'].isin(selected_sigla))
+]
 
 # Filter max_rates_df to exclude wells with max oil and gas rates above 10,000,000
 max_rates_df_filtered = max_rates_df[(max_rates_df['oil_rate'] <= 10000000) & (max_rates_df['gas_rate'] <= 10000000)]
@@ -114,11 +114,11 @@ top_petroleo_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'
 top_gas_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'] == 'Gas'].nlargest(10, 'gas_rate')
 
 # Create a bar plot for the top gas wells
-st.subheader("Ranking mejores pozos de Gas según caudales máximos")
-fig_gas = px.bar(top_gas_wells, x='Sigla del pozo', y='Caudal de gas (km3/d)', color='sigla', title="Top Gas Wells")
+st.subheader("Top Gas Wells")
+fig_gas = px.bar(top_gas_wells, x='sigla', y='gas_rate', color='sigla', title="Top Gas Wells")
 st.plotly_chart(fig_gas)
 
 # Create a bar plot for the top petroleo wells
-st.subheader("Ranking mejores pozos de Petróleo según caudales máximos")
-fig_oil = px.bar(top_petroleo_wells, x='Sigla del pozo', y='Caudal de petróleo (m3/d)', color='sigla', title="Top Petroleo Wells")
+st.subheader("Top Petroleo Wells")
+fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Top Petroleo Wells")
 st.plotly_chart(fig_oil)
