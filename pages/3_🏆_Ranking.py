@@ -91,13 +91,13 @@ max_rates_df['Fluido McCain'] = max_rates_df.apply(
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
-st.sidebar.title("Por favor filtrar aquí: ")
+#st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a dropdown list for "Fluido McCain"
-selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
+#selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
 
 # Create a multiselect list for 'sigla'
-selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+#selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
 
 # Filter data for matching 'sigla'
 filtered_data = data_sorted[
