@@ -90,19 +90,19 @@ max_rates_df['Fluido McCain'] = max_rates_df.apply(
 
 st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
-st.sidebar.image(image)
-st.sidebar.title("Por favor filtrar aquí: ")
+#st.sidebar.image(image)
+#st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a dropdown list for "Fluido McCain"
-selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
+#selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
 
 # Create a multiselect list for 'sigla'
-selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+#selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
 
 # Filter data for matching 'sigla'
-filtered_data = data_sorted[
-    (data_sorted['sigla'].isin(selected_sigla))
-]
+#filtered_data = data_sorted[
+#    (data_sorted['sigla'].isin(selected_sigla))
+#]
 
 # Filter max_rates_df to exclude wells with max oil and gas rates above 10,000,000
 max_rates_df_filtered = max_rates_df[(max_rates_df['oil_rate'] <= 10000000) & (max_rates_df['gas_rate'] <= 10000000)]
