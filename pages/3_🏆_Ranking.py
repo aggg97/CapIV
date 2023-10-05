@@ -70,42 +70,32 @@ data_sorted = load_and_sort_data(dataset_url)
 data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
-# Create a Pivot Table to Calculate Maximum Oil and Gas Rates for Each Well
-pivot_table = data_sorted.pivot_table(
-    values=['gas_rate', 'oil_rate', 'water_rate'],
+# Filter data_sorted to exclude wells with tef values between 0.01 and 1
+data_sorted_filtered = data_sorted[(data_sorted['tef'] == 0) | ((data_sorted['tef'] > 1) | (data_sorted['tef'] < 0.01))]
+
+# Create a Pivot Table to Calculate Maximum Oil and Gas Rates and TEF for Each Well
+pivot_table = data_sorted_filtered.pivot_table(
+    values=['gas_rate', 'oil_rate', 'water_rate', 'tef'],  # Include 'tef' here
     index=['sigla'],
-    aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max'}
+    aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max', 'tef': 'min'}  # Include 'tef' here
 )
 
-# Step 2: Create a New DataFrame with Maximum Oil and Gas Rates
+# Step 2: Create a New DataFrame with Maximum Oil and Gas Rates and TEF
 max_rates_df = pivot_table.reset_index()
-max_rates_df['GOR'] = max_rates_df['gas_rate'] / max_rates_df['oil_rate']
+max_rates_df['GOR'] = (max_rates_df['gas_rate']*1000) / max_rates_df['oil_rate']
 max_rates_df['GOR'] = max_rates_df['GOR'].fillna(100000)
 
 # Add a new column "Fluido McCain" based on conditions
 max_rates_df['Fluido McCain'] = max_rates_df.apply(
-    lambda row: 'Gas' if row['oil_rate'] == 0 or row['GOR'] > 3000 else 'Petróleo',
+    lambda row: 'Gas' if row['oil_rate'] == 0 or row['GOR'] > 15000 else 'Petróleo',
     axis=1
 )
 
-st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
-image = Image.open('Vaca Muerta rig.png')
-#st.sidebar.image(image)
-#st.sidebar.title("Por favor filtrar aquí: ")
-
-# Create a dropdown list for "Fluido McCain"
-#selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
-
-# Create a multiselect list for 'sigla'
-#selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
-
-# Filter data for matching 'sigla'
-#filtered_data = data_sorted[
-#    (data_sorted['sigla'].isin(selected_sigla))
-#]
-
 # Filter max_rates_df to exclude wells with max oil and gas rates above 10,000,000
-max_rates_df_filtered = max_rates_df[(max_rates_df['oil_rate'] <= 10000000) & (max_rates_df['gas_rate'] <= 10000000)]
+max_rates_df_filtered = max_rates_df[
+    (max_rates_df['oil_rate'] <= 10000000) &
+    (max_rates_df['gas_rate'] <= 10000000)
+]
 
 # Get the top 10 petroleo wells
 top_petroleo_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'] == 'Petróleo'].nlargest(10, 'oil_rate')
@@ -114,11 +104,11 @@ top_petroleo_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'
 top_gas_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'] == 'Gas'].nlargest(10, 'gas_rate')
 
 # Create a bar plot for the top gas wells
-st.subheader("Top Gas Wells")
-fig_gas = px.bar(top_gas_wells, x='sigla', y='gas_rate', color='sigla', title="Top Gas Wells")
+st.subheader("Mejores pozos de gas")
+fig_gas = px.bar(top_gas_wells, x='sigla', y='gas_rate', color='sigla', title="Caudales máximos de gas")
 st.plotly_chart(fig_gas)
 
 # Create a bar plot for the top petroleo wells
-st.subheader("Top Petroleo Wells")
-fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Top Petroleo Wells")
+st.subheader("Mejores pozos de petróleo")
+fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Caudales máximos de petróleo")
 st.plotly_chart(fig_oil)
