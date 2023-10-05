@@ -169,7 +169,7 @@ st.plotly_chart(water_rate_fig)
 # Plot cumulative gas production (Gp) using Plotly with 'date' as x-axis
 qovsnp_fig = go.Figure()
 
-cumulative_gas_fig.add_trace(
+qovsnp_fig.add_trace(
     go.Scatter(
         x=matching_data['oil_rate'],  
         y=matching_data['cumulative_oil'],
