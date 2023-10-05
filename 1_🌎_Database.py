@@ -179,12 +179,12 @@ qovsnp_fig.add_trace(
     )
 )
 
-cumulative_gas_fig.update_layout(
+qovsnp_fig.update_layout(
     title=f"{selected_sigla}",
     xaxis_title="Oil rate (m3/d)",  
     yaxis_title="Np (m3)"
 )
-cumulative_gas_fig.update_yaxes(range=[0, None])
+qovsnp_fig.update_yaxes(range=[0, None])
 st.plotly_chart(qovsnp_fig)
 
 
