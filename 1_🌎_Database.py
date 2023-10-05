@@ -167,64 +167,24 @@ water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
 # Plot cumulative gas production (Gp) using Plotly with 'date' as x-axis
-cumulative_gas_fig = go.Figure()
+qovsnp_fig = go.Figure()
 
 cumulative_gas_fig.add_trace(
     go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['cumulative_gas'],
+        x=matching_data['oil_rate'],  
+        y=matching_data['cumulative_oil'],
         mode='lines+markers',
-        name='Cumulative Gas Production (Gp)',
+        name='Caudal de petróleo (Qo) vs Acumulada de petróleo (Np)',
         line=dict(color='red')
     )
 )
 
 cumulative_gas_fig.update_layout(
-    title=f"Acumulada de Gas (Gp) del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
-    yaxis_title="Gp (km3)"
-)
-cumulative_gas_fig.update_yaxes(range=[0, None])
-st.plotly_chart(cumulative_gas_fig)
-
-# Plot cumulative oil production (Np) using Plotly with 'date' as x-axis
-cumulative_oil_fig = go.Figure()
-
-cumulative_oil_fig.add_trace(
-    go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['cumulative_oil'],
-        mode='lines+markers',
-        name='Cumulative Oil Production (Np)',
-        line=dict(color='green')
-    )
-)
-
-cumulative_oil_fig.update_layout(
-    title=f"Acumulada de Petróleo (Np) del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
+    title=f"{selected_sigla}",
+    xaxis_title="Oil rate (m3/d)",  
     yaxis_title="Np (m3)"
 )
-cumulative_oil_fig.update_yaxes(range=[0, None])
-st.plotly_chart(cumulative_oil_fig)
+cumulative_gas_fig.update_yaxes(range=[0, None])
+st.plotly_chart(qovsnp_fig)
 
-# Plot cumulative water production (Wp) using Plotly with 'date' as x-axis
-cumulative_water_fig = go.Figure()
 
-cumulative_water_fig.add_trace(
-    go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['cumulative_water'],
-        mode='lines+markers',
-        name='Cumulative Water Production (Wp)',
-        line=dict(color='blue')
-    )
-)
-
-cumulative_water_fig.update_layout(
-    title=f"Acumulada de Agua (Wp) del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
-    yaxis_title="Wp (m3)"
-)
-cumulative_water_fig.update_yaxes(range=[0, None])
-st.plotly_chart(cumulative_water_fig)
