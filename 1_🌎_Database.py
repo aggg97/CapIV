@@ -171,8 +171,8 @@ qovsnp_fig = go.Figure()
 
 qovsnp_fig.add_trace(
     go.Scatter(
-        x=matching_data['oil_rate'],  
-        y=matching_data['cumulative_oil'],
+        x=matching_data['cumulative_oil'],  
+        y=matching_data['oil_rate'],
         mode='lines+markers',
         name='Caudal de petróleo (Qo) vs Acumulada de petróleo (Np)',
         line=dict(color='red')
@@ -181,8 +181,8 @@ qovsnp_fig.add_trace(
 
 qovsnp_fig.update_layout(
     title=f"{selected_sigla}",
-    xaxis_title="Oil rate (m3/d)",  
-    yaxis_title="Np (m3)"
+    xaxis_title="Np (m3)",  
+    yaxis_title="Oil rate (m3/d)"
 )
 qovsnp_fig.update_yaxes(range=[0, None])
 st.plotly_chart(qovsnp_fig)
