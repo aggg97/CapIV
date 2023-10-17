@@ -29,7 +29,8 @@ data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + dat
 # Convert the "Fecha" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
-st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
+st.title(f":blue[Capítulo IV Dataset - Producción No Convencional]")
+st.caption("Creado por Agustina Gilardone")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
