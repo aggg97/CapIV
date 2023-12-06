@@ -100,10 +100,10 @@ filtered_data = data_sorted[
     (data_sorted['sigla'].isin(selected_sigla))
 ]
 
-# Get unique years from the dataset
-unique_years = data_sorted['anio'].unique()
+# Get unique years from the dataset and sort them in decreasing order
+unique_years = sorted(data_sorted['anio'].unique(), reverse=True)
 
-# Create a multiselect list for 'anio' (years)
+# Create a multiselect list for 'anio' (years) in decreasing order
 selected_years = st.sidebar.multiselect("Seleccionar año", unique_years)
 
 # Filter data based on selected years
