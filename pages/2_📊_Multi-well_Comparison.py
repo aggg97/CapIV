@@ -100,6 +100,30 @@ filtered_data = data_sorted[
     (data_sorted['sigla'].isin(selected_sigla))
 ]
 
+# Get unique years from the dataset
+unique_years = data_sorted['anio'].unique()
+
+# Create a multiselect list for 'anio' (years)
+selected_years = st.sidebar.multiselect("Seleccionar año", unique_years)
+
+# Filter data based on selected years
+filtered_data_by_year = data_sorted[data_sorted['anio'].isin(selected_years)]
+
+# Filter wells where the first value of Np different from zero appears on the selected year
+wells_with_non_zero_Np = filtered_data_by_year.groupby('sigla')['Np'].transform('idxmax')
+filtered_data_by_year = filtered_data_by_year.loc[wells_with_non_zero_Np]
+
+# Get unique wells (sigla) based on the filtered data
+unique_wells_filtered_by_year = filtered_data_by_year['sigla'].unique()
+
+# Create a multiselect list for 'sigla' based on the filtered wells
+selected_sigla_filtered_by_year = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar (Filtrados por año)", unique_wells_filtered_by_year)
+
+# Filter data for matching 'sigla' based on the selection
+filtered_data_filtered_by_year = filtered_data_by_year[
+    (filtered_data_by_year['sigla'].isin(selected_sigla_filtered_by_year))
+]
+
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
 
