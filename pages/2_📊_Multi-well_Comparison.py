@@ -92,14 +92,6 @@ st.sidebar.title("Por favor filtrar aquí: ")
 # Create a dropdown list for "Fluido McCain"
 selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
 
-# Create a multiselect list for 'sigla'
-selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
-
-# Filter data for matching 'sigla'
-filtered_data = data_sorted[
-    (data_sorted['sigla'].isin(selected_sigla))
-]
-
 # Get unique years from the dataset and sort them in decreasing order
 unique_years = sorted(data_sorted['anio'].unique(), reverse=True)
 
@@ -123,6 +115,15 @@ selected_sigla_filtered_by_year = st.sidebar.multiselect("Seleccionar siglas de 
 filtered_data_filtered_by_year = filtered_data_by_year[
     (filtered_data_by_year['sigla'].isin(selected_sigla_filtered_by_year))
 ]
+
+# Create a multiselect list for 'sigla'
+selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+
+# Filter data for matching 'sigla'
+filtered_data = data_sorted[
+    (data_sorted['sigla'].isin(selected_sigla))
+]
+
 
 # Plot gas rate using Plotly
 gas_rate_fig = go.Figure()
