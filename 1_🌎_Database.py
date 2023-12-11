@@ -1,3 +1,4 @@
+import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
