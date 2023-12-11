@@ -3,6 +3,39 @@ import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
 
+COLUMNS = [
+    'sigla',  # atemporal
+    'anio',  # temporal
+    'mes',  # temporal
+    'prod_pet',  # temporal
+    'prod_gas',  # temporal
+    'prod_agua',  # temporal
+    'iny_gas',  # temporal
+    'tef',  # temporal
+    'tipoextraccion',  # atemporal
+    'tipopozo',  # atemporal
+    'empresa',  # atemporal
+    'formacion',  # atemporal
+    'areayacimiento',  # atemporal
+    'fecha_data'  # temporal
+]
+
+COLUMNS_NAMES = [
+    'Sigla',
+    'Año',
+    'Mes',
+    'Producción de Petróleo (m3)',
+    'Producción de Gas (km3)',
+    'Producción de Agua (m3)',
+    'Inyección de Gas (km3)',
+    'TEF',
+    'Tipo de Extracción',
+    'Tipo de Pozo',
+    'Empresa',
+    'Formación',
+    'Área yacimiento',
+    'Fecha de Carga'
+]
 
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
