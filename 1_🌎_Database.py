@@ -95,11 +95,15 @@ matching_data = data_sorted[
     (data_sorted['sigla'] == selected_sigla)
 ]
 
-# Display the filtered data table
-# soon... download to .xls 
+# Display the filtered data table with renamed columns
 if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
-    st.write(matching_data)
+    
+    # Renaming columns before displaying
+    matching_data_display = matching_data.rename(columns=dict(zip(COLUMNS, COLUMNS_NAMES)))
+    
+    st.write(matching_data_display)
+# add download to .xls 
 
 # Calculate gas rate for the filtered data
 matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
