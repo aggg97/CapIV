@@ -1,4 +1,3 @@
-import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
@@ -95,15 +94,11 @@ matching_data = data_sorted[
     (data_sorted['sigla'] == selected_sigla)
 ]
 
-# Display the filtered data table with renamed columns
+# Display the filtered data table
+# soon... download to .xls 
 if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Filtered Data:")
-    
-    # Renaming columns before displaying
-    matching_data_display = matching_data.rename(columns=dict(zip(COLUMNS, COLUMNS_NAMES)))
-    
-    st.write(matching_data_display)
-# add download to .xls 
+    st.write(matching_data)
 
 # Calculate gas rate for the filtered data
 matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
@@ -203,6 +198,3 @@ water_rate_fig.update_layout(
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
-
-
-
