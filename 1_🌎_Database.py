@@ -37,18 +37,18 @@ COLUMNS_NAMES = [
     'Fecha de Carga'
 ]
 
+# Reorder and rename the columns in the DataFrame
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
-    df = pd.read_csv(dataset_url)
-    data_sorted = df.sort_values(by='fecha_data', ascending=True)
-     # Add a new column "Np" with the cumulative sum of "prod_pet" for each 'sigla'
+    df = pd.read_csv(dataset_url, usecols=COLUMNS)
+    data_sorted = df.sort_values(by=['sigla', 'fecha_data'], ascending=True)
+    data_sorted = data_sorted[COLUMNS]
+    data_sorted['gas_rate'] = data_sorted['prod_gas'] / data_sorted['tef']
+    data_sorted['oil_rate'] = data_sorted['prod_pet'] / data_sorted['tef']
+    data_sorted['water_rate'] = data_sorted['prod_agua'] / data_sorted['tef']
     data_sorted['Np'] = data_sorted.groupby('sigla')['prod_pet'].cumsum()
-
-    # Add a new column "Gp" with the cumulative sum of "prod_gas" for each 'sigla'
     data_sorted['Gp'] = data_sorted.groupby('sigla')['prod_gas'].cumsum()
-
-    # Add a new column "Wp" with the cumulative sum of "prod_agua" for each 'sigla'
-    data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum
+    data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum()
     return data_sorted
 
 # URL of the dataset
