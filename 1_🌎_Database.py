@@ -1,201 +1,94 @@
-import streamlit as st # run in terminal $ streamlit run capiv.py to open url
-import pandas as pd
-import plotly.graph_objects as go
-from PIL import Image
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from tabulate import tabulate
 
-COLUMNS = [
-    'sigla',  # atemporal
-    'anio',  # temporal
-    'mes',  # temporal
-    'prod_pet',  # temporal
-    'prod_gas',  # temporal
-    'prod_agua',  # temporal
-    'iny_gas',  # temporal
-    'tef',  # temporal
-    'tipoextraccion',  # atemporal
-    'tipopozo',  # atemporal
-    'empresa',  # atemporal
-    'formacion',  # atemporal
-    'areayacimiento',  # atemporal
-    'fecha_data'  # temporal
-]
+st.title("IPR Calculation")
 
-COLUMNS_NAMES = [
-    'Sigla',
-    'Año',
-    'Mes',
-    'Producción de Petróleo (m3)',
-    'Producción de Gas (km3)',
-    'Producción de Agua (m3)',
-    'Inyección de Gas (km3)',
-    'TEF',
-    'Tipo de Extracción',
-    'Tipo de Pozo',
-    'Empresa',
-    'Formación',
-    'Área yacimiento',
-    'Fecha de Carga'
-]
+# Definition of the quadratic curve equation (Inflow Performance Relationship - IPR)
+def curve_IPR(Q, a, b, Pws):
+    return np.sqrt(-a * Q ** 2 - b * Q + Pws**2)
 
-# Reorder and rename the columns in the DataFrame
-@st.cache(allow_output_mutation=True)
-def load_and_sort_data(dataset_url):
-    df = pd.read_csv(dataset_url, usecols=COLUMNS)
-    data_sorted = df.sort_values(by=['sigla', 'fecha_data'], ascending=True)
-    data_sorted = data_sorted[COLUMNS]
-    data_sorted['gas_rate'] = data_sorted['prod_gas'] / data_sorted['tef']
-    data_sorted['oil_rate'] = data_sorted['prod_pet'] / data_sorted['tef']
-    data_sorted['water_rate'] = data_sorted['prod_agua'] / data_sorted['tef']
-    data_sorted['Np'] = data_sorted.groupby('sigla')['prod_pet'].cumsum()
-    data_sorted['Gp'] = data_sorted.groupby('sigla')['prod_gas'].cumsum()
-    data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum()
-    return data_sorted
+# Function to collect input data
+def collect_data():
+    data = []
+    Pws = st.number_input("Enter reservoir pressure (in bar): ")
 
-# URL of the dataset
-dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad3543b407c/resource/b5b58cdc-9e07-41f9-b392-fb9ec68b0725/download/produccin-de-pozos-de-gas-y-petrleo-no-convencional.csv"
+    # Create a list to store data entry forms
+    forms = []
 
-# Load and sort the data using the cached function
-data_sorted = load_and_sort_data(dataset_url)
+    # Define a function to add a new data entry form
+    def add_data_entry():
+        with st.form(key=f"form_{len(forms)}"):
+            st.write("Enter test data:")
+            date = st.text_input("Enter date:")
+            comment = st.text_input("Enter comment:")
+            Pwf = st.number_input("Enter flowing bottomhole pressure (in bar):")
+            Q = st.number_input("Enter rate (in km3/d):")
+            submit_button = st.form_submit_button(label="Add Data")
+            if submit_button:
+                data.append((date, comment, Pwf, Q))
+            st.write("\n")
+        return submit_button
 
-# Add a new column "Fecha" by combining year and month
-data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
-# Convert the "Fecha" column to datetime format
-data_sorted['date'] = pd.to_datetime(data_sorted['date'])
+    # Display initial data entry form
+    add_data_entry()
 
-st.title(f":blue[Capítulo IV Dataset - Producción No Convencional]")
-st.caption("Creado por Agustina Gilardone")
-image = Image.open('Vaca Muerta rig.png')
-st.sidebar.image(image)
-st.sidebar.title("Por favor filtrar aquí: ")
+    # Allow users to add more data entry forms dynamically
+    while st.button("Add More Data"):
+        if add_data_entry():
+            forms.append(True)
+    
+    # Print data as a table
+    st.write("\nInput Data:")
+    headers = ["Date", "Comment", "Pwf (bar)", "Rate (km3/d)"]
+    st.table(data)
+    return data, Pws
 
-# Create a multiselect widget for 'tipo pozo'
-# soon... type fluid classification by GOR (McCain)
-tipos_pozo = data_sorted['tipopozo'].unique()
-selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
+# Collect test data
+data, Pws = collect_data()
 
-# Create a dropdown list for 'empresa'
-empresas = data_sorted['empresa'].unique()
-selected_empresa = st.sidebar.selectbox("Seleccionar operadora:", empresas)
+# Convert data into arrays
+Q_data = np.array([d[3] for d in data])
+P_data = np.array([d[2] for d in data])
 
-# Filter data based on selected 'tipo pozo' and 'empresa'
-matching_data = data_sorted[
-    (data_sorted['tipopozo'].isin(selected_tipos_pozo)) &
-    (data_sorted['empresa'] == selected_empresa)
-]
+# Perform curve fitting
+initial_guess = [3.75e-9, 4.17e-4]  # Initial guess for the parameters a, b, and c
+bounds = ([0, 0], [np.inf, np.inf])  # Bounds for the parameters
+params, _ = curve_fit(curve_IPR, Q_data, P_data, p0=initial_guess, bounds=bounds)
+a_fit, b_fit = params
 
-# Get unique 'sigla' values based on selected 'empresa' and 'tipo pozo'
-siglas_for_selected_empresa = matching_data['sigla'].unique()
+st.write("\n\nFitted Parameters:")
+st.write(f"a: {a_fit:.2f} bar2/(Sm3/day)2")
+st.write(f"b: {b_fit:.2f} bar2/(Sm3/day)")
+st.write(f"Reservoir Pressure: {Pws:.2f} bar")
 
-# Create a dropdown list for 'sigla'
-selected_sigla = st.sidebar.selectbox("Seleccionar sigla del pozo", siglas_for_selected_empresa)
+# AOF Calculation
+# Bhaskara’s formula to find positive root
+discriminant = b_fit ** 2 + 4 * a_fit * Pws ** 2
+if discriminant >= 0:
+    AOF = (-b_fit + np.sqrt(discriminant)) / (2 * a_fit)
+    st.write(f"AOF: {AOF/1000:.2f} km3/d")
+else:
+    st.write("No real roots exist.")
 
-# Filter data for matching 'empresa' and 'sigla'
-matching_data = data_sorted[
-    (data_sorted['empresa'] == selected_empresa) &
-    (data_sorted['sigla'] == selected_sigla)
-]
+# Range of points for extrapolation of the curve
+Q_range = np.linspace(0, AOF, 500)
+Pwf_fit = curve_IPR(Q_range, a_fit, b_fit, Pws)
 
-# Display the filtered data table
-# soon... download to .xls 
-if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
-    st.write("Filtered Data:")
-    st.write(matching_data)
+# Test points
+plt.scatter(Q_data, P_data, color='red', label='Test Data')
+# Fitted curve
+plt.plot(Q_range, Pwf_fit, color='blue', label='Fitted Curve')
 
-# Calculate gas rate for the filtered data
-matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
+# Set the limits for both x and y axes
+plt.xlim(0, plt.xlim()[1])  # x-axis minimum to 0
+plt.ylim(0, plt.ylim()[1])  # y-axis minimum to 0
 
-# Calculate oil rate and water rate for the filtered data
-matching_data['oil_rate'] = matching_data['prod_pet'] / matching_data['tef']
-matching_data['water_rate'] = matching_data['prod_agua'] / matching_data['tef']
-
-# Calculate cumulative Gp, Np, and Wp for the selected well
-matching_data['cumulative_gas'] = matching_data['Gp']
-matching_data['cumulative_oil'] = matching_data['Np']
-matching_data['cumulative_water'] = matching_data.groupby('sigla')['prod_agua'].cumsum()
-
-# Create a counter column for x-axis
-matching_data['counter'] = range(1, len(matching_data) + 1)
-
-# Filter data for matching 'tipo pozo'
-matching_tipo_pozo_data = data_sorted[data_sorted['tipopozo'].isin(selected_tipos_pozo)]
-
-# Calculate maximum values below 1,000,000 for gas, oil, and water rates
-max_gas_rate = matching_data[matching_data['gas_rate'] <= 1000000]['gas_rate'].max()
-max_oil_rate = matching_data[matching_data['oil_rate'] <= 1000000]['oil_rate'].max()
-max_water_rate = matching_data[matching_data['water_rate'] <= 1000000]['water_rate'].max()
-
-# Round the maximum rates to one decimal place
-max_gas_rate_rounded = round(max_gas_rate, 1)
-max_oil_rate_rounded = round(max_oil_rate, 1)
-max_water_rate_rounded = round(max_water_rate, 1)
-
-st.header(selected_sigla)
-col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rounded)
-col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
-col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
-
-
-
-# Plot gas rate using Plotly with 'date' as x-axis
-gas_rate_fig = go.Figure()
-
-gas_rate_fig.add_trace(
-    go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['gas_rate'],
-        mode='lines+markers',
-        name='Gas Rate',
-        line=dict(color='red')
-    )
-)
-
-gas_rate_fig.update_layout(
-    title=f"Historia de Producción de Gas del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
-    yaxis_title="Caudal de Gas (km3/d)"
-)
-gas_rate_fig.update_yaxes(range=[0, None])
-st.plotly_chart(gas_rate_fig)
-
-# Plot oil rate using Plotly with 'date' as x-axis
-oil_rate_fig = go.Figure()
-
-oil_rate_fig.add_trace(
-    go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['oil_rate'],
-        mode='lines+markers',
-        name='Oil Rate',
-        line=dict(color='green')
-    )
-)
-
-oil_rate_fig.update_layout(
-    title=f"Historia de Producción de Petróleo del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
-    yaxis_title="Caudal de Petróleo (m3/d)"
-)
-oil_rate_fig.update_yaxes(rangemode='tozero')
-st.plotly_chart(oil_rate_fig)
-
-# Plot water rate using Plotly with 'date' as x-axis
-water_rate_fig = go.Figure()
-
-water_rate_fig.add_trace(
-    go.Scatter(
-        x=matching_data['date'],  
-        y=matching_data['water_rate'],
-        mode='lines+markers',
-        name='Water Rate',
-        line=dict(color='blue')
-    )
-)
-
-water_rate_fig.update_layout(
-    title=f"Historia de Producción de Agua del pozo: {selected_sigla}",
-    xaxis_title="Fecha",  
-    yaxis_title="Caudal de Agua (m3/d)"
-)
-water_rate_fig.update_yaxes(range=[0, None])
-st.plotly_chart(water_rate_fig)
+plt.xlabel('Rate (km$^3$/ d)')
+plt.ylabel('Pressure (bar)')
+plt.title('Pressure vs Rate')
+plt.legend()
+plt.grid(True)
+st.pyplot(plt)
