@@ -1,24 +1,23 @@
-import streamlit as st
+import streamlit as st # run in terminal $ streamlit run capiv.py to open url
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
-import plotly.express as px
 
 COLUMNS = [
-    'sigla',
-    'anio',
-    'mes',
-    'prod_pet',
-    'prod_gas',
-    'prod_agua',
-    'iny_gas',
-    'tef',
-    'tipoextraccion',
-    'tipopozo',
-    'empresa',
-    'formacion',
-    'areayacimiento',
-    'fecha_data'
+    'sigla',  # atemporal
+    'anio',  # temporal
+    'mes',  # temporal
+    'prod_pet',  # temporal
+    'prod_gas',  # temporal
+    'prod_agua',  # temporal
+    'iny_gas',  # temporal
+    'tef',  # temporal
+    'tipoextraccion',  # atemporal
+    'tipopozo',  # atemporal
+    'empresa',  # atemporal
+    'formacion',  # atemporal
+    'areayacimiento',  # atemporal
+    'fecha_data'  # temporal
 ]
 
 COLUMNS_NAMES = [
@@ -35,10 +34,10 @@ COLUMNS_NAMES = [
     'Empresa',
     'Formación',
     'Área yacimiento',
-    'Fecha de Datos'
+    'Fecha de Carga'
 ]
 
-# Load and sort the data
+# Reorder and rename the columns in the DataFrame
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
@@ -60,6 +59,7 @@ data_sorted = load_and_sort_data(dataset_url)
 
 # Add a new column "Fecha" by combining year and month
 data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
+# Convert the "Fecha" column to datetime format
 data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
 st.title(f":blue[Capítulo IV Dataset - Producción No Convencional]")
@@ -69,6 +69,7 @@ st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí: ")
 
 # Create a multiselect widget for 'tipo pozo'
+# soon... type fluid classification by GOR (McCain)
 tipos_pozo = data_sorted['tipopozo'].unique()
 selected_tipos_pozo = st.sidebar.multiselect("Seleccionar tipo de pozo:", tipos_pozo)
 
@@ -121,18 +122,6 @@ max_water_rate = matching_data[matching_data['water_rate'] <= 1000000]['water_ra
 max_gas_rate_rounded = round(max_gas_rate, 1)
 max_oil_rate_rounded = round(max_oil_rate, 1)
 max_water_rate_rounded = round(max_water_rate, 1)
-
-# Calculate the ranking of the selected 'sigla' based on gas_rate
-selected_sigla_rank = None
-if not matching_data.empty and selected_sigla in matching_data['sigla'].values:
-    selected_sigla_rank = int(ranking[matching_data['sigla'] == selected_sigla].values[0])
-else:
-    st.write(f"Error: No data found for the selected 'sigla': {selected_sigla}")
-
-
-# Display the ranking position of the selected 'sigla'
-st.write(f"The selected 'sigla', {selected_sigla}, is ranked #{selected_sigla_rank} based on gas rate.")
-
 
 st.header(selected_sigla)
 col1, col2, col3 = st.columns(3)
