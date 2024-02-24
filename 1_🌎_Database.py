@@ -215,7 +215,7 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
         'fecha_data': 'Fecha de Carga'
     })
 
-# st.download_button(
+st.download_button(
     label="Descargar data como archivo CSV",
     data=csv,
     file_name='large_df.csv',
