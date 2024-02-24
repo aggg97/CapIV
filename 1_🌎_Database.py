@@ -123,13 +123,15 @@ max_oil_rate_rounded = round(max_oil_rate, 1)
 max_water_rate_rounded = round(max_water_rate, 1)
 
 # Calculate the ranking of the selected 'sigla' based on gas_rate
-ranking = matching_data['gas_rate'].rank(ascending=False)
-selected_sigla_rank = int(ranking[matching_data['sigla'] == selected_sigla].values[0])
+selected_sigla_rank = None
+if not matching_data.empty and selected_sigla in matching_data['sigla'].values:
+    selected_sigla_rank = int(ranking[matching_data['sigla'] == selected_sigla].values[0])
+else:
+    st.write(f"Error: No data found for the selected 'sigla': {selected_sigla}")
+
 
 # Display the ranking position of the selected 'sigla'
 st.write(f"The selected 'sigla', {selected_sigla}, is ranked #{selected_sigla_rank} based on gas rate.")
-
-# Continue with your code to display charts and tables...
 
 
 st.header(selected_sigla)
