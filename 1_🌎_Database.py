@@ -95,12 +95,6 @@ matching_data = data_sorted[
     (data_sorted['sigla'] == selected_sigla)
 ]
 
-# Display the filtered data table
-# soon... download to .xls 
-if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
-    st.write("Filtered Data:")
-    st.write(matching_data)
-
 # Calculate gas rate for the filtered data
 matching_data['gas_rate'] = matching_data['prod_gas'] / matching_data['tef']
 
@@ -199,3 +193,31 @@ water_rate_fig.update_layout(
 )
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
+
+# Display the filtered data table
+if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
+    st.write("Datos filtrados:")
+    st.write(matching_data)
+    matching_data_renamed = matching_data.rename(columns={
+        'sigla': 'Sigla',
+        'anio': 'Año',
+        'mes': 'Mes',
+        'prod_pet': 'Producción de Petróleo (m3)',
+        'prod_gas': 'Caudal de Gas (m3/d)',
+        'prod_agua': 'Producción de Agua (m3)',
+        'iny_gas': 'Inyección de Gas (m3)',
+        'tef': 'TEF',
+        'tipoextraccion': 'Tipo de Extracción',
+        'tipopozo': 'Tipo de Pozo',
+        'empresa': 'Empresa',
+        'formacion': 'Formación',
+        'areayacimiento': 'Área yacimiento',
+        'fecha_data': 'Fecha de Carga'
+    })
+
+# st.download_button(
+    label="Descargar data como archivo CSV",
+    data=csv,
+    file_name='large_df.csv',
+    mime='text/csv',
+)
