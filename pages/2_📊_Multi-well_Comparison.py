@@ -226,7 +226,7 @@ np_fig.add_trace(
 # Plot Gp (gas_rate) vs cumulative gas production (Gp)
 gp_fig.add_trace(
     go.Scatter(
-        x=filtered_well_data['Gp'],  # Use cumulative gas production (Gp) as x-axis
+        x=filtered_well_data['Gp'] / 1000, # Use cumulative gas production (Gp) as x-axis
         y=filtered_well_data['gas_rate'],  # Use gas_rate as y-axis
         mode='lines+markers',
         name=f'Gas Rate - {sigla}',
@@ -254,8 +254,8 @@ np_fig.update_layout(
 
 # Update layout for Gp (gas_rate) figure
 gp_fig.update_layout(
-    title="Acumulada de Gas (km3) vs Caudal de Gas (km3/d)",
-    xaxis_title="Gp (km3)",
+    title="Acumulada de Gas (MMm3) vs Caudal de Gas (km3/d)",
+    xaxis_title="Gp (MMm3)",
     yaxis_title="Caudal de Gas (km3/d)",
 )
 
