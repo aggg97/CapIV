@@ -272,5 +272,9 @@ if sigla is not None:
     st.plotly_chart(gp_fig)
     st.plotly_chart(wp_fig)
 else:
+    # If sigla is None, display a simple scatter plot with a single point at (0, 0)
+    st.subheader("No data available for plotting")
     st.write("sigla is None. Plots will not be displayed.")
+    st.plotly_chart(go.Figure(data=go.Scatter(x=[0], y=[0], mode='markers')))
+
 
