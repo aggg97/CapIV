@@ -218,6 +218,5 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
 st.download_button(
     label="Descargar data como archivo CSV",
     data=csv,
-    file_name='large_df.csv',
-    mime='text/csv',
+    file_name=f"{sigla}_data.csv"
 )
