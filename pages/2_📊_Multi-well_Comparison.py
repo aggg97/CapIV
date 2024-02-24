@@ -198,53 +198,54 @@ water_rate_fig.update_layout(
 # Display the water rate Plotly figure in the Streamlit app
 st.plotly_chart(water_rate_fig)
 
-# Create separate figures for Gp, Np, and Wp
-gp_fig = go.Figure()
-np_fig = go.Figure()
-wp_fig = go.Figure()
 
-for i, sigla in enumerate(selected_sigla):
-    filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
-    
-    # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
-    
-    # Add a counter column to the filtered data
-    filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
-    
-if sigla is not None:
-    # Plot Np (oil_rate) vs cumulative oil production (Np)
-    np_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['Np'],  # Use cumulative oil production (Np) as x-axis
-            y=filtered_well_data['oil_rate'],  # Use oil_rate as y-axis
-            mode='lines+markers',
-            name=f'Oil Rate - {sigla}',
-            line=dict(color=oil_np_palette[i % len(oil_np_palette)]),  # Use the Oil Rate palette
-        )
-    )
+if selected_fluido and selected_sigla:
+    # Create separate figures for Gp, Np, and Wp
+    gp_fig = go.Figure()
+    np_fig = go.Figure()
+    wp_fig = go.Figure()
 
-    # Plot Gp (gas_rate) vs cumulative gas production (Gp)
-    gp_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['Gp'] / 1000, # Use cumulative gas production (Gp) as x-axis
-            y=filtered_well_data['gas_rate'],  # Use gas_rate as y-axis
-            mode='lines+markers',
-            name=f'Gas Rate - {sigla}',
-            line=dict(color=gas_gp_palette[i % len(gas_gp_palette)]),  # Use the Gas Rate palette
-        )
-    )
+    for i, sigla in enumerate(selected_sigla):
+        filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
 
-    # Plot Wp (water_rate) vs cumulative water production (Wp)
-    wp_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['Wp'],  # Use cumulative water production (Wp) as x-axis
-            y=filtered_well_data['water_rate'],  # Use water_rate as y-axis
-            mode='lines+markers',
-            name=f'Water Rate - {sigla}',
-            line=dict(color=water_wp_palette[i % len(water_wp_palette)]),  # Use the Water Rate palette
+        # Filter data to start when 'Np' is different from zero
+        filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
+
+        # Add a counter column to the filtered data
+        filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
+
+        # Plot Np (oil_rate) vs cumulative oil production (Np)
+        np_fig.add_trace(
+            go.Scatter(
+                x=filtered_well_data['Np'],  # Use cumulative oil production (Np) as x-axis
+                y=filtered_well_data['oil_rate'],  # Use oil_rate as y-axis
+                mode='lines+markers',
+                name=f'Oil Rate - {sigla}',
+                line=dict(color=oil_np_palette[i % len(oil_np_palette)]),  # Use the Oil Rate palette
+            )
         )
-    )
+
+        # Plot Gp (gas_rate) vs cumulative gas production (Gp)
+        gp_fig.add_trace(
+            go.Scatter(
+                x=filtered_well_data['Gp'] / 1000, # Use cumulative gas production (Gp) as x-axis
+                y=filtered_well_data['gas_rate'],  # Use gas_rate as y-axis
+                mode='lines+markers',
+                name=f'Gas Rate - {sigla}',
+                line=dict(color=gas_gp_palette[i % len(gas_gp_palette)]),  # Use the Gas Rate palette
+            )
+        )
+
+        # Plot Wp (water_rate) vs cumulative water production (Wp)
+        wp_fig.add_trace(
+            go.Scatter(
+                x=filtered_well_data['Wp'],  # Use cumulative water production (Wp) as x-axis
+                y=filtered_well_data['water_rate'],  # Use water_rate as y-axis
+                mode='lines+markers',
+                name=f'Water Rate - {sigla}',
+                line=dict(color=water_wp_palette[i % len(water_wp_palette)]),  # Use the Water Rate palette
+            )
+        )
 
     # Update layout for Np (oil_rate) figure
     np_fig.update_layout(
@@ -272,9 +273,9 @@ if sigla is not None:
     st.plotly_chart(gp_fig)
     st.plotly_chart(wp_fig)
 else:
-    # If sigla is None, display a simple scatter plot with a single point at (0, 0)
+    # If Fluido McCain or sigla is not selected, display a message
     st.subheader("No data available for plotting")
-    st.write("sigla is None. Plots will not be displayed.")
-    st.plotly_chart(go.Figure(data=go.Scatter(x=[0], y=[0], mode='markers')))
+    st.write("Fluido McCain or sigla is not selected. Plots will not be displayed.")
+
 
 
