@@ -221,12 +221,13 @@ def convert_table(matching_data):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return matching_data.to_csv().encode('utf-8')
 
-csv = convert_table(selected_sigla)
+# Call the function with the correct argument
+csv = convert_table(matching_data)
 
 st.download_button(
     label="Descargar tabla como archivo CSV",
     data=csv,
-    file_name='selected_sigla.csv',
+    file_name=f'{selected_sigla}.csv',  # Update file name to include selected_sigla
     mime='text/csv',
 )
 
