@@ -215,8 +215,18 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
         'fecha_data': 'Fecha de Carga'
     })
 
+
+@st.cache
+def convert_table(matching_data):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return matching_data.to_csv().encode('utf-8')
+
+csv = convert_table(selected_sigla)
+
 st.download_button(
-    label="Descargar data como archivo CSV",
+    label="Descargar tabla como archivo CSV",
     data=csv,
-    file_name=f"{sigla}_data.csv"
+    file_name='selected_sigla.csv',
+    mime='text/csv',
 )
+
