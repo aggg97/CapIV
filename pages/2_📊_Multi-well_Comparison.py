@@ -274,8 +274,8 @@ if selected_fluido and selected_sigla:
     st.plotly_chart(wp_fig)
 else:
     # If Fluido McCain or sigla is not selected, display a message
-    st.subheader("No data available for plotting")
-    st.write("Fluido McCain or sigla is not selected. Plots will not be displayed.")
+    st.subheader("")
+    st.write("")
 
 
 
