@@ -20,23 +20,6 @@ COLUMNS = [
     'fecha_data'  # temporal
 ]
 
-COLUMNS_NAMES = [
-    'Sigla',
-    'Año',
-    'Mes',
-    'Producción de Petróleo (m3)',
-    'Producción de Gas (km3)',
-    'Producción de Agua (m3)',
-    'Inyección de Gas (km3)',
-    'TEF',
-    'Tipo de Extracción',
-    'Tipo de Pozo',
-    'Empresa',
-    'Formación',
-    'Área yacimiento',
-    'Fecha de Carga'
-]
-
 # Reorder and rename the columns in the DataFrame
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
@@ -194,10 +177,8 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
-# Display the filtered data table
 if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Datos filtrados:")
-    st.write(matching_data)
     matching_data_renamed = matching_data.rename(columns={
         'sigla': 'Sigla',
         'anio': 'Año',
@@ -214,20 +195,20 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
         'areayacimiento': 'Área yacimiento',
         'fecha_data': 'Fecha de Carga'
     })
+    st.write(matching_data_renamed)
 
+    @st.cache
+    def convert_table(matching_data_renamed):
+        # Cache the conversion to prevent computation on every rerun
+        return matching_data_renamed.to_csv().encode('utf-8')
 
-@st.cache
-def convert_table(matching_data):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return matching_data.to_csv().encode('utf-8')
+    # Call the function with the correct argument
+    csv = convert_table(matching_data_renamed)
 
-# Call the function with the correct argument
-csv = convert_table(matching_data)
-
-st.download_button(
-    label="Descargar tabla como archivo CSV",
-    data=csv,
-    file_name=f'{selected_sigla}.csv',  # Update file name to include selected_sigla
-    mime='text/csv',
-)
+    st.download_button(
+        label="Descargar tabla como archivo CSV",
+        data=csv,
+        file_name=f'{selected_sigla}.csv',  # Update file name to include selected_sigla
+        mime='text/csv',
+    )
 
