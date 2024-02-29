@@ -1,4 +1,4 @@
-import streamlit as st # run in terminal $ streamlit run capiv.py to open url
+import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
@@ -112,8 +112,6 @@ col1.metric(label=f":red[Caudal Máximo de Gas (km3/d)]", value=max_gas_rate_rou
 col2.metric(label=f":green[Caudal Máximo de Petróleo (m3/d)]", value=max_oil_rate_rounded)
 col3.metric(label=f":blue[Caudal Máximo de Agua (m3/d)]", value=max_water_rate_rounded)
 
-
-
 # Plot gas rate using Plotly with 'date' as x-axis
 gas_rate_fig = go.Figure()
 
@@ -177,7 +175,7 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
-# Define a function to prepare the DataFrame with renamed columns
+# Define the function to prepare the DataFrame for download
 def prepare_dataframe_for_download(data):
     renamed_columns = {
         'sigla': 'Sigla',
@@ -205,7 +203,7 @@ matching_data_renamed = prepare_dataframe_for_download(matching_data)
 # Display the data table
 st.write(matching_data_renamed)
 
-# Define a function to convert DataFrame to CSV
+# Define the function to convert DataFrame to CSV
 @st.cache
 def convert_dataframe_to_csv(data):
     # Convert DataFrame to CSV and encode it as utf-8
@@ -223,4 +221,3 @@ if st.button(f"Descargar tabla como archivo CSV"):
         file_name=f'{selected_sigla}.csv',
         mime='text/csv',
     )
-
