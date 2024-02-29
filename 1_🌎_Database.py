@@ -200,7 +200,7 @@ def prepare_dataframe_for_download(data):
 # Prepare the data for download
 matching_data_renamed = prepare_dataframe_for_download(matching_data)
 
-# Display the data table
+# Display the data table with renamed columns
 st.write(matching_data_renamed)
 
 # Define the function to convert DataFrame to CSV
@@ -221,3 +221,4 @@ if st.button(f"Descargar tabla como archivo CSV"):
         file_name=f'{selected_sigla}.csv',
         mime='text/csv',
     )
+
