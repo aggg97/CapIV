@@ -224,7 +224,3 @@ if st.button(f"Descargar tabla como archivo CSV"):
         mime='text/csv',
     )
 
-        data=csv,
-        file_name=f'{selected_sigla}.csv',  # Update file name to include selected_sigla
-        mime='text/csv',
-    )
