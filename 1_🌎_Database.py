@@ -177,9 +177,9 @@ water_rate_fig.update_layout(
 water_rate_fig.update_yaxes(range=[0, None])
 st.plotly_chart(water_rate_fig)
 
-if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
-    st.write("Datos filtrados:")
-    matching_data_renamed = matching_data.rename(columns={
+# Define a function to prepare the DataFrame with renamed columns
+def prepare_dataframe_for_download(data):
+    renamed_columns = {
         'sigla': 'Sigla',
         'date': 'Fecha',
         'oil_rate': 'Caudal de petróleo (m3/d)',
@@ -194,20 +194,36 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
         'empresa': 'Empresa',
         'formacion': 'Formación',
         'areayacimiento': 'Área yacimiento',
-    })
-    
-    st.write(matching_data_renamed)
+    }
+    # Rename the columns
+    data_renamed = data.rename(columns=renamed_columns)
+    return data_renamed
 
-    @st.cache
-    def convert_table(matching_data_renamed):
-        # Cache the conversion to prevent computation on every rerun
-        return matching_data_renamed.to_csv().encode('utf-8')
+# Prepare the data for download
+matching_data_renamed = prepare_dataframe_for_download(matching_data)
 
-    # Call the function with the correct argument
-    csv = convert_table(matching_data_renamed)
+# Display the data table
+st.write(matching_data_renamed)
 
+# Define a function to convert DataFrame to CSV
+@st.cache
+def convert_dataframe_to_csv(data):
+    # Convert DataFrame to CSV and encode it as utf-8
+    csv = data.to_csv(index=False).encode('utf-8')
+    return csv
+
+# Call the function to convert DataFrame to CSV
+csv_data = convert_dataframe_to_csv(matching_data_renamed)
+
+# Add a button to download the CSV file
+if st.button(f"Descargar tabla como archivo CSV"):
     st.download_button(
-        label="Descargar tabla como archivo CSV",
+        label="Descargar CSV",
+        data=csv_data,
+        file_name=f'{selected_sigla}.csv',
+        mime='text/csv',
+    )
+
         data=csv,
         file_name=f'{selected_sigla}.csv',  # Update file name to include selected_sigla
         mime='text/csv',
