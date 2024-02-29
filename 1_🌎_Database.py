@@ -1,4 +1,4 @@
-import streamlit as st # run in terminal $ streamlit run capiv.py to open url
+import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
@@ -200,7 +200,7 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     @st.cache
     def convert_table(matching_data_renamed):
         # Cache the conversion to prevent computation on every rerun
-        return matching_data_renamed.to_csv().encode('utf-8')
+        return matching_data_renamed.to_csv(index=False).encode('utf-8')
 
     # Call the function with the correct argument
     csv = convert_table(matching_data_renamed)
