@@ -181,20 +181,21 @@ if st.button(f"Ver datos históricos del pozo: {selected_sigla}"):
     st.write("Datos filtrados:")
     matching_data_renamed = matching_data.rename(columns={
         'sigla': 'Sigla',
-        'anio': 'Año',
-        'mes': 'Mes',
-        'prod_pet': 'Producción de Petróleo (m3)',
-        'prod_gas': 'Caudal de Gas (m3/d)',
-        'prod_agua': 'Producción de Agua (m3)',
-        'iny_gas': 'Inyección de Gas (m3)',
+        'date': 'Fecha',
+        'oil_rate': 'Caudal de petróleo (m3/d)',
+        'gas_rate': 'Caudal de gas(m3/d)',
+        'water_rate': 'Caudal de agua (m3/d)',
+        'Np': 'Acumulada de Petróleo (m3)',
+        'Gp': 'Acumulada de Gas (m3)',
+        'Wp': 'Acumulada de Agua (m3)',
         'tef': 'TEF',
         'tipoextraccion': 'Tipo de Extracción',
         'tipopozo': 'Tipo de Pozo',
         'empresa': 'Empresa',
         'formacion': 'Formación',
         'areayacimiento': 'Área yacimiento',
-        'fecha_data': 'Fecha de Carga'
     })
+    
     st.write(matching_data_renamed)
 
     @st.cache
