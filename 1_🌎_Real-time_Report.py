@@ -105,7 +105,7 @@ st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
 
 # Area plots for gas and oil rates by top 10 companies (non-stacked)
-st.subheader("Caudal de Gas y Petróleo por Empresa (Top 10 y Otros)")
+st.subheader("Caudal de Gas y Petróleo por Empresa")
 
 # Plot for gas rate by company (non-stacked)
 fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa", line_group='top_company')
@@ -152,7 +152,7 @@ st.write("Resumen de producción de petróleo por empresa:")
 st.write(top_company_summary.groupby('top_company').agg(total_oil_rate=('total_oil_rate', 'sum')).reset_index())
 
 # Area plots for gas and oil rates by top 10 areas
-st.subheader("Caudal de Gas y Petróleo por Área de Yacimiento (Top 10 y Otros)")
+st.subheader("Caudal de Gas y Petróleo por Área de Yacimiento")
 
 # Plot for gas rate by area
 fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área de Yacimiento")
@@ -199,7 +199,7 @@ st.write("Resumen de producción de petróleo por área de yacimiento:")
 st.write(top_area_summary.groupby('top_area').agg(total_oil_rate=('total_oil_rate', 'sum')).reset_index())
 
 # Bar plot of the number of wells per company
-st.subheader("Número de Pozos por Empresa (Top 10 y Otros)")
+st.subheader("Número de Pozos por Empresa")
 
 fig_wells = px.bar(top_well_count, x='top_company', y='well_count', title="Número de Pozos por Empresa", text='well_count')
 fig_wells.update_layout(
