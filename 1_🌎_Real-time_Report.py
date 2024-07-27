@@ -126,7 +126,7 @@ fig_oil_company.update_layout(
     legend=dict(
         orientation="h",
         yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
+        y=-0.3, # Adjust this value to avoid overlapping
         xanchor="center",
         x=0.5,
         font=dict(size=10)  # Adjust the font size to fit the space
@@ -137,16 +137,18 @@ fig_oil_company.update_layout(
 )
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
-# Proportional area chart (treemap) for all areas
-st.subheader("Proporción de producción por área")
+# Proportional area chart (treemap) for all areas using the last date
+st.subheader("Proporción de producción por área (Última Fecha)")
 
-fig_area_proportion_gas = px.treemap(area_summary, path=['areayacimiento'], values='total_gas_rate', title="Proporción de Producción de Gas por Área")
+last_date_area_summary = area_summary[area_summary['date'] == last_date]
+
+fig_area_proportion_gas = px.treemap(last_date_area_summary, path=['areayacimiento'], values='total_gas_rate', title="Proporción de Producción de Gas por Área")
 fig_area_proportion_gas.update_layout(
     margin=dict(t=50, l=25, r=25, b=25)
 )
 st.plotly_chart(fig_area_proportion_gas, use_container_width=True)
 
-fig_area_proportion_oil = px.treemap(area_summary, path=['areayacimiento'], values='total_oil_rate', title="Proporción de Producción de Petróleo por Área")
+fig_area_proportion_oil = px.treemap(last_date_area_summary, path=['areayacimiento'], values='total_oil_rate', title="Proporción de Producción de Petróleo por Área")
 fig_area_proportion_oil.update_layout(
     margin=dict(t=50, l=25, r=25, b=25)
 )
