@@ -27,8 +27,8 @@ last_date = data_sorted['date'].max()
 last_date_data = data_sorted[data_sorted['date'] == last_date]
 
 # Calculate total gas and oil rates for the last date
-total_gas_rate = last_date_data['gas_rate'].sum()
-total_oil_rate = last_date_data['oil_rate'].sum()
+total_gas_rate = last_date_data['gas_rate'].sum()/1000
+total_oil_rate = last_date_data['oil_rate'].sum()/1000
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
@@ -43,9 +43,9 @@ st.header(f":blue[Reporte de Producción No Convencional]")
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Total Caudal de Gas (m³/d)]", value=total_gas_rate_rounded)
-col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
-col3.metric(label=f":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
+col1.metric(label=f":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
+col2.metric(label=f":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_rate_rounded)
+col3.metric(label=f":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # Load and preprocess data for plotting
 company_summary = data_sorted.groupby(['empresa', 'date']).agg(
