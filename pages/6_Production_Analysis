@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.express as px
 from PIL import Image
 
+# Define the columns for the dataset
 COLUMNS = [
     'sigla',  # atemporal
     'anio',  # temporal
@@ -20,6 +21,7 @@ COLUMNS = [
     'fecha_data'  # temporal
 ]
 
+# Define the column names for the dataset
 COLUMNS_NAMES = [
     'Sigla',
     'Año',
@@ -37,23 +39,12 @@ COLUMNS_NAMES = [
     'Fecha de Datos'
 ]
 
-# Define palettes for Gas Rate and Gp, Oil Rate and Np, and Water Rate and Wp
-gas_gp_palette = ['#FF0000', '#FFA07A', '#FA8072', '#E9967A', '#F08080', '#CD5C5C', '#DC143C', '#B22222', '#8B0000']
-oil_np_palette = ['#008000', '#006400', '#90EE90', '#98FB98', '#8FBC8F', '#3CB371', '#2E8B57', '#808000', '#556B2F', '#6B8E23']
-water_wp_palette = ['#0000FF', '#0000CD', '#00008B', '#000080', '#191970', '#7B68EE', '#6A5ACD', '#483D8B', '#B0E0E6', '#ADD8E6', '#87CEFA', '#87CEEB', '#00BFFF', '#B0C4DE', '#1E90FF', '#6495ED']
-
-# Reorder and rename the columns in the DataFrame
+# Load and sort the data
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
     data_sorted = df.sort_values(by=['sigla', 'fecha_data'], ascending=True)
     data_sorted = data_sorted[COLUMNS]
-    data_sorted['gas_rate'] = data_sorted['prod_gas'] / data_sorted['tef']
-    data_sorted['oil_rate'] = data_sorted['prod_pet'] / data_sorted['tef']
-    data_sorted['water_rate'] = data_sorted['prod_agua'] / data_sorted['tef']
-    data_sorted['Np'] = data_sorted.groupby('sigla')['prod_pet'].cumsum()
-    data_sorted['Gp'] = data_sorted.groupby('sigla')['prod_gas'].cumsum()
-    data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum()
     return data_sorted
 
 # URL of the dataset
@@ -64,215 +55,55 @@ data_sorted = load_and_sort_data(dataset_url)
 
 # Add a new column "date" by combining year and month
 data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
-data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 
-# Create a Pivot Table to Calculate Maximum Oil and Gas Rates for Each Well
-pivot_table = data_sorted.pivot_table(
-    values=['gas_rate', 'oil_rate', 'water_rate'],
-    index=['sigla'],
-    aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max'}
-)
+# Summarize production data by company and block
+summary_df = data_sorted.groupby(['empresa', 'areayacimiento', 'date']).agg(
+    total_prod_pet=('prod_pet', 'sum'),
+    total_prod_gas=('prod_gas', 'sum')
+).reset_index()
 
-# Step 2: Create a New DataFrame with Maximum Oil and Gas Rates
-max_rates_df = pivot_table.reset_index()
-max_rates_df['GOR'] = max_rates_df['gas_rate'] / max_rates_df['oil_rate']
-max_rates_df['GOR'] = max_rates_df['GOR'].fillna(100000)
-
-# Add a new column "Fluido McCain" based on conditions
-max_rates_df['Fluido McCain'] = max_rates_df.apply(
-    lambda row: 'Gas' if row['oil_rate'] == 0 or row['GOR'] > 3000 else 'Petróleo',
-    axis=1
-)
-
-st.header(f":blue[Capítulo IV Dataset - Producción No Convencional]")
+# Sidebar filters
+st.header(f":blue[Análisis de Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
-st.sidebar.title("Por favor filtrar aquí: ")
+st.sidebar.title("Por favor filtrar aquí:")
 
-# Create a dropdown list for "Fluido McCain"
-selected_fluido = st.sidebar.selectbox("Seleccionar tipo de fluido según McCain:", max_rates_df['Fluido McCain'].unique())
+# Create a multiselect list for companies
+selected_companies = st.sidebar.multiselect("Seleccionar empresas", summary_df['empresa'].unique())
 
-# Create a multiselect list for 'sigla'
-selected_sigla = st.sidebar.multiselect("Seleccionar siglas de los pozos a comparar", max_rates_df['sigla'])
+# Create a multiselect list for blocks
+selected_blocks = st.sidebar.multiselect("Seleccionar áreas de yacimiento", summary_df['areayacimiento'].unique())
 
-# Filter data for matching 'sigla'
-filtered_data = data_sorted[
-    (data_sorted['sigla'].isin(selected_sigla))
+# Filter data based on selections
+filtered_data = summary_df[
+    (summary_df['empresa'].isin(selected_companies)) & 
+    (summary_df['areayacimiento'].isin(selected_blocks))
 ]
 
-
-# Plot gas rate using Plotly
-gas_rate_fig = go.Figure()
-
-for i, sigla in enumerate(selected_sigla):
-    filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
-    
-    # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
-    
-    # Add a counter column to the filtered data
-    filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
-    
-    gas_rate_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['counter'],  # Use the counter as x-axis
-            y=filtered_well_data['gas_rate'],
-            mode='lines+markers',
-            name=f'Gas Rate - {sigla}',
-            line=dict(color=gas_gp_palette[i % len(gas_gp_palette)]),  # Use the Gas Rate and Gp palette
-        )
-    )
-
-gas_rate_fig.update_layout(
-    title="Historia de Producción de Gas",
-    xaxis_title="Meses",
-    yaxis_title="Caudal de Gas (km3/d)",
+# Plot total oil production by company and block over time
+oil_fig = px.line(
+    filtered_data, 
+    x='date', 
+    y='total_prod_pet', 
+    color='empresa',
+    line_group='areayacimiento',
+    title="Producción Total de Petróleo por Empresa y Área de Yacimiento",
+    labels={"total_prod_pet": "Producción de Petróleo (m3)"}
 )
 
-# Display the gas rate Plotly figure in the Streamlit app
-st.plotly_chart(gas_rate_fig)
+# Display the oil production plot
+st.plotly_chart(oil_fig)
 
-# Define a list of specific colors for oil rate plots
-oil_color_list = ['#008000', '#006400', '#90EE90', '#98FB98', '#8FBC8F', '#3CB371', '#2E8B57', '#808000', '#556B2F', '#6B8E23']
-
-oil_rate_fig = go.Figure()
-
-for i, sigla in enumerate(selected_sigla):
-    filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
-    
-    # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
-    
-    # Add a counter column to the filtered data
-    filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
-    
-    oil_rate_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['counter'],  # Use the counter as x-axis
-            y=filtered_well_data['oil_rate'],
-            mode='lines+markers',
-            name=f'Oil Rate - {sigla}',
-            line=dict(color=oil_np_palette[i % len(oil_np_palette)]),  # Use the Oil Rate and Np palette
-        )
-    )
-
-oil_rate_fig.update_layout(
-    title="Historia de Producción de Petróleo",
-    xaxis_title="Meses",
-    yaxis_title="Caudal de Petróleo (m3/d)",
+# Plot total gas production by company and block over time
+gas_fig = px.line(
+    filtered_data, 
+    x='date', 
+    y='total_prod_gas', 
+    color='empresa',
+    line_group='areayacimiento',
+    title="Producción Total de Gas por Empresa y Área de Yacimiento",
+    labels={"total_prod_gas": "Producción de Gas (km3)"}
 )
 
-# Display the oil rate Plotly figure in the Streamlit app
-st.plotly_chart(oil_rate_fig)
-
-# Define a list of specific colors for water rate plots
-water_color_list = ['#0000FF', '#0000CD', '#00008B', '#000080', '#191970', '#7B68EE', '#6A5ACD', '#483D8B', '#B0E0E6', '#ADD8E6', '#87CEFA', '#87CEEB', '#00BFFF', '#B0C4DE', '#1E90FF', '#6495ED']
-
-water_rate_fig = go.Figure()
-
-for i, sigla in enumerate(selected_sigla):
-    filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
-    
-    # Filter data to start when 'Np' is different from zero
-    filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
-    
-    # Add a counter column to the filtered data
-    filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
-    
-    water_rate_fig.add_trace(
-        go.Scatter(
-            x=filtered_well_data['counter'],  # Use the counter as x-axis
-            y=filtered_well_data['water_rate'],
-            mode='lines+markers',
-            name=f'Water Rate - {sigla}',
-            line=dict(color=water_wp_palette[i % len(water_wp_palette)]),  # Use the Water Rate and Wp palette
-        )
-    )
-
-water_rate_fig.update_layout(
-    title="Historia de Producción de Agua",
-    xaxis_title="Meses",
-    yaxis_title="Caudal de Agua (m3/d)",
-)
-
-# Display the water rate Plotly figure in the Streamlit app
-st.plotly_chart(water_rate_fig)
-
-
-if selected_fluido and selected_sigla:
-    # Create separate figures for Gp, Np, and Wp
-    gp_fig = go.Figure()
-    np_fig = go.Figure()
-    wp_fig = go.Figure()
-
-    for i, sigla in enumerate(selected_sigla):
-        filtered_well_data = filtered_data[filtered_data['sigla'] == sigla]
-
-        # Filter data to start when 'Np' is different from zero
-        filtered_well_data = filtered_well_data[filtered_well_data['Gp'] != 0]
-
-        # Add a counter column to the filtered data
-        filtered_well_data['counter'] = range(1, len(filtered_well_data) + 1)
-
-        # Plot Np (oil_rate) vs cumulative oil production (Np)
-        np_fig.add_trace(
-            go.Scatter(
-                x=filtered_well_data['Np'],  # Use cumulative oil production (Np) as x-axis
-                y=filtered_well_data['oil_rate'],  # Use oil_rate as y-axis
-                mode='lines+markers',
-                name=f'Oil Rate - {sigla}',
-                line=dict(color=oil_np_palette[i % len(oil_np_palette)]),  # Use the Oil Rate palette
-            )
-        )
-
-        # Plot Gp (gas_rate) vs cumulative gas production (Gp)
-        gp_fig.add_trace(
-            go.Scatter(
-                x=filtered_well_data['Gp'] / 1000, # Use cumulative gas production (Gp) as x-axis
-                y=filtered_well_data['gas_rate'],  # Use gas_rate as y-axis
-                mode='lines+markers',
-                name=f'Gas Rate - {sigla}',
-                line=dict(color=gas_gp_palette[i % len(gas_gp_palette)]),  # Use the Gas Rate palette
-            )
-        )
-
-        # Plot Wp (water_rate) vs cumulative water production (Wp)
-        wp_fig.add_trace(
-            go.Scatter(
-                x=filtered_well_data['Wp'],  # Use cumulative water production (Wp) as x-axis
-                y=filtered_well_data['water_rate'],  # Use water_rate as y-axis
-                mode='lines+markers',
-                name=f'Water Rate - {sigla}',
-                line=dict(color=water_wp_palette[i % len(water_wp_palette)]),  # Use the Water Rate palette
-            )
-        )
-
-    # Update layout for Np (oil_rate) figure
-    np_fig.update_layout(
-        title="Acumulada de Petróleo (m3) vs Caudal de Petróleo (m3/d)",
-        xaxis_title="Np (m3)",
-        yaxis_title="Caudal de Petróleo (m3/d)",
-    )
-
-    # Update layout for Gp (gas_rate) figure
-    gp_fig.update_layout(
-        title="Acumulada de Gas (MMm3) vs Caudal de Gas (km3/d)",
-        xaxis_title="Gp (MMm3)",
-        yaxis_title="Caudal de Gas (km3/d)",
-    )
-
-    # Update layout for Wp (water_rate) figure
-    wp_fig.update_layout(
-        title="Acumulada de Agua (m3) vs Caudal de Agua (m3/d)",
-        xaxis_title="Wp (m3)",
-        yaxis_title="Caudal de Agua (m3/d)",
-    )
-
-    # Display the updated Plotly figures in the Streamlit app
-    st.plotly_chart(np_fig)
-    st.plotly_chart(gp_fig)
-    st.plotly_chart(wp_fig)
-else:
-    # If Fluido McCain or sigla is not selected, display a message
-    st.subheader("")
-    st.write("")
+# Display the gas production plot
+st.plotly_chart(gas_fig)
