@@ -66,11 +66,6 @@ top_company_summary = company_summary.groupby(['top_company', 'date']).agg(
 top_areas = area_summary.groupby('areayacimiento')['total_oil_rate'].sum().nlargest(10).index
 area_summary['top_area'] = area_summary['areayacimiento'].apply(lambda x: x if x in top_areas else 'Otros')
 
-# Summarize production data by top areas and "Otros"
-top_area_summary = area_summary.groupby(['top_area', 'date']).agg(
-    total_gas_rate=('total_gas_rate', 'sum'),
-    total_oil_rate=('total_oil_rate', 'sum')
-).reset_index()
 
 # Count wells per company
 well_count = data_sorted.groupby('empresa')['sigla'].nunique().reset_index()
@@ -80,8 +75,6 @@ well_count.columns = ['empresa', 'well_count']
 top_wells_companies = well_count.nlargest(10, 'well_count')['empresa']
 well_count['top_company'] = well_count['empresa'].apply(lambda x: x if x in top_wells_companies else 'Otros')
 
-# Summarize number of wells by top companies and "Otros"
-top_well_count = well_count.groupby('top_company')['well_count'].sum().reset_index()
 
 # Group data by year for stacked area plots
 year_summary = data_sorted.groupby(['anio', 'date']).agg(
