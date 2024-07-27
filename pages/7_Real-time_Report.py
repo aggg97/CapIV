@@ -89,11 +89,13 @@ fig_gas_company.update_layout(
     legend_title_text='Empresa',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (m³/d)"
 )
@@ -109,11 +111,13 @@ fig_oil_company.update_layout(
     legend_title_text='Empresa',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
@@ -132,11 +136,13 @@ fig_gas_area.update_layout(
     legend_title_text='Área de Yacimiento',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (m³/d)"
 )
@@ -152,11 +158,13 @@ fig_oil_area.update_layout(
     legend_title_text='Área de Yacimiento',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
@@ -169,22 +177,16 @@ st.write(top_area_summary.groupby('top_area').agg(total_oil_rate=('total_oil_rat
 # Bar plot for number of wells per top 10 companies
 st.subheader("Número de Pozos por Empresa (Top 10 y Otros)")
 
-fig_well_count = px.bar(top_well_count, x='top_company', y='well_count', title="Número de Pozos por Empresa")
-fig_well_count.update_layout(
+fig_wells = px.bar(top_well_count, x='top_company', y='well_count', title="Número de Pozos por Empresa", text='well_count')
+fig_wells.update_layout(
     xaxis_title="Empresa",
     yaxis_title="Número de Pozos",
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5
-    )
+    xaxis_tickangle=-45
 )
-st.plotly_chart(fig_well_count, use_container_width=True)
+st.plotly_chart(fig_wells, use_container_width=True)
 
-# Summary table for number of wells per company
-st.write("Resumen del número de pozos por empresa:")
+# Summary table for number of wells
+st.write("Resumen de número de pozos por empresa:")
 st.write(top_well_count)
 
 # Area plots for gas and oil rates by year
@@ -196,11 +198,13 @@ fig_gas_year.update_layout(
     legend_title_text='Año',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (m³/d)"
 )
@@ -212,11 +216,13 @@ fig_oil_year.update_layout(
     legend_title_text='Año',
     legend=dict(
         orientation="h",
-        yanchor="bottom",
-        y=-0.4,  # Adjust this value to avoid overlapping
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
         xanchor="center",
-        x=0.5
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
     ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
