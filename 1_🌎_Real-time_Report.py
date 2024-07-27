@@ -20,9 +20,15 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
 
-# Calculate total gas and oil rates
-total_gas_rate = data_sorted['gas_rate'].sum()
-total_oil_rate = data_sorted['oil_rate'].sum()
+# Find the last date in the dataset
+last_date = data_sorted['date'].max()
+
+# Filter the data for the last date
+last_date_data = data_sorted[data_sorted['date'] == last_date]
+
+# Calculate total gas and oil rates for the last date
+total_gas_rate = last_date_data['gas_rate'].sum()
+total_oil_rate = last_date_data['oil_rate'].sum()
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
