@@ -11,7 +11,7 @@ def load_and_sort_data(dataset_url):
     return df
 
 # URL of the dataset
-dataset_url = "https://datos.gob.ar/dataset/energia-datos-fractura-pozos-hidrocarburos-adjunto-iv/archivo/energia_2280ad92-6ed3-403e-a095-50139863ab0d.csv"
+dataset_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-7f35e41f58d7/resource/2280ad92-6ed3-403e-a095-50139863ab0d/download/datos-de-fractura-de-pozos-de-hidrocarburos-adjunto-iv-actualizacin-diaria.csv"
 
 # Load the data
 df = load_and_sort_data(dataset_url)
