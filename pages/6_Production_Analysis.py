@@ -38,17 +38,26 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load and sort the data using the cached function
 data_sorted = load_and_sort_data(dataset_url)
 
-# Summarize production data by block
-summary_df = data_sorted.groupby(['areayacimiento', 'date']).agg(
-    total_gas_rate=('gas_rate', 'sum'),
-    total_oil_rate=('oil_rate', 'sum')
-).reset_index()
-
 # Sidebar filters
 st.header(f":blue[Análisis de Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
+
+# Create a checklist for companies
+selected_company = st.sidebar.selectbox(
+    "Seleccione la empresa",
+    options=data_sorted['empresa'].unique()
+)
+
+# Filter data based on selections
+filtered_data = data_sorted[data_sorted['empresa'] == selected_company]
+
+# Summarize production data by block
+summary_df = filtered_data.groupby(['areayacimiento', 'date']).agg(
+    total_gas_rate=('gas_rate', 'sum'),
+    total_oil_rate=('oil_rate', 'sum')
+).reset_index()
 
 # Create a checklist for blocks
 selected_blocks = st.sidebar.multiselect(
@@ -117,6 +126,64 @@ gas_rate_fig.update_layout(
 
 # Display the gas production plot
 st.plotly_chart(gas_rate_fig, use_container_width=True)
+
+# Top 10 wells production profile
+top_10_wells_gas = filtered_data.nlargest(10, 'total_gas_rate')
+top_10_wells_oil = filtered_data.nlargest(10, 'total_oil_rate')
+
+# Plot top 10 wells production profile for gas
+top_gas_fig = go.Figure()
+
+for i, well in enumerate(top_10_wells_gas['areayacimiento'].unique()):
+    well_data = top_10_wells_gas[top_10_wells_gas['areayacimiento'] == well]
+    top_gas_fig.add_trace(
+        go.Scatter(
+            x=well_data['date'],
+            y=well_data['total_gas_rate'],
+            mode='lines+markers',
+            name=f'{well} - Gas Rate',
+            line=dict(color=color_palette[i % len(color_palette)]),
+            hovertemplate='Fecha: %{x}<br>Caudal de Gas: %{y:.2f} km3/d'
+        )
+    )
+
+top_gas_fig.update_layout(
+    title="Top 10 Pozos por Perfil de Producción de Gas",
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km3/d)",
+    hovermode='x unified',
+    legend_title="Pozos"
+)
+
+# Display the top 10 wells gas production plot
+st.plotly_chart(top_gas_fig, use_container_width=True)
+
+# Plot top 10 wells production profile for oil
+top_oil_fig = go.Figure()
+
+for i, well in enumerate(top_10_wells_oil['areayacimiento'].unique()):
+    well_data = top_10_wells_oil[top_10_wells_oil['areayacimiento'] == well]
+    top_oil_fig.add_trace(
+        go.Scatter(
+            x=well_data['date'],
+            y=well_data['total_oil_rate'],
+            mode='lines+markers',
+            name=f'{well} - Oil Rate',
+            line=dict(color=color_palette[i % len(color_palette)]),
+            hovertemplate='Fecha: %{x}<br>Caudal de Petróleo: %{y:.2f} m3/d'
+        )
+    )
+
+top_oil_fig.update_layout(
+    title="Top 10 Pozos por Perfil de Producción de Petróleo",
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m3/d)",
+    hovermode='x unified',
+    legend_title="Pozos"
+)
+
+# Display the top 10 wells oil production plot
+st.plotly_chart(top_oil_fig, use_container_width=True)
 
 # Option to download the filtered data
 csv = filtered_data.to_csv(index=False)
