@@ -21,9 +21,13 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
 
-# Calculate total gas and oil rates
-total_gas_rate = data_sorted['gas_rate'].sum()
-total_oil_rate = data_sorted['oil_rate'].sum()
+# Filter the data to the last date
+last_date = data_sorted['date'].max()
+last_date_data = data_sorted[data_sorted['date'] == last_date]
+
+# Calculate total gas and oil rates for the last date
+total_gas_rate = last_date_data['gas_rate'].sum()
+total_oil_rate = last_date_data['oil_rate'].sum()
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
@@ -36,7 +40,7 @@ oil_rate_bpd_rounded = round(oil_rate_bpd, 1)
 # Create Streamlit app layout
 st.header(f":blue[Reporte de Producción No Convencional]")
 
-# Display total gas rate and oil rate metrics
+# Display total gas rate and oil rate metrics for the last date
 col1, col2, col3 = st.columns(3)
 col1.metric(label=f":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
 col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
@@ -79,20 +83,13 @@ well_count.columns = ['empresa', 'well_count']
 
 # Determine top 10 companies by number of wells
 top_wells_companies = well_count.nlargest(10, 'well_count')['empresa']
-well_count['top_company'] = well_count['empresa'].apply(lambda x: x if x in top_wells_companies else 'Otros')
+top_well_count = well_count[well_count['empresa'].isin(top_wells_companies)]
 
-# Summarize number of wells by top companies and "Otros"
-top_well_count = well_count.groupby('top_company')['well_count'].sum().reset_index()
-
-# Group data by year for stacked area plots
-year_summary = data_sorted.groupby(['anio', 'date']).agg(
+# Group data by year for stacked plots
+year_summary = data_sorted.groupby(['anio']).agg(
     total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
-
-# Filter data for the last year
-last_year = data_sorted['anio'].max()
-last_year_wells_count = well_count[well_count['empresa'].isin(top_wells_companies) | (well_count['top_company'] == 'Otros')]
 
 # Create Streamlit app layout
 st.header(f":blue[Reporte de Producción No Convencional]")
@@ -140,58 +137,25 @@ fig_oil_company.update_layout(
 )
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
-# Area plots for gas and oil rates by top 20 areas
-st.subheader("Actividad por área")
-
-# Plot for gas rate by area
-fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área de Yacimiento")
-fig_gas_area.update_layout(
-    legend_title_text='Área de Yacimiento',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
-)
-st.plotly_chart(fig_gas_area, use_container_width=True)
-
-# Plot for oil rate by area
-fig_oil_area = px.area(top_area_summary, x='date', y='total_oil_rate', color='top_area', title="Caudal de Petróleo por Área de Yacimiento")
-fig_oil_area.update_layout(
-    legend_title_text='Área de Yacimiento',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
-)
-st.plotly_chart(fig_oil_area, use_container_width=True)
-
 # Proportional area chart (treemap) for all areas
 st.subheader("Proporción de producción por área")
 
-fig_area_proportion = px.treemap(area_summary, path=['areayacimiento'], values='total_oil_rate', title="Proporción de Producción de Petróleo por Área")
-fig_area_proportion.update_layout(
+fig_area_proportion_gas = px.treemap(area_summary, path=['areayacimiento'], values='total_gas_rate', title="Proporción de Producción de Gas por Área")
+fig_area_proportion_gas.update_layout(
     margin=dict(t=50, l=25, r=25, b=25)
 )
-st.plotly_chart(fig_area_proportion, use_container_width=True)
+st.plotly_chart(fig_area_proportion_gas, use_container_width=True)
+
+fig_area_proportion_oil = px.treemap(area_summary, path=['areayacimiento'], values='total_oil_rate', title="Proporción de Producción de Petróleo por Área")
+fig_area_proportion_oil.update_layout(
+    margin=dict(t=50, l=25, r=25, b=25)
+)
+st.plotly_chart(fig_area_proportion_oil, use_container_width=True)
 
 # Bar plot of the number of wells per company
-st.subheader("Número de Pozos por Empresa (Top 10 y Otros)")
+st.subheader("Número de Pozos por Empresa (Top 10)")
 
-fig_wells = px.bar(top_well_count, x='top_company', y='well_count', title="Número de Pozos por Empresa", text='well_count')
+fig_wells = px.bar(top_well_count, x='empresa', y='well_count', title="Número de Pozos por Empresa", text='well_count')
 fig_wells.update_layout(
     xaxis_title="Empresa",
     yaxis_title="Número de Pozos",
@@ -199,48 +163,33 @@ fig_wells.update_layout(
 )
 st.plotly_chart(fig_wells, use_container_width=True)
 
-# Area plots for gas and oil rates by year
+# Stacked area plot for gas and oil rates by year
 st.subheader("Caudal de Gas y Petróleo por Año")
 
-# Plot for gas rate by year
-fig_gas_year = px.area(year_summary, x='date', y='total_gas_rate', color='anio', title="Caudal de Gas por Año")
-fig_gas_year.update_layout(
-    legend_title_text='Año',
+# Plot for gas rate and oil rate by year
+fig_gas_oil_year = px.area(year_summary, x='anio', y=['total_gas_rate', 'total_oil_rate'], title="Caudal de Gas y Petróleo por Año", labels={'value': 'Caudal', 'anio': 'Año'})
+fig_gas_oil_year.update_layout(
+    legend_title_text='Tipo de Caudal',
     legend=dict(
         orientation="h",
         yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
+        y=-0.3,
         xanchor="center",
         x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
+        font=dict(size=10)
     ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
+    margin=dict(b=100),
+    xaxis_title="Año",
+    yaxis_title="Caudal (km³/d y m³/d)"
 )
-st.plotly_chart(fig_gas_year, use_container_width=True)
-
-# Plot for oil rate by year
-fig_oil_year = px.area(year_summary, x='date', y='total_oil_rate', color='anio', title="Caudal de Petróleo por Año")
-fig_oil_year.update_layout(
-    legend_title_text='Año',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (km³/d)"
-)
-st.plotly_chart(fig_oil_year, use_container_width=True)
+st.plotly_chart(fig_gas_oil_year, use_container_width=True)
 
 # Display table for number of wells per company in the last year
-st.subheader(f"Número de Pozos por Empresa ({last_year})")
+last_year = data_sorted['anio'].max()
+last_year_wells_count = data_sorted[data_sorted['anio'] == last_year].groupby('empresa')['sigla'].nunique().reset_index()
+last_year_wells_count.columns = ['Empresa', 'Número de Pozos']
 
+st.subheader(f"Número de Pozos por Empresa ({last_year})")
 st.write(last_year_wells_count)
 
 # Option to download the filtered data
