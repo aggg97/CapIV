@@ -16,7 +16,12 @@ dataset_url = "https://datos.gob.ar/dataset/energia-datos-fractura-pozos-hidroca
 # Load the data
 df = load_and_sort_data(dataset_url)
 
-# Display the first few rows of the dataframe
-print(df.head())
+# Display the first few rows of the dataframe in Streamlit
+st.write("### Data Preview")
+st.write(df.head())
 
-
+# Additional Streamlit elements can be added here, such as charts or images
+# Example: Displaying a simple line chart
+st.write("### Simple Line Chart")
+fig = px.line(df, x='Column1', y='Column2', title='Sample Line Chart')
+st.plotly_chart(fig)
