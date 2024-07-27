@@ -14,6 +14,9 @@ def load_and_sort_data(dataset_url):
 dataset_url = "https://datos.gob.ar/dataset/energia-datos-fractura-pozos-hidrocarburos-adjunto-iv/archivo/energia_2280ad92-6ed3-403e-a095-50139863ab0d.csv"
 
 # Load the data
-data_sorted = load_and_sort_data(dataset_url)
+df = load_and_sort_data(dataset_url)
+
+# Display the first few rows of the dataframe
+print(df.head())
 
 
