@@ -20,7 +20,8 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
 
-
+# Filter out rows where tef is zero for calculating metrics
+data_filtered = data_sorted[data_sorted['tef'] >= 0]
 
 # Calculate total gas and oil rates
 total_gas_rate = data_filtered['gas_rate'].sum()/1000
