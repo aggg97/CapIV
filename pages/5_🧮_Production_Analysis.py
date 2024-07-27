@@ -127,19 +127,19 @@ gas_rate_fig.update_layout(
 # Display the gas production plot
 st.plotly_chart(gas_rate_fig, use_container_width=True)
 
-# Top 10 wells production profile
-top_10_wells_gas = filtered_data.nlargest(10, 'total_gas_rate')
-top_10_wells_oil = filtered_data.nlargest(10, 'total_oil_rate')
+# Identify top 10 wells for gas and oil based on the maximum production rates
+top_10_gas_wells = filtered_data.sort_values(by='total_gas_rate', ascending=False).head(10)['areayacimiento'].unique()
+top_10_oil_wells = filtered_data.sort_values(by='total_oil_rate', ascending=False).head(10)['areayacimiento'].unique()
 
 # Plot top 10 wells production profile for gas
 top_gas_fig = go.Figure()
 
-for i, well in enumerate(top_10_wells_gas['areayacimiento'].unique()):
-    well_data = top_10_wells_gas[top_10_wells_gas['areayacimiento'] == well]
+for i, well in enumerate(top_10_gas_wells):
+    well_data = data_sorted[(data_sorted['empresa'] == selected_company) & (data_sorted['areayacimiento'] == well)]
     top_gas_fig.add_trace(
         go.Scatter(
             x=well_data['date'],
-            y=well_data['total_gas_rate'],
+            y=well_data['gas_rate'],
             mode='lines+markers',
             name=f'{well} - Gas Rate',
             line=dict(color=color_palette[i % len(color_palette)]),
@@ -161,12 +161,12 @@ st.plotly_chart(top_gas_fig, use_container_width=True)
 # Plot top 10 wells production profile for oil
 top_oil_fig = go.Figure()
 
-for i, well in enumerate(top_10_wells_oil['areayacimiento'].unique()):
-    well_data = top_10_wells_oil[top_10_wells_oil['areayacimiento'] == well]
+for i, well in enumerate(top_10_oil_wells):
+    well_data = data_sorted[(data_sorted['empresa'] == selected_company) & (data_sorted['areayacimiento'] == well)]
     top_oil_fig.add_trace(
         go.Scatter(
             x=well_data['date'],
-            y=well_data['total_oil_rate'],
+            y=well_data['oil_rate'],
             mode='lines+markers',
             name=f'{well} - Oil Rate',
             line=dict(color=color_palette[i % len(color_palette)]),
