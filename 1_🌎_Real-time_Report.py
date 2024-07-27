@@ -74,8 +74,15 @@ top_wells_companies = well_count.nlargest(10, 'well_count')['empresa']
 # Filter well_count to include only top companies
 well_count_top = well_count[well_count['empresa'].isin(top_wells_companies)]
 
-# Group data by year for stacked area plots
-year_summary = data_sorted.groupby(['anio', 'date']).agg(
+# Determine the starting year for each well
+well_start_year = data_sorted.groupby('sigla')['anio'].min().reset_index()
+well_start_year.columns = ['sigla', 'start_year']
+
+# Merge the start year back to the original data
+data_with_start_year = pd.merge(data_sorted, well_start_year, on='sigla')
+
+# Group data by start year and date for stacked area plots
+yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
     total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
@@ -144,13 +151,13 @@ fig_wells.update_layout(
 )
 st.plotly_chart(fig_wells, use_container_width=True)
 
-# Area plots for gas and oil rates by year
-st.subheader("Producción por Año")
+# Area plots for gas and oil rates by well start year
+st.subheader("Producción por Año de Inicio de Pozo")
 
-# Plot for gas rate by year
-fig_gas_year = px.area(year_summary, x='date', y='total_gas_rate', color='anio', title="Caudal de Gas por Año")
+# Plot for gas rate by start year
+fig_gas_year = px.area(yearly_summary, x='date', y='total_gas_rate', color='start_year', title="Caudal de Gas por Año de Inicio de Pozo")
 fig_gas_year.update_layout(
-    legend_title_text='Año',
+    legend_title_text='Año de Inicio de Pozo',
     legend=dict(
         orientation="h",
         yanchor="top",
@@ -165,10 +172,10 @@ fig_gas_year.update_layout(
 )
 st.plotly_chart(fig_gas_year, use_container_width=True)
 
-# Plot for oil rate by year
-fig_oil_year = px.area(year_summary, x='date', y='total_oil_rate', color='anio', title="Caudal de Petróleo por Año")
+# Plot for oil rate by start year
+fig_oil_year = px.area(yearly_summary, x='date', y='total_oil_rate', color='start_year', title="Caudal de Petróleo por Año de Inicio de Pozo")
 fig_oil_year.update_layout(
-    legend_title_text='Año',
+    legend_title_text='Año de Inicio de Pozo',
     legend=dict(
         orientation="h",
         yanchor="top",
