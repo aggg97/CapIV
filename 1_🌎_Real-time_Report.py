@@ -99,8 +99,6 @@ year_summary = data_sorted.groupby(['anio', 'date']).agg(
 last_year = data_sorted['anio'].max()
 last_year_wells_count = well_count[well_count['empresa'].isin(top_wells_companies) | (well_count['top_company'] == 'Otros')]
 
-# Create Streamlit app layout
-st.header(f":blue[Reporte de Producción No Convencional]")
 
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
