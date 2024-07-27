@@ -100,7 +100,7 @@ col2.metric(label=f":green[Total Caudal de Petróleo (km³/d)]", value=total_oil
 col3.metric(label=f":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # Area plots for gas and oil rates by top 10 companies
-st.subheader("Actividad de las principales empresas")
+st.subheader("Actividad de las Principales Empresas")
 
 # Plot for gas rate by company
 fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa")
