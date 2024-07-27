@@ -97,7 +97,7 @@ fig_gas_company.update_layout(
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (m³/d)"
+    yaxis_title="Caudal de Gas (km³/d)"
 )
 st.plotly_chart(fig_gas_company, use_container_width=True)
 
@@ -144,7 +144,7 @@ fig_gas_area.update_layout(
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (m³/d)"
+    yaxis_title="Caudal de Gas (km³/d)"
 )
 st.plotly_chart(fig_gas_area, use_container_width=True)
 
