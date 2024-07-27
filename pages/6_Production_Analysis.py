@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
+import plotly.express as px
 
 # Define the columns for the dataset
 COLUMNS = [
@@ -22,7 +23,7 @@ COLUMNS = [
 ]
 
 # Load and sort the data
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
     df['date'] = pd.to_datetime(df['anio'].astype(str) + '-' + df['mes'].astype(str) + '-1')
@@ -59,17 +60,22 @@ selected_blocks = st.sidebar.multiselect(
 # Filter data based on selections
 filtered_data = summary_df[summary_df['areayacimiento'].isin(selected_blocks)]
 
-# Plot total oil production by block over time
+# Plot total oil production by block over time using area plot
 oil_rate_fig = go.Figure()
 
-for block in filtered_data['areayacimiento'].unique():
+color_palette = px.colors.qualitative.Set3  # Use a distinct color palette
+
+for i, block in enumerate(filtered_data['areayacimiento'].unique()):
     block_data = filtered_data[filtered_data['areayacimiento'] == block]
     oil_rate_fig.add_trace(
         go.Scatter(
             x=block_data['date'],
             y=block_data['total_oil_rate'],
-            mode='lines+markers',
+            mode='lines',
             name=f'{block} - Oil Rate',
+            fill='tonexty',
+            line=dict(color=color_palette[i % len(color_palette)]),
+            hovertemplate='Fecha: %{x}<br>Caudal de Petróleo: %{y:.2f} m3/d'
         )
     )
 
@@ -77,22 +83,27 @@ oil_rate_fig.update_layout(
     title="Producción Total de Petróleo por Área de Yacimiento",
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m3/d)",
+    hovermode='x unified',
+    legend_title="Área de Yacimiento"
 )
 
 # Display the oil production plot
-st.plotly_chart(oil_rate_fig)
+st.plotly_chart(oil_rate_fig, use_container_width=True)
 
-# Plot total gas production by block over time
+# Plot total gas production by block over time using area plot
 gas_rate_fig = go.Figure()
 
-for block in filtered_data['areayacimiento'].unique():
+for i, block in enumerate(filtered_data['areayacimiento'].unique()):
     block_data = filtered_data[filtered_data['areayacimiento'] == block]
     gas_rate_fig.add_trace(
         go.Scatter(
             x=block_data['date'],
             y=block_data['total_gas_rate'],
-            mode='lines+markers',
+            mode='lines',
             name=f'{block} - Gas Rate',
+            fill='tonexty',
+            line=dict(color=color_palette[i % len(color_palette)]),
+            hovertemplate='Fecha: %{x}<br>Caudal de Gas: %{y:.2f} km3/d'
         )
     )
 
@@ -100,7 +111,70 @@ gas_rate_fig.update_layout(
     title="Producción Total de Gas por Área de Yacimiento",
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km3/d)",
+    hovermode='x unified',
+    legend_title="Área de Yacimiento"
 )
 
 # Display the gas production plot
-st.plotly_chart(gas_rate_fig)
+st.plotly_chart(gas_rate_fig, use_container_width=True)
+
+# Option to download the filtered data
+csv = filtered_data.to_csv(index=False)
+st.sidebar.download_button(
+    label="Descargar datos filtrados",
+    data=csv,
+    file_name='filtered_data.csv',
+    mime='text/csv',
+)
+
+# Optionally add plot smoothing
+st.sidebar.title("Opciones de Suavizado")
+smoothing = st.sidebar.checkbox("Activar suavizado de la curva")
+if smoothing:
+    from scipy.ndimage import gaussian_filter1d
+    
+    oil_rate_fig_smooth = go.Figure()
+    gas_rate_fig_smooth = go.Figure()
+    
+    for i, block in enumerate(filtered_data['areayacimiento'].unique()):
+        block_data = filtered_data[filtered_data['areayacimiento'] == block]
+        oil_rate_fig_smooth.add_trace(
+            go.Scatter(
+                x=block_data['date'],
+                y=gaussian_filter1d(block_data['total_oil_rate'], sigma=2),
+                mode='lines',
+                name=f'{block} - Oil Rate (Suavizado)',
+                fill='tonexty',
+                line=dict(color=color_palette[i % len(color_palette)]),
+                hovertemplate='Fecha: %{x}<br>Caudal de Petróleo: %{y:.2f} m3/d'
+            )
+        )
+        gas_rate_fig_smooth.add_trace(
+            go.Scatter(
+                x=block_data['date'],
+                y=gaussian_filter1d(block_data['total_gas_rate'], sigma=2),
+                mode='lines',
+                name=f'{block} - Gas Rate (Suavizado)',
+                fill='tonexty',
+                line=dict(color=color_palette[i % len(color_palette)]),
+                hovertemplate='Fecha: %{x}<br>Caudal de Gas: %{y:.2f} km3/d'
+            )
+        )
+    
+    oil_rate_fig_smooth.update_layout(
+        title="Producción Total de Petróleo por Área de Yacimiento (Suavizado)",
+        xaxis_title="Fecha",
+        yaxis_title="Caudal de Petróleo (m3/d)",
+        hovermode='x unified',
+        legend_title="Área de Yacimiento"
+    )
+    gas_rate_fig_smooth.update_layout(
+        title="Producción Total de Gas por Área de Yacimiento (Suavizado)",
+        xaxis_title="Fecha",
+        yaxis_title="Caudal de Gas (km3/d)",
+        hovermode='x unified',
+        legend_title="Área de Yacimiento"
+    )
+    
+    st.plotly_chart(oil_rate_fig_smooth, use_container_width=True)
+    st.plotly_chart(gas_rate_fig_smooth, use_container_width=True)
