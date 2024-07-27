@@ -4,6 +4,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 from PIL import Image
 
+st.caption("Coming soon...")
+
 # Load and preprocess the data
 @st.cache_data
 def load_and_sort_data(dataset_url):
