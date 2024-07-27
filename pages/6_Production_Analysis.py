@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 from PIL import Image
 
 # Define the columns for the dataset
@@ -21,30 +21,14 @@ COLUMNS = [
     'fecha_data'  # temporal
 ]
 
-# Define the column names for the dataset
-COLUMNS_NAMES = [
-    'Sigla',
-    'Año',
-    'Mes',
-    'Producción de Petróleo (m3)',
-    'Producción de Gas (km3)',
-    'Producción de Agua (m3)',
-    'Inyección de Gas (km3)',
-    'TEF',
-    'Tipo de Extracción',
-    'Tipo de Pozo',
-    'Empresa',
-    'Formación',
-    'Área yacimiento',
-    'Fecha de Datos'
-]
-
 # Load and sort the data
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
+    df['date'] = pd.to_datetime(df['anio'].astype(str) + '-' + df['mes'].astype(str) + '-1')
+    df['gas_rate'] = df['prod_gas'] / df['tef']
+    df['oil_rate'] = df['prod_pet'] / df['tef']
     data_sorted = df.sort_values(by=['sigla', 'fecha_data'], ascending=True)
-    data_sorted = data_sorted[COLUMNS]
     return data_sorted
 
 # URL of the dataset
@@ -53,13 +37,10 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load and sort the data using the cached function
 data_sorted = load_and_sort_data(dataset_url)
 
-# Add a new column "date" by combining year and month
-data_sorted['date'] = pd.to_datetime(data_sorted['anio'].astype(str) + '-' + data_sorted['mes'].astype(str) + '-1')
-
-# Summarize production data by company and block
-summary_df = data_sorted.groupby(['empresa', 'areayacimiento', 'date']).agg(
-    total_prod_pet=('prod_pet', 'sum'),
-    total_prod_gas=('prod_gas', 'sum')
+# Summarize production data by block
+summary_df = data_sorted.groupby(['areayacimiento', 'date']).agg(
+    total_gas_rate=('gas_rate', 'sum'),
+    total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
 
 # Sidebar filters
@@ -68,42 +49,58 @@ image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
 
-# Create a multiselect list for companies
-selected_companies = st.sidebar.multiselect("Seleccionar empresas", summary_df['empresa'].unique())
-
-# Create a multiselect list for blocks
-selected_blocks = st.sidebar.multiselect("Seleccionar áreas de yacimiento", summary_df['areayacimiento'].unique())
+# Create a checklist for blocks
+selected_blocks = st.sidebar.multiselect(
+    "Desactivar áreas de yacimiento",
+    options=summary_df['areayacimiento'].unique(),
+    default=summary_df['areayacimiento'].unique()
+)
 
 # Filter data based on selections
-filtered_data = summary_df[
-    (summary_df['empresa'].isin(selected_companies)) & 
-    (summary_df['areayacimiento'].isin(selected_blocks))
-]
+filtered_data = summary_df[summary_df['areayacimiento'].isin(selected_blocks)]
 
-# Plot total oil production by company and block over time
-oil_fig = px.line(
-    filtered_data, 
-    x='date', 
-    y='total_prod_pet', 
-    color='empresa',
-    line_group='areayacimiento',
-    title="Producción Total de Petróleo por Empresa y Área de Yacimiento",
-    labels={"total_prod_pet": "Producción de Petróleo (m3)"}
+# Plot total oil production by block over time
+oil_rate_fig = go.Figure()
+
+for block in filtered_data['areayacimiento'].unique():
+    block_data = filtered_data[filtered_data['areayacimiento'] == block]
+    oil_rate_fig.add_trace(
+        go.Scatter(
+            x=block_data['date'],
+            y=block_data['total_oil_rate'],
+            mode='lines+markers',
+            name=f'{block} - Oil Rate',
+        )
+    )
+
+oil_rate_fig.update_layout(
+    title="Producción Total de Petróleo por Área de Yacimiento",
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m3/d)",
 )
 
 # Display the oil production plot
-st.plotly_chart(oil_fig)
+st.plotly_chart(oil_rate_fig)
 
-# Plot total gas production by company and block over time
-gas_fig = px.line(
-    filtered_data, 
-    x='date', 
-    y='total_prod_gas', 
-    color='empresa',
-    line_group='areayacimiento',
-    title="Producción Total de Gas por Empresa y Área de Yacimiento",
-    labels={"total_prod_gas": "Producción de Gas (km3)"}
+# Plot total gas production by block over time
+gas_rate_fig = go.Figure()
+
+for block in filtered_data['areayacimiento'].unique():
+    block_data = filtered_data[filtered_data['areayacimiento'] == block]
+    gas_rate_fig.add_trace(
+        go.Scatter(
+            x=block_data['date'],
+            y=block_data['total_gas_rate'],
+            mode='lines+markers',
+            name=f'{block} - Gas Rate',
+        )
+    )
+
+gas_rate_fig.update_layout(
+    title="Producción Total de Gas por Área de Yacimiento",
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km3/d)",
 )
 
 # Display the gas production plot
-st.plotly_chart(gas_fig)
+st.plotly_chart(gas_rate_fig)
