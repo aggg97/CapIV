@@ -6,19 +6,26 @@ from PIL import Image
 # Load and preprocess the data
 @st.cache_data
 def load_and_sort_data(dataset_url):
-    df = pd.read_csv(dataset_url, usecols=[
-        'sigla', 'anio', 'mes', 'prod_pet', 'prod_gas', 'tef', 'empresa', 'areayacimiento', 'fecha_data'
-    ])
-    df['date'] = pd.to_datetime(df['anio'].astype(str) + '-' + df['mes'].astype(str) + '-1')
-    df['gas_rate'] = df['prod_gas'] / df['tef']
-    df['oil_rate'] = df['prod_pet'] / df['tef']
-    return df
+    try:
+        df = pd.read_csv(dataset_url, usecols=[
+            'sigla', 'anio', 'mes', 'prod_pet', 'prod_gas', 'tef', 'empresa', 'areayacimiento', 'fecha_data'
+        ])
+        df['date'] = pd.to_datetime(df['anio'].astype(str) + '-' + df['mes'].astype(str) + '-1')
+        df['gas_rate'] = df['prod_gas'] / df['tef']
+        df['oil_rate'] = df['prod_pet'] / df['tef']
+        return df
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame in case of error
 
 # URL of the dataset
 dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad3543b407c/resource/b5b58cdc-9e07-41f9-b392-fb9ec68b0725/download/produccin-de-pozos-de-gas-y-petrleo-no-convencional.csv"
 
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
+
+if data_sorted.empty:
+    st.stop()  # Stop execution if data failed to load
 
 # Filter out rows where tef is zero for calculating metrics
 data_filtered = data_sorted[data_sorted['tef'] > 0]
@@ -89,7 +96,7 @@ year_summary = data_sorted.groupby(['anio', 'date']).agg(
 ).reset_index()
 
 # Create Streamlit app layout
-st.header(f":blue[Reporte de Producción No Convencional]")
+st.header(":blue[Reporte de Producción No Convencional]")
 
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
@@ -97,9 +104,9 @@ st.sidebar.title("Por favor filtrar aquí:")
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
-col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
-col3.metric(label=f":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
+col1.metric(label=":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
+col2.metric(label=":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
+col3.metric(label=":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
 
 # Area plots for gas and oil rates by top 10 companies + Others
 st.subheader("Actividad de las principales empresas")
