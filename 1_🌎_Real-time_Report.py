@@ -20,15 +20,12 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
 
-# Find the last date in the dataset
-last_date = data_sorted['date'].max()
+# Filter out rows where tef is zero for calculating metrics
+data_filtered = data_sorted[data_sorted['tef'] > 0]
 
-# Filter the data for the last date
-last_date_data = data_sorted[data_sorted['date'] == last_date]
-
-# Calculate total gas and oil rates for the last date
-total_gas_rate = last_date_data['gas_rate'].sum()
-total_oil_rate = last_date_data['oil_rate'].sum()
+# Calculate total gas and oil rates
+total_gas_rate = data_filtered['gas_rate'].sum()
+total_oil_rate = data_filtered['oil_rate'].sum()
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
@@ -37,15 +34,6 @@ oil_rate_bpd = total_oil_rate * 6.28981
 total_gas_rate_rounded = round(total_gas_rate, 1)
 total_oil_rate_rounded = round(total_oil_rate, 1)
 oil_rate_bpd_rounded = round(oil_rate_bpd, 1)
-
-# Create Streamlit app layout
-st.header(f":blue[Reporte de Producción No Convencional]")
-
-# Display total gas rate and oil rate metrics
-col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Total Caudal de Gas (m³/d)]", value=total_gas_rate_rounded)
-col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
-col3.metric(label=f":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
 
 # Load and preprocess data for plotting
 company_summary = data_sorted.groupby(['empresa', 'date']).agg(
@@ -106,11 +94,17 @@ image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
 
-# Area plots for gas and oil rates by top 10 companies (non-stacked)
-st.subheader("Caudal de Gas y Petróleo por Empresa (Top 10 y Otros)")
+# Display total gas rate and oil rate metrics
+col1, col2, col3 = st.columns(3)
+col1.metric(label=f":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
+col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
+col3.metric(label=f":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
 
-# Plot for gas rate by company (non-stacked)
-fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa", line_group='top_company')
+# Area plots for gas and oil rates by top 10 companies
+st.subheader("Actividad de las principales empresas")
+
+# Plot for gas rate by company
+fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa")
 fig_gas_company.update_layout(
     legend_title_text='Empresa',
     legend=dict(
@@ -123,12 +117,12 @@ fig_gas_company.update_layout(
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (m³/d)"
+    yaxis_title="Caudal de Gas (km³/d)"
 )
 st.plotly_chart(fig_gas_company, use_container_width=True)
 
-# Plot for oil rate by company (non-stacked)
-fig_oil_company = px.area(top_company_summary, x='date', y='total_oil_rate', color='top_company', title="Caudal de Petróleo por Empresa", line_group='top_company')
+# Plot for oil rate by company
+fig_oil_company = px.area(top_company_summary, x='date', y='total_oil_rate', color='top_company', title="Caudal de Petróleo por Empresa")
 fig_oil_company.update_layout(
     legend_title_text='Empresa',
     legend=dict(
@@ -146,7 +140,7 @@ fig_oil_company.update_layout(
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
 # Area plots for gas and oil rates by top 10 areas
-st.subheader("Caudal de Gas y Petróleo por Área de Yacimiento (Top 10 y Otros)")
+st.subheader("Actividad por área de yacimiento")
 
 # Plot for gas rate by area
 fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área de Yacimiento")
@@ -162,7 +156,7 @@ fig_gas_area.update_layout(
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (m³/d)"
+    yaxis_title="Caudal de Gas (km³/d)"
 )
 st.plotly_chart(fig_gas_area, use_container_width=True)
 
@@ -212,7 +206,7 @@ fig_gas_year.update_layout(
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (m³/d)"
+    yaxis_title="Caudal de Gas (km³/d)"
 )
 st.plotly_chart(fig_gas_year, use_container_width=True)
 
@@ -236,6 +230,8 @@ st.plotly_chart(fig_oil_year, use_container_width=True)
 
 # Display table for number of wells per company in the last year
 st.subheader(f"Número de Pozos por Empresa ({last_year})")
+
+st.write(last_year_wells_count)
 
 # Option to download the filtered data
 csv = data_sorted.to_csv(index=False)
