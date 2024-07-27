@@ -20,18 +20,15 @@ dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad35
 # Load the data
 data_sorted = load_and_sort_data(dataset_url)
 
-# Convert gas_rate to million cubic meters (Mm³)
-data_sorted['gas_rate_mm3'] = data_sorted['gas_rate'] / 1e6
-
 # Group data by company and date
 company_summary = data_sorted.groupby(['empresa', 'date']).agg(
-    total_gas_rate_mm3=('gas_rate_mm3', 'sum'),
+    total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
 
 # Group data by area and date
 area_summary = data_sorted.groupby(['areayacimiento', 'date']).agg(
-    total_gas_rate_mm3=('gas_rate_mm3', 'sum'),
+    total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
 
@@ -41,7 +38,7 @@ company_summary['top_company'] = company_summary['empresa'].apply(lambda x: x if
 
 # Summarize production data by top companies and "Other"
 top_company_summary = company_summary.groupby(['top_company', 'date']).agg(
-    total_gas_rate_mm3=('total_gas_rate_mm3', 'sum'),
+    total_gas_rate=('total_gas_rate', 'sum'),
     total_oil_rate=('total_oil_rate', 'sum')
 ).reset_index()
 
@@ -51,7 +48,7 @@ area_summary['top_area'] = area_summary['areayacimiento'].apply(lambda x: x if x
 
 # Summarize production data by top areas and "Other"
 top_area_summary = area_summary.groupby(['top_area', 'date']).agg(
-    total_gas_rate_mm3=('total_gas_rate_mm3', 'sum'),
+    total_gas_rate=('total_gas_rate', 'sum'),
     total_oil_rate=('total_oil_rate', 'sum')
 ).reset_index()
 
@@ -68,7 +65,7 @@ top_well_count = well_count.groupby('top_company')['well_count'].sum().reset_ind
 
 # Group data by year for stacked area plots
 year_summary = data_sorted.groupby(['anio', 'date']).agg(
-    total_gas_rate_mm3=('gas_rate_mm3', 'sum'),
+    total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
 
@@ -86,8 +83,8 @@ st.sidebar.title("Por favor filtrar aquí:")
 # Area plots for gas and oil rates by top 10 companies
 st.subheader("Caudal de Gas y Petróleo por Empresa (Top 10 y Otros)")
 
-# Plot for gas rate by company in million cubic meters
-fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate_mm3', color='top_company', title="Caudal de Gas por Empresa (Mm³)")
+# Plot for gas rate by company
+fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa")
 fig_gas_company.update_layout(
     legend_title_text='Empresa',
     legend=dict(
@@ -98,13 +95,13 @@ fig_gas_company.update_layout(
         x=0.5
     ),
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (Mm³/d)"
+    yaxis_title="Caudal de Gas (m³/d)"
 )
 st.plotly_chart(fig_gas_company, use_container_width=True)
 
 # Summary table for gas rate by company
 st.write("Resumen de producción de gas por empresa:")
-st.write(top_company_summary.groupby('top_company').agg(total_gas_rate_mm3=('total_gas_rate_mm3', 'sum')).reset_index())
+st.write(top_company_summary.groupby('top_company').agg(total_gas_rate=('total_gas_rate', 'sum')).reset_index())
 
 # Plot for oil rate by company
 fig_oil_company = px.area(top_company_summary, x='date', y='total_oil_rate', color='top_company', title="Caudal de Petróleo por Empresa")
@@ -129,8 +126,8 @@ st.write(top_company_summary.groupby('top_company').agg(total_oil_rate=('total_o
 # Area plots for gas and oil rates by top 10 areas
 st.subheader("Caudal de Gas y Petróleo por Área de Yacimiento (Top 10 y Otros)")
 
-# Plot for gas rate by area in million cubic meters
-fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate_mm3', color='top_area', title="Caudal de Gas por Área de Yacimiento (Mm³)")
+# Plot for gas rate by area
+fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área de Yacimiento")
 fig_gas_area.update_layout(
     legend_title_text='Área de Yacimiento',
     legend=dict(
@@ -141,13 +138,13 @@ fig_gas_area.update_layout(
         x=0.5
     ),
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (Mm³/d)"
+    yaxis_title="Caudal de Gas (m³/d)"
 )
 st.plotly_chart(fig_gas_area, use_container_width=True)
 
 # Summary table for gas rate by area
 st.write("Resumen de producción de gas por área de yacimiento:")
-st.write(top_area_summary.groupby('top_area').agg(total_gas_rate_mm3=('total_gas_rate_mm3', 'sum')).reset_index())
+st.write(top_area_summary.groupby('top_area').agg(total_gas_rate=('total_gas_rate', 'sum')).reset_index())
 
 # Plot for oil rate by area
 fig_oil_area = px.area(top_area_summary, x='date', y='total_oil_rate', color='top_area', title="Caudal de Petróleo por Área de Yacimiento")
@@ -193,8 +190,8 @@ st.write(top_well_count)
 # Area plots for gas and oil rates by year
 st.subheader("Caudal de Gas y Petróleo por Año")
 
-# Plot for gas rate by year in million cubic meters
-fig_gas_year = px.area(year_summary, x='date', y='total_gas_rate_mm3', color='anio', title="Caudal de Gas por Año (Mm³)")
+# Plot for gas rate by year
+fig_gas_year = px.area(year_summary, x='date', y='total_gas_rate', color='anio', title="Caudal de Gas por Año")
 fig_gas_year.update_layout(
     legend_title_text='Año',
     legend=dict(
@@ -205,7 +202,7 @@ fig_gas_year.update_layout(
         x=0.5
     ),
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (Mm³/d)"
+    yaxis_title="Caudal de Gas (m³/d)"
 )
 st.plotly_chart(fig_gas_year, use_container_width=True)
 
