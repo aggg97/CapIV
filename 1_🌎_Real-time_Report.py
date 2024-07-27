@@ -24,8 +24,8 @@ data_sorted = load_and_sort_data(dataset_url)
 data_filtered = data_sorted[data_sorted['tef'] > 0]
 
 # Calculate total gas and oil rates
-total_gas_rate = data_filtered['gas_rate'].sum()
-total_oil_rate = data_filtered['oil_rate'].sum()
+total_gas_rate = data_filtered['gas_rate'].sum()/1000
+total_oil_rate = data_filtered['oil_rate'].sum()/1000
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
@@ -96,9 +96,9 @@ st.sidebar.title("Por favor filtrar aquí:")
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
-col1.metric(label=f":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
-col2.metric(label=f":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
-col3.metric(label=f":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
+col1.metric(label=f":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
+col2.metric(label=f":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_rate_rounded)
+col3.metric(label=f":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # Area plots for gas and oil rates by top 10 companies
 st.subheader("Actividad de las principales empresas")
