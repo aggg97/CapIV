@@ -154,24 +154,13 @@ fig_area_proportion_oil.update_layout(
 )
 st.plotly_chart(fig_area_proportion_oil, use_container_width=True)
 
-# Bar plot of the number of wells per company
-st.subheader("Número de Pozos por Empresa (Top 10)")
+# Line chart for gas rate and oil rate by area
+st.subheader("Producción de Gas y Petróleo por Área")
 
-fig_wells = px.bar(top_well_count, x='empresa', y='well_count', title="Número de Pozos por Empresa", text='well_count')
-fig_wells.update_layout(
-    xaxis_title="Empresa",
-    yaxis_title="Número de Pozos",
-    xaxis_tickangle=-45
-)
-st.plotly_chart(fig_wells, use_container_width=True)
-
-# Stacked area plot for gas and oil rates by year
-st.subheader("Caudal de Gas y Petróleo por Año")
-
-# Plot for gas rate and oil rate by year
-fig_gas_oil_year = px.area(year_summary, x='anio', y=['total_gas_rate', 'total_oil_rate'], title="Caudal de Gas y Petróleo por Año", labels={'value': 'Caudal', 'anio': 'Año'})
-fig_gas_oil_year.update_layout(
-    legend_title_text='Tipo de Caudal',
+# Plot for gas rate by area
+fig_gas_area = px.line(area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área")
+fig_gas_area.update_layout(
+    legend_title_text='Área',
     legend=dict(
         orientation="h",
         yanchor="top",
@@ -181,6 +170,34 @@ fig_gas_oil_year.update_layout(
         font=dict(size=10)
     ),
     margin=dict(b=100),
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km³/d)"
+)
+st.plotly_chart(fig_gas_area, use_container_width=True)
+
+# Plot for oil rate by area
+fig_oil_area = px.line(area_summary, x='date', y='total_oil_rate', color='top_area', title="Caudal de Petróleo por Área")
+fig_oil_area.update_layout(
+    legend_title_text='Área',
+    legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.3,
+        xanchor="center",
+        x=0.5,
+        font=dict(size=10)
+    ),
+    margin=dict(b=100),
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m³/d)"
+)
+st.plotly_chart(fig_oil_area, use_container_width=True)
+
+# Stacked plot for gas and oil rates by year
+st.subheader("Producción Total por Año")
+
+fig_gas_oil_year = px.area(year_summary, x='anio', y=['total_gas_rate', 'total_oil_rate'], title="Producción Total de Gas y Petróleo por Año")
+fig_gas_oil_year.update_layout(
     xaxis_title="Año",
     yaxis_title="Caudal (km³/d y m³/d)"
 )
