@@ -113,7 +113,7 @@ st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
 
 # Area plots for gas and oil rates by top 10 companies
-st.subheader("Caudal de Gas y Petróleo por Empresa (Top 10 y Otros)")
+st.subheader("Actividad de las principales empresas")
 
 # Plot for gas rate by company
 fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa")
