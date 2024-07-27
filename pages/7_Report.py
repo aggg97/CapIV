@@ -84,33 +84,104 @@ st.sidebar.title("Por favor filtrar aquí:")
 st.subheader("Caudal de Gas y Petróleo por Empresa (Top 10 y Otros)")
 
 fig_gas_company = px.area(top_company_summary, x='date', y='total_gas_rate', color='top_company', title="Caudal de Gas por Empresa")
+fig_gas_company.update_layout(
+    legend_title_text='Empresa',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_gas_company, use_container_width=True)
 
 fig_oil_company = px.area(top_company_summary, x='date', y='total_oil_rate', color='top_company', title="Caudal de Petróleo por Empresa")
+fig_oil_company.update_layout(
+    legend_title_text='Empresa',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
 # Area plots for gas and oil rates by top 10 areas
 st.subheader("Caudal de Gas y Petróleo por Área de Yacimiento (Top 10 y Otros)")
 
 fig_gas_area = px.area(top_area_summary, x='date', y='total_gas_rate', color='top_area', title="Caudal de Gas por Área de Yacimiento")
+fig_gas_area.update_layout(
+    legend_title_text='Área de Yacimiento',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_gas_area, use_container_width=True)
 
 fig_oil_area = px.area(top_area_summary, x='date', y='total_oil_rate', color='top_area', title="Caudal de Petróleo por Área de Yacimiento")
+fig_oil_area.update_layout(
+    legend_title_text='Área de Yacimiento',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_oil_area, use_container_width=True)
 
 # Bar plot for number of wells per top 10 companies
 st.subheader("Número de Pozos por Empresa (Top 10 y Otros)")
 
 fig_well_count = px.bar(top_well_count, x='top_company', y='well_count', title="Número de Pozos por Empresa")
+fig_well_count.update_layout(
+    xaxis_title="Empresa",
+    yaxis_title="Número de Pozos",
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_well_count, use_container_width=True)
 
 # Stacked area plots for gas and oil rates by year
 st.subheader("Caudal de Gas y Petróleo por Año")
 
 fig_gas_year = px.area(year_summary, x='date', y='total_gas_rate', color='anio', title="Caudal de Gas por Año")
+fig_gas_year.update_layout(
+    legend_title_text='Año',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_gas_year, use_container_width=True)
 
 fig_oil_year = px.area(year_summary, x='date', y='total_oil_rate', color='anio', title="Caudal de Petróleo por Año")
+fig_oil_year.update_layout(
+    legend_title_text='Año',
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.3,  # Adjust this value as needed
+        xanchor="center",
+        x=0.5
+    )
+)
 st.plotly_chart(fig_oil_year, use_container_width=True)
 
 # Display table for number of wells per company in the last year
