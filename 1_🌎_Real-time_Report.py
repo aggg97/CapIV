@@ -48,37 +48,6 @@ total_gas_rate_rounded = round(total_gas_rate, 1)
 total_oil_rate_rounded = round(total_oil_rate, 1)
 oil_rate_bpd_rounded = round(oil_rate_bpd, 1)
 
-# Load and preprocess data for plotting
-company_summary = data_sorted.groupby(['empresa', 'date']).agg(
-    total_gas_rate=('gas_rate', 'sum'),
-    total_oil_rate=('oil_rate', 'sum')
-).reset_index()
-
-area_summary = data_sorted.groupby(['areayacimiento', 'date']).agg(
-    total_gas_rate=('gas_rate', 'sum'),
-    total_oil_rate=('oil_rate', 'sum')
-).reset_index()
-
-# Determine top 10 companies by total oil production
-top_companies = company_summary.groupby('empresa')['total_oil_rate'].sum().nlargest(10).index
-
-# Aggregate data for top companies and "Others"
-company_summary['empresa'] = company_summary['empresa'].apply(lambda x: x if x in top_companies else 'Others')
-company_summary_aggregated = company_summary.groupby(['empresa', 'date']).agg(
-    total_gas_rate=('total_gas_rate', 'sum'),
-    total_oil_rate=('total_oil_rate', 'sum')
-).reset_index()
-
-# Determine top 20 areas by total oil production
-top_areas = area_summary.groupby('areayacimiento')['total_oil_rate'].sum().nlargest(20).index
-
-# Aggregate data for top areas and "Others"
-area_summary['areayacimiento'] = area_summary['areayacimiento'].apply(lambda x: x if x in top_areas else 'Others')
-area_summary_aggregated = area_summary.groupby(['areayacimiento', 'date']).agg(
-    total_gas_rate=('total_gas_rate', 'sum'),
-    total_oil_rate=('total_oil_rate', 'sum')
-).reset_index()
-
 # Count wells per company
 well_count = data_sorted.groupby('empresa')['sigla'].nunique().reset_index()
 well_count.columns = ['empresa', 'well_count']
@@ -107,84 +76,6 @@ col1, col2, col3 = st.columns(3)
 col1.metric(label=":red[Total Caudal de Gas (km³/d)]", value=total_gas_rate_rounded)
 col2.metric(label=":green[Total Caudal de Petróleo (m³/d)]", value=total_oil_rate_rounded)
 col3.metric(label=":green[Total Caudal de Petróleo (bpd)]", value=oil_rate_bpd_rounded)
-
-# Area plots for gas and oil rates by top 10 companies + Others
-st.subheader("Actividad de las principales empresas")
-
-# Plot for gas rate by company
-fig_gas_company = px.area(company_summary_aggregated, x='date', y='total_gas_rate', color='empresa', title="Caudal de Gas por Empresa")
-fig_gas_company.update_layout(
-    legend_title_text='Empresa',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
-)
-st.plotly_chart(fig_gas_company, use_container_width=True)
-
-# Plot for oil rate by company
-fig_oil_company = px.area(company_summary_aggregated, x='date', y='total_oil_rate', color='empresa', title="Caudal de Petróleo por Empresa")
-fig_oil_company.update_layout(
-    legend_title_text='Empresa',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
-)
-st.plotly_chart(fig_oil_company, use_container_width=True)
-
-# Area plots for gas and oil rates by top 20 areas + Others
-st.subheader("Actividad por área de yacimiento")
-
-# Plot for gas rate by area
-fig_gas_area = px.area(area_summary_aggregated, x='date', y='total_gas_rate', color='areayacimiento', title="Caudal de Gas por Área de Yacimiento")
-fig_gas_area.update_layout(
-    legend_title_text='Área de Yacimiento',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
-)
-st.plotly_chart(fig_gas_area, use_container_width=True)
-
-# Plot for oil rate by area
-fig_oil_area = px.area(area_summary_aggregated, x='date', y='total_oil_rate', color='areayacimiento', title="Caudal de Petróleo por Área de Yacimiento")
-fig_oil_area.update_layout(
-    legend_title_text='Área de Yacimiento',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
-)
-st.plotly_chart(fig_oil_area, use_container_width=True)
 
 # Bar plot of the number of wells per company
 st.subheader("Número de Pozos por Empresa")
