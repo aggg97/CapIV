@@ -25,7 +25,7 @@ dataset_frac_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-
 df_frac = load_and_sort_data_frac(dataset_frac_url)
 
 # Display the first few rows of the fracture dataframe in Streamlit
-st.write("### Fracture Data Preview")
+st.write("### Dataset de Fractura")
 st.write(df_frac.head())
 
 # Define the columns for the second dataset
@@ -61,38 +61,22 @@ dataset_prod_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-
 data_sorted = load_and_sort_data_prod(dataset_prod_url)
 
 # Display the first few rows of the production dataframe in Streamlit
-st.write("### Production Data Preview")
+st.write("### Dataset Producción No Convencional")
 st.write(data_sorted.head())
 
 # Merge the dataframes on 'sigla'
-df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio', 'empresa', 'formacion']], on='sigla', how='left').drop_duplicates()
+df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio']], on='sigla', how='left').drop_duplicates()
 
 # Plot the length of fracture as a boxplot
-st.write("### Length of Fracture")
+st.write("### Longitud de Rama Horizontal")
 fig_length = px.box(df_merged, x='anio', y='longitud_rama_horizontal_m',
-                    labels={'longitud_rama_horizontal_m': 'Length of Fracture (m)', 'anio': 'Year'},
-                    title='Length of Fracture by Year')
+                    labels={'longitud_rama_horizontal_m': 'Longitud de rama horizontal (m)', 'anio': 'Año'},
+                    title='Longitud de rama horizontal por año)
 st.plotly_chart(fig_length)
 
 # Plot the number of fractures as a boxplot
-st.write("### Number of Fractures")
+st.write("### Numero de Fracturas")
 fig_fractures = px.box(df_merged, x='anio', y='cantidad_fracturas',
-                       labels={'cantidad_fracturas': 'Number of Fractures', 'anio': 'Year'},
-                       title='Number of Fractures by Year')
+                       labels={'cantidad_fracturas': 'Numbero de Fracturas', 'anio': 'Año'},
+                       title='Numero de Fracturas por año')
 st.plotly_chart(fig_fractures)
-
-# Additional analysis: Total length of fractures by company
-st.write("### Total Length of Fractures by Company")
-fig_company_length = px.bar(df_merged.groupby('empresa')['longitud_rama_horizontal_m'].sum().reset_index(),
-                            x='empresa', y='longitud_rama_horizontal_m',
-                            labels={'longitud_rama_horizontal_m': 'Total Length of Fracture (m)', 'empresa': 'Company'},
-                            title='Total Length of Fractures by Company')
-st.plotly_chart(fig_company_length)
-
-# Additional analysis: Number of fractures by formation
-st.write("### Number of Fractures by Formation")
-fig_formation_fractures = px.bar(df_merged.groupby('formacion')['cantidad_fracturas'].sum().reset_index(),
-                                 x='formacion', y='cantidad_fracturas',
-                                 labels={'cantidad_fracturas': 'Number of Fractures', 'formacion': 'Formation'},
-                                 title='Number of Fractures by Formation')
-st.plotly_chart(fig_formation_fractures)
