@@ -133,11 +133,23 @@ area_year_data = company_data[(company_data['areayacimiento'] == selected_area) 
 top_10_oil_wells = area_year_data.sort_values(by='oil_rate', ascending=False).head(10)['sigla'].unique()
 top_10_gas_wells = area_year_data.sort_values(by='gas_rate', ascending=False).head(10)['sigla'].unique()
 
+# Filter data for the top 10 wells since the beginning of the oldest well
+top_10_oil_data = company_data[company_data['sigla'].isin(top_10_oil_wells)]
+top_10_gas_data = company_data[company_data['sigla'].isin(top_10_gas_wells)]
+
+# Get the oldest date for the top 10 oil wells
+oldest_oil_date = top_10_oil_data['date'].min()
+top_10_oil_data = top_10_oil_data[top_10_oil_data['date'] >= oldest_oil_date]
+
+# Get the oldest date for the top 10 gas wells
+oldest_gas_date = top_10_gas_data['date'].min()
+top_10_gas_data = top_10_gas_data[top_10_gas_data['date'] >= oldest_gas_date]
+
 # Plot top 10 wells production profile for oil
 top_oil_fig = go.Figure()
 
 for i, well in enumerate(top_10_oil_wells):
-    well_data = area_year_data[area_year_data['sigla'] == well]
+    well_data = top_10_oil_data[top_10_oil_data['sigla'] == well]
     top_oil_fig.add_trace(
         go.Scatter(
             x=well_data['date'],
@@ -150,7 +162,7 @@ for i, well in enumerate(top_10_oil_wells):
     )
 
 top_oil_fig.update_layout(
-    title=f"Top 10 Pozos por Perfil de Producción de Petróleo en {selected_year}",
+    title=f"Top 10 Pozos por Perfil de Producción de Petróleo desde {oldest_oil_date.year}",
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m3/d)",
     hovermode='x unified',
@@ -164,7 +176,7 @@ st.plotly_chart(top_oil_fig, use_container_width=True)
 top_gas_fig = go.Figure()
 
 for i, well in enumerate(top_10_gas_wells):
-    well_data = area_year_data[area_year_data['sigla'] == well]
+    well_data = top_10_gas_data[top_10_gas_data['sigla'] == well]
     top_gas_fig.add_trace(
         go.Scatter(
             x=well_data['date'],
@@ -177,7 +189,7 @@ for i, well in enumerate(top_10_gas_wells):
     )
 
 top_gas_fig.update_layout(
-    title=f"Top 10 Pozos por Perfil de Producción de Gas en {selected_year}",
+    title=f"Top 10 Pozos por Perfil de Producción de Gas desde {oldest_gas_date.year}",
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km3/d)",
     hovermode='x unified',
