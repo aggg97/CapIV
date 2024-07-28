@@ -44,7 +44,7 @@ oil_np_palette = ['#008000', '#006400', '#90EE90', '#98FB98', '#8FBC8F', '#3CB37
 water_wp_palette = ['#0000FF', '#0000CD', '#00008B', '#000080', '#191970', '#7B68EE', '#6A5ACD', '#483D8B', '#B0E0E6', '#ADD8E6', '#87CEFA', '#87CEEB', '#00BFFF', '#B0C4DE', '#1E90FF', '#6495ED']
 
 # Reorder and rename the columns in the DataFrame
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
     data_sorted = df.sort_values(by=['sigla', 'fecha_data'], ascending=True)
@@ -114,3 +114,28 @@ st.subheader("Top 10 pozos de petróleo")
 fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Según Caudales máximos de petróleo")
 fig_oil.update_yaxes(title="Caudal de Petróleo (m3/d)")  # Set y-axis label
 st.plotly_chart(fig_oil)
+
+# Aggregate production by company
+company_production = data_sorted_filtered.groupby('empresa').agg({
+    'prod_pet': 'sum',
+    'prod_gas': 'sum',
+    'prod_agua': 'sum'
+}).reset_index()
+
+# Get the top 10 companies by total production
+company_production['total_production'] = company_production[['prod_pet', 'prod_gas', 'prod_agua']].sum(axis=1)
+top_companies = company_production.nlargest(10, 'total_production')
+
+# Create a bar plot for the top companies
+st.subheader("Top 10 empresas por producción total")
+fig_companies = px.bar(top_companies, x='empresa', y='total_production', color='empresa', title="Producción total por empresa")
+fig_companies.update_yaxes(title="Producción total (m3 y km3)")
+st.plotly_chart(fig_companies)
+
+# Compute correlation matrix
+correlation_matrix = data_sorted_filtered[['prod_pet', 'prod_gas', 'prod_agua', 'tef', 'oil_rate', 'gas_rate', 'water_rate']].corr()
+
+# Create a heatmap for the correlation matrix
+st.subheader("Mapa de calor de correlaciones")
+fig_corr = px.imshow(correlation_matrix, title="Mapa de calor de correlaciones entre métricas de producción")
+st.plotly_chart(fig_corr)
