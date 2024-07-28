@@ -71,7 +71,7 @@ df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio']], on='sigla', how='l
 st.write("### Longitud de Rama Horizontal")
 fig_length = px.box(df_merged, x='anio', y='longitud_rama_horizontal_m',
                     labels={'longitud_rama_horizontal_m': 'Longitud de rama horizontal (m)', 'anio': 'Año'},
-                    title='Longitud de rama horizontal por año)
+                    title='Longitud de rama horizontal por año')
 st.plotly_chart(fig_length)
 
 # Plot the number of fractures as a boxplot
