@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
-from PIL import Image
 import plotly.express as px
 
 COLUMNS = [
@@ -43,7 +41,6 @@ gas_gp_palette = ['#FF0000', '#FFA07A', '#FA8072', '#E9967A', '#F08080', '#CD5C5
 oil_np_palette = ['#008000', '#006400', '#90EE90', '#98FB98', '#8FBC8F', '#3CB371', '#2E8B57', '#808000', '#556B2F', '#6B8E23']
 water_wp_palette = ['#0000FF', '#0000CD', '#00008B', '#000080', '#191970', '#7B68EE', '#6A5ACD', '#483D8B', '#B0E0E6', '#ADD8E6', '#87CEFA', '#87CEEB', '#00BFFF', '#B0C4DE', '#1E90FF', '#6495ED']
 
-# Reorder and rename the columns in the DataFrame
 @st.cache(allow_output_mutation=True)
 def load_and_sort_data(dataset_url):
     df = pd.read_csv(dataset_url, usecols=COLUMNS)
@@ -56,9 +53,6 @@ def load_and_sort_data(dataset_url):
     data_sorted['Gp'] = data_sorted.groupby('sigla')['prod_gas'].cumsum()
     data_sorted['Wp'] = data_sorted.groupby('sigla')['prod_agua'].cumsum()
     return data_sorted
-
-def calculate_max_rates(group):
-    return group[['gas_rate', 'oil_rate']].max()
 
 # URL of the dataset
 dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad3543b407c/resource/b5b58cdc-9e07-41f9-b392-fb9ec68b0725/download/produccin-de-pozos-de-gas-y-petrleo-no-convencional.csv"
@@ -73,18 +67,14 @@ data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 # Filter data_sorted to exclude wells with tef values between 0.01 and 1
 data_sorted_filtered = data_sorted[(data_sorted['tef'] == 0) | ((data_sorted['tef'] > 1) | (data_sorted['tef'] < 0.01))]
 
-# Filter data to the most recent year
-most_recent_year = data_sorted_filtered['anio'].max()
-data_last_year = data_sorted_filtered[data_sorted_filtered['anio'] == most_recent_year]
-
 # Create a Pivot Table to Calculate Maximum Oil and Gas Rates and TEF for Each Well
-pivot_table = data_last_year.pivot_table(
+pivot_table = data_sorted_filtered.pivot_table(
     values=['gas_rate', 'oil_rate', 'water_rate', 'tef'],  # Include 'tef' here
     index=['sigla'],
     aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max', 'tef': 'min'}  # Include 'tef' here
 )
 
-# Step 2: Create a New DataFrame with Maximum Oil and Gas Rates and TEF
+# Create a New DataFrame with Maximum Oil and Gas Rates and TEF
 max_rates_df = pivot_table.reset_index()
 max_rates_df['GOR'] = (max_rates_df['gas_rate']*1000) / max_rates_df['oil_rate']
 max_rates_df['GOR'] = max_rates_df['GOR'].fillna(100000)
@@ -108,13 +98,62 @@ top_petroleo_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'
 top_gas_wells = max_rates_df_filtered[max_rates_df_filtered['Fluido McCain'] == 'Gas'].nlargest(10, 'gas_rate')
 
 # Create a bar plot for the top gas wells
-st.subheader("Top 10 pozos de gas")
+st.subheader("Top 10 pozos de gas (Histórico)")
 fig_gas = px.bar(top_gas_wells, x='sigla', y='gas_rate', color='sigla', title="Según Caudales máximos de gas")
 fig_gas.update_yaxes(title="Caudal de Gas (km3/d)")  # Set y-axis label
 st.plotly_chart(fig_gas)
 
 # Create a bar plot for the top petroleo wells
-st.subheader("Top 10 pozos de petróleo")
+st.subheader("Top 10 pozos de petróleo (Histórico)")
 fig_oil = px.bar(top_petroleo_wells, x='sigla', y='oil_rate', color='sigla', title="Según Caudales máximos de petróleo")
 fig_oil.update_yaxes(title="Caudal de Petróleo (m3/d)")  # Set y-axis label
 st.plotly_chart(fig_oil)
+
+# Add an input for selecting the year
+st.sidebar.subheader("Selecciona el año para el ranking")
+selected_year = st.sidebar.selectbox("Año", sorted(data_sorted['anio'].unique(), reverse=True))
+
+# Filter data to the selected year
+data_selected_year = data_sorted_filtered[data_sorted_filtered['anio'] == selected_year]
+
+# Create a Pivot Table to Calculate Maximum Oil and Gas Rates and TEF for Each Well for the selected year
+pivot_table_selected_year = data_selected_year.pivot_table(
+    values=['gas_rate', 'oil_rate', 'water_rate', 'tef'],
+    index=['sigla'],
+    aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max', 'tef': 'min'}
+)
+
+# Create a New DataFrame with Maximum Oil and Gas Rates and TEF for the selected year
+max_rates_df_selected_year = pivot_table_selected_year.reset_index()
+max_rates_df_selected_year['GOR'] = (max_rates_df_selected_year['gas_rate']*1000) / max_rates_df_selected_year['oil_rate']
+max_rates_df_selected_year['GOR'] = max_rates_df_selected_year['GOR'].fillna(100000)
+
+# Add a new column "Fluido McCain" based on conditions for the selected year
+max_rates_df_selected_year['Fluido McCain'] = max_rates_df_selected_year.apply(
+    lambda row: 'Gas' if row['oil_rate'] == 0 or row['GOR'] > 15000 else 'Petróleo',
+    axis=1
+)
+
+# Filter max_rates_df_selected_year to exclude wells with max oil and gas rates above 10,000,000
+max_rates_df_selected_year_filtered = max_rates_df_selected_year[
+    (max_rates_df_selected_year['oil_rate'] <= 10000000) &
+    (max_rates_df_selected_year['gas_rate'] <= 10000000)
+]
+
+# Get the top 10 petroleo wells for the selected year
+top_petroleo_wells_selected_year = max_rates_df_selected_year_filtered[max_rates_df_selected_year_filtered['Fluido McCain'] == 'Petróleo'].nlargest(10, 'oil_rate')
+
+# Get the top 10 gas wells for the selected year
+top_gas_wells_selected_year = max_rates_df_selected_year_filtered[max_rates_df_selected_year_filtered['Fluido McCain'] == 'Gas'].nlargest(10, 'gas_rate')
+
+# Create a bar plot for the top gas wells for the selected year
+st.subheader(f"Top 10 pozos de gas ({selected_year})")
+fig_gas_selected_year = px.bar(top_gas_wells_selected_year, x='sigla', y='gas_rate', color='sigla', title=f"Según Caudales máximos de gas en {selected_year}")
+fig_gas_selected_year.update_yaxes(title="Caudal de Gas (km3/d)")  # Set y-axis label
+st.plotly_chart(fig_gas_selected_year)
+
+# Create a bar plot for the top petroleo wells for the selected year
+st.subheader(f"Top 10 pozos de petróleo ({selected_year})")
+fig_oil_selected_year = px.bar(top_petroleo_wells_selected_year, x='sigla', y='oil_rate', color='sigla', title=f"Según Caudales máximos de petróleo en {selected_year}")
+fig_oil_selected_year.update_yaxes(title="Caudal de Petróleo (m3/d)")  # Set y-axis label
+st.plotly_chart(fig_oil_selected_year)
