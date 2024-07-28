@@ -59,7 +59,7 @@ summary_df = company_data.groupby(['areayacimiento', 'date']).agg(
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
 
-# Plot total oil production by field area over time using area plot
+# Plot total oil production by field area over time using stacked area plot
 oil_rate_fig = go.Figure()
 
 color_palette = px.colors.qualitative.Set3  # Use a distinct color palette
@@ -72,7 +72,7 @@ for i, area in enumerate(summary_df['areayacimiento'].unique()):
             y=area_data['total_oil_rate'],
             mode='lines',
             name=f'{area} - Oil Rate',
-            fill='tonexty',
+            stackgroup='one',  # This line makes it a stacked area plot
             line=dict(color=color_palette[i % len(color_palette)]),
             hovertemplate='Fecha: %{x}<br>Caudal de Petróleo: %{y:.2f} m3/d'
         )
@@ -89,7 +89,7 @@ oil_rate_fig.update_layout(
 # Display the oil production plot
 st.plotly_chart(oil_rate_fig, use_container_width=True)
 
-# Plot total gas production by field area over time using area plot
+# Plot total gas production by field area over time using stacked area plot
 gas_rate_fig = go.Figure()
 
 for i, area in enumerate(summary_df['areayacimiento'].unique()):
@@ -100,7 +100,7 @@ for i, area in enumerate(summary_df['areayacimiento'].unique()):
             y=area_data['total_gas_rate'],
             mode='lines',
             name=f'{area} - Gas Rate',
-            fill='tonexty',
+            stackgroup='one',  # This line makes it a stacked area plot
             line=dict(color=color_palette[i % len(color_palette)]),
             hovertemplate='Fecha: %{x}<br>Caudal de Gas: %{y:.2f} km3/d'
         )
