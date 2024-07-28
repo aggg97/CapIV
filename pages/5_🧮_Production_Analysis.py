@@ -118,13 +118,13 @@ gas_rate_fig.update_layout(
 st.plotly_chart(gas_rate_fig, use_container_width=True)
 
 # Selectbox for areas based on selected company
-selected_area = st.sidebar.selectbox(
+selected_area = st.selectbox(
     "Seleccione el área de yacimiento",
     options=company_data['areayacimiento'].unique()
 )
 
 # Number input for year selection
-selected_year = st.sidebar.number_input('Ingrese el año', min_value=int(data_sorted['anio'].min()), max_value=int(data_sorted['anio'].max()), value=int(data_sorted['anio'].max()), step=1)
+selected_year = st.number_input('Ingrese el año', min_value=int(data_sorted['anio'].min()), max_value=int(data_sorted['anio'].max()), value=int(data_sorted['anio'].max()), step=1)
 
 # Filter data based on selected area and year
 area_year_data = company_data[(company_data['areayacimiento'] == selected_area) & (company_data['anio'] == selected_year)]
