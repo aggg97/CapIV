@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from PIL import Image
-import plotly.express as px  # Import Plotly Express for bar plots
+import plotly.express as px
 
 COLUMNS = [
     'sigla',  # atemporal
@@ -73,8 +73,12 @@ data_sorted['date'] = pd.to_datetime(data_sorted['date'])
 # Filter data_sorted to exclude wells with tef values between 0.01 and 1
 data_sorted_filtered = data_sorted[(data_sorted['tef'] == 0) | ((data_sorted['tef'] > 1) | (data_sorted['tef'] < 0.01))]
 
+# Filter data to the most recent year
+most_recent_year = data_sorted_filtered['anio'].max()
+data_last_year = data_sorted_filtered[data_sorted_filtered['anio'] == most_recent_year]
+
 # Create a Pivot Table to Calculate Maximum Oil and Gas Rates and TEF for Each Well
-pivot_table = data_sorted_filtered.pivot_table(
+pivot_table = data_last_year.pivot_table(
     values=['gas_rate', 'oil_rate', 'water_rate', 'tef'],  # Include 'tef' here
     index=['sigla'],
     aggfunc={'gas_rate': 'max', 'oil_rate': 'max', 'water_rate': 'max', 'tef': 'min'}  # Include 'tef' here
