@@ -1,6 +1,6 @@
-import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.express as px
 
 # Define the columns for the first dataset
 COLUMNS_FRAC = [
@@ -69,18 +69,16 @@ df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio']], on='sigla', how='l
 
 # Plot the length of fracture
 st.write("### Length of Fracture")
-plt.figure(figsize=(10, 6))
-df_merged.groupby('anio')['longitud_rama_horizontal_m'].sum().plot(kind='bar')
-plt.title('Total Length of Fracture by Year')
-plt.xlabel('Year')
-plt.ylabel('Total Length of Fracture (m)')
-st.pyplot(plt.gcf())
+fig_length = px.bar(df_merged.groupby('anio')['longitud_rama_horizontal_m'].sum().reset_index(),
+                    x='anio', y='longitud_rama_horizontal_m',
+                    labels={'longitud_rama_horizontal_m': 'Total Length of Fracture (m)', 'anio': 'Year'},
+                    title='Total Length of Fracture by Year')
+st.plotly_chart(fig_length)
 
 # Plot the number of fractures
 st.write("### Number of Fractures")
-plt.figure(figsize=(10, 6))
-df_merged.groupby('anio')['cantidad_fracturas'].sum().plot(kind='bar')
-plt.title('Total Number of Fractures by Year')
-plt.xlabel('Year')
-plt.ylabel('Number of Fractures')
-st.pyplot(plt.gcf())
+fig_fractures = px.bar(df_merged.groupby('anio')['cantidad_fracturas'].sum().reset_index(),
+                       x='anio', y='cantidad_fracturas',
+                       labels={'cantidad_fracturas': 'Number of Fractures', 'anio': 'Year'},
+                       title='Total Number of Fractures by Year')
+st.plotly_chart(fig_fractures)
