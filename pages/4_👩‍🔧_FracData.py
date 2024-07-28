@@ -6,6 +6,23 @@ from PIL import Image
 
 st.caption("Coming soon...")
 
+COLUMNS = [
+    'sigla',  # atemporal
+    'anio',  # temporal
+    'mes',  # temporal
+    'prod_pet',  # temporal
+    'prod_gas',  # temporal
+    'prod_agua',  # temporal
+    'iny_gas',  # temporal
+    'tef',  # temporal
+    'tipoextraccion',  # atemporal
+    'tipopozo',  # atemporal
+    'empresa',  # atemporal
+    'formacion',  # atemporal
+    'areayacimiento',  # atemporal
+    'fecha_data'  # temporal
+]
+
 # Load and preprocess the data
 @st.cache_data
 def load_and_sort_data(dataset_url):
