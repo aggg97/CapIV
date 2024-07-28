@@ -65,7 +65,7 @@ st.write("### Production Data Preview")
 st.write(data_sorted.head())
 
 # Merge the dataframes on 'sigla'
-df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio']], on='sigla', how='left').drop_duplicates()
+df_merged = pd.merge(df_frac, data_sorted[['sigla', 'anio', 'empresa', 'formacion']], on='sigla', how='left').drop_duplicates()
 
 # Plot the length of fracture as a boxplot
 st.write("### Length of Fracture")
@@ -80,3 +80,19 @@ fig_fractures = px.box(df_merged, x='anio', y='cantidad_fracturas',
                        labels={'cantidad_fracturas': 'Number of Fractures', 'anio': 'Year'},
                        title='Number of Fractures by Year')
 st.plotly_chart(fig_fractures)
+
+# Additional analysis: Total length of fractures by company
+st.write("### Total Length of Fractures by Company")
+fig_company_length = px.bar(df_merged.groupby('empresa')['longitud_rama_horizontal_m'].sum().reset_index(),
+                            x='empresa', y='longitud_rama_horizontal_m',
+                            labels={'longitud_rama_horizontal_m': 'Total Length of Fracture (m)', 'empresa': 'Company'},
+                            title='Total Length of Fractures by Company')
+st.plotly_chart(fig_company_length)
+
+# Additional analysis: Number of fractures by formation
+st.write("### Number of Fractures by Formation")
+fig_formation_fractures = px.bar(df_merged.groupby('formacion')['cantidad_fracturas'].sum().reset_index(),
+                                 x='formacion', y='cantidad_fracturas',
+                                 labels={'cantidad_fracturas': 'Number of Fractures', 'formacion': 'Formation'},
+                                 title='Number of Fractures by Formation')
+st.plotly_chart(fig_formation_fractures)
