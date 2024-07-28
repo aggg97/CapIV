@@ -77,6 +77,6 @@ st.plotly_chart(fig_length)
 # Plot the number of fractures as a boxplot
 st.write("### Numero de Fracturas")
 fig_fractures = px.box(df_merged, x='anio', y='cantidad_fracturas',
-                       labels={'cantidad_fracturas': 'Numbero de Fracturas', 'anio': 'Año'},
+                       labels={'cantidad_fracturas': 'Numero de Fracturas', 'anio': 'Año'},
                        title='Numero de Fracturas por año')
 st.plotly_chart(fig_fractures)
