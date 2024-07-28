@@ -22,8 +22,3 @@ df = load_and_sort_data(dataset_url)
 st.write("### Data Preview")
 st.write(df.head())
 
-# Additional Streamlit elements can be added here, such as charts or images
-# Example: Displaying a simple line chart
-st.write("### Simple Line Chart")
-fig = px.line(df, x='Column1', y='Column2', title='Sample Line Chart')
-st.plotly_chart(fig)
