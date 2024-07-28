@@ -113,8 +113,8 @@ with tab1:
 
 with tab2:
     # Add an input for selecting the year
-    st.sidebar.subheader("Selecciona el año para el ranking")
-    selected_year = st.sidebar.selectbox("Año", sorted(data_sorted['anio'].unique(), reverse=True))
+    st.subheader("Selecciona el año para el ranking")
+    selected_year = st.selectbox("Año", sorted(data_sorted['anio'].unique(), reverse=True))
 
     # Filter data to the selected year
     data_selected_year = data_sorted_filtered[data_sorted_filtered['anio'] == selected_year]
