@@ -139,15 +139,13 @@ fig_oil_company.update_layout(
 )
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
-# Bar plot of the number of wells per company
+# Treemap of the number of wells per company
 st.subheader("Número de Pozos por Empresa")
 
-fig_wells = px.bar(well_count_top, x='empresa', y='well_count', color='empresa', title="Número de Pozos")
+fig_wells = px.treemap(well_count, path=['empresa'], values='well_count', title="Número de Pozos por Empresa")
 fig_wells.update_layout(
-    showlegend=False,
-    xaxis_title="Empresa",
-    yaxis_title="Número de Pozos",
-    xaxis_tickangle=-45
+    treemapcolorway=px.colors.qualitative.Pastel,
+    margin=dict(t=50, l=25, r=25, b=25)
 )
 st.plotly_chart(fig_wells, use_container_width=True)
 
