@@ -84,7 +84,7 @@ well_start_year.columns = ['sigla', 'start_year']
 # Merge the start year back to the original data
 data_with_start_year = pd.merge(data_sorted, well_start_year, on='sigla')
 
-# Group data by start year and date for stacked area plots
+# Group data by start year and date for area plots
 yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
     total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
