@@ -74,8 +74,11 @@ top_wells_companies = well_count.nlargest(10, 'well_count')['empresa']
 # Filter well_count to include only top companies
 well_count_top = well_count[well_count['empresa'].isin(top_wells_companies)]
 
-# Determine the starting year for each well
-well_start_year = data_sorted.groupby('sigla')['anio'].min().reset_index()
+# Filter the dataset to include only rows where the gas rate is not null
+non_null_gas_data = data_sorted[data_sorted['gas_rate'] > 0]
+
+# Determine the starting year for each well based on the first non-null gas rate
+well_start_year = non_null_gas_data.groupby('sigla')['anio'].min().reset_index()
 well_start_year.columns = ['sigla', 'start_year']
 
 # Merge the start year back to the original data
@@ -139,12 +142,12 @@ fig_oil_company.update_layout(
 )
 st.plotly_chart(fig_oil_company, use_container_width=True)
 
-# Treemap of the number of wells per company
+# Treemap for the number of wells per company
 st.subheader("Número de Pozos por Empresa")
 
-fig_wells = px.treemap(well_count, path=['empresa'], values='well_count', title="Número de Pozos por Empresa")
+fig_wells = px.treemap(well_count_top, path=['empresa'], values='well_count', title="Número de Pozos")
 fig_wells.update_layout(
-    treemapcolorway=px.colors.qualitative.Pastel,
+    treemapcolorway=['#636EFA', '#EF553B', '#00CC96', '#AB63FA', '#FFA15A', '#19D3F3', '#FF6692', '#B6E880', '#FF97FF', '#FECB52'],
     margin=dict(t=50, l=25, r=25, b=25)
 )
 st.plotly_chart(fig_wells, use_container_width=True)
