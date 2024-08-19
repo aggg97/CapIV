@@ -37,8 +37,8 @@ latest_date = data_filtered['date'].max()
 latest_data = data_filtered[data_filtered['date'] == latest_date]
 
 # Calculate total gas and oil rates for the latest date
-total_gas_rate = latest_data['gas_rate'].sum()/1000
-total_oil_rate = latest_data['oil_rate'].sum()/1000
+total_gas_rate = latest_data['gas_rate'].sum() / 1000
+total_oil_rate = latest_data['oil_rate'].sum() / 1000
 
 # Convert oil rate to barrels per day (bpd)
 oil_rate_bpd = total_oil_rate * 6.28981
@@ -86,6 +86,9 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
     total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
+
+# Filter out rows where cumulative gas and oil production are zero or less
+yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
 # Create Streamlit app layout
 st.header(":blue[Reporte de Producción No Convencional]")
