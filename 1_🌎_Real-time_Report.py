@@ -49,7 +49,7 @@ total_oil_rate_rounded = round(total_oil_rate, 1)
 oil_rate_bpd_rounded = round(oil_rate_bpd, 1)
 
 # Load and preprocess data for plotting
-company_summary = data_sorted.groupby(['empresa', 'date']).agg(
+company_summary = data_filtered.groupby(['empresa', 'date']).agg(
     total_gas_rate=('gas_rate', 'sum'),
     total_oil_rate=('oil_rate', 'sum')
 ).reset_index()
@@ -65,7 +65,7 @@ company_summary_aggregated = company_summary.groupby(['empresa', 'date']).agg(
 ).reset_index()
 
 # Count wells per company
-well_count = data_sorted.groupby('empresa')['sigla'].nunique().reset_index()
+well_count = data_filtered.groupby('empresa')['sigla'].nunique().reset_index()
 well_count.columns = ['empresa', 'well_count']
 
 # Determine top 10 companies by number of wells
@@ -75,11 +75,11 @@ top_wells_companies = well_count.nlargest(10, 'well_count')['empresa']
 well_count_top = well_count[well_count['empresa'].isin(top_wells_companies)]
 
 # Determine the starting year for each well
-well_start_year = data_sorted.groupby('sigla')['anio'].min().reset_index()
+well_start_year = data_filtered.groupby('sigla')['anio'].min().reset_index()
 well_start_year.columns = ['sigla', 'start_year']
 
 # Merge the start year back to the original data
-data_with_start_year = pd.merge(data_sorted, well_start_year, on='sigla')
+data_with_start_year = pd.merge(data_filtered, well_start_year, on='sigla')
 
 # Group data by start year and date for stacked area plots
 yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
