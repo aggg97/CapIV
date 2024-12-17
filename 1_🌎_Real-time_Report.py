@@ -192,7 +192,7 @@ fig_oil_year.update_layout(
 st.plotly_chart(fig_oil_year, use_container_width=True)
 
 # Option to download the filtered data
-csv = data_sorted.to_csv(index=False)
+csv = data_filtered.to_csv(index=False)
 st.sidebar.download_button(
     label="Descargar datos",
     data=csv,
