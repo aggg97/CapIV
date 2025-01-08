@@ -159,7 +159,7 @@ fig_gas_company.update_layout(
     legend_title="Empresa",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
+        yanchor="bottom",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -182,7 +182,7 @@ fig_oil_company.update_layout(
     legend_title="Empresa",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
+        yanchor="bottom",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -193,17 +193,17 @@ fig_oil_company.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-# Plot for gas rate by start year
+# Plot for gas rate by start year (change "Año de Puesta en Marcha" to "Campaña")
 fig_gas_year = px.area(
     yearly_summary, 
     x='date', y='total_gas_rate', color='start_year', 
-    title="Caudal de Gas Campaña"
+    title="Caudal de Gas por Campaña"
 )
 fig_gas_year.update_layout(
-    legend_title="Campaña",
+    legend_title="Campaña",  # Change the legend title here
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
+        yanchor="bottom",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -215,17 +215,17 @@ fig_gas_year.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-# Plot for oil rate by start year
+# Plot for oil rate by start year (change "Año de Puesta en Marcha" to "Campaña")
 fig_oil_year = px.area(
     yearly_summary, 
     x='date', y='total_oil_rate', color='start_year', 
     title="Caudal de Petróleo por Campaña"
 )
 fig_oil_year.update_layout(
-    legend_title="Campaña",
+    legend_title="Campaña",  # Change the legend title here
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
+        yanchor="bottom",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -242,3 +242,4 @@ st.plotly_chart(fig_gas_company)
 st.plotly_chart(fig_oil_company)
 st.plotly_chart(fig_gas_year)
 st.plotly_chart(fig_oil_year)
+
