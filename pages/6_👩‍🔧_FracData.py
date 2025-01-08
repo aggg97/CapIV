@@ -153,14 +153,14 @@ fig_gas_company.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="bottom",  # Position the legend at the bottom
-        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size
+        font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels if needed to avoid overlap
-    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot oil rate by company
@@ -176,14 +176,14 @@ fig_oil_company.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="bottom",  # Position the legend at the bottom
-        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size
+        font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels if needed to avoid overlap
-    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot for gas rate by start year
@@ -197,21 +197,45 @@ fig_gas_year.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="bottom",  # Position the legend at the bottom
-        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size
+        font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km³/d)",
-    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot for oil rate by start year
 fig_oil_year = px.area(
     yearly_summary, 
-    x='date', y
+    x='date', y='total_oil_rate', color='start_year', 
+    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
+)
+fig_oil_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.4,  # Position the legend further below the plot area
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
+    ),
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m³/d)",
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
+)
+
+# Plot the charts
+st.plotly_chart(fig_gas_company)
+st.plotly_chart(fig_oil_company)
+st.plotly_chart(fig_gas_year)
+st.plotly_chart(fig_oil_year)
+
 
 
 
