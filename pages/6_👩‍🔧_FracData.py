@@ -127,7 +127,7 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-st.write(latest_date)
+st.write("Fecha Cierre de Última Alocación: " , latest_date)
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
