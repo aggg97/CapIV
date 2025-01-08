@@ -196,9 +196,7 @@ fig_oil_company.update_layout(
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
-    ),
-   
-)
+    )
 
 # Checkbox for logarithmic scale for oil
 log_scale_oil = st.checkbox('Escala semilog')
