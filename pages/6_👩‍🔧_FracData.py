@@ -80,7 +80,7 @@ def load_and_sort_data(dataset_url):
     return df_frac
 
 # Print the initial info about the dataset
-print(df_frac.info())
+# print(df_frac.info())
 
 # Create a new column for the total amount of arena (sum of national and imported arena)
 df_frac['arena_total_tn'] = df_frac['arena_bombeada_nacional_tn'] + df_frac['arena_bombeada_importada_tn']
