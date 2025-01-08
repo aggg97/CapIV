@@ -113,8 +113,7 @@ columns_to_check = [
 # ------------------------ Fluido segun McCain ------------------------
 
 st.sidebar.caption("")
-st.sidebar.caption("")
-st.sidebar.caption("")
+
 st.sidebar.caption("NOTA: Para evitar pozos con clasificacion 'Otro tipo' \
 Se define una columna nueva que utilizara la definicion de Fluido \
 segun McCain a partir el GOR para definir si estos pozos caen en \
