@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 # Streamlit configuration
-st.title("Producción y Fractura de Pozos de Hidrocarburos")
+st.title("Análisis Completo de Datos de Producción y Completación en Vaca Muerta")
 
 # Load and preprocess the production data
 @st.cache_data
@@ -48,70 +48,5 @@ replacement_dict = {
 }
 data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
 
-# Aggregate data for plotting (production)
-company_summary_aggregated = (
-    data_sorted.groupby(['date', 'empresaNEW'])
-    .agg(total_gas_rate=('gas_rate', 'sum'), total_oil_rate=('oil_rate', 'sum'))
-    .reset_index()
-)
+st.write(data_sorted[['empresa', 'empresaNEW']].head())
 
-# Display production plots
-st.subheader("Caudal de Gas por Empresa")
-fig_gas_company = px.area(
-    company_summary_aggregated,
-    x='date', y='total_gas_rate', color='empresaNEW',
-    title="Caudal de Gas por Empresa"
-)
-fig_gas_company.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    legend_title="Empresa"
-)
-st.plotly_chart(fig_gas_company)
-
-st.subheader("Caudal de Petróleo por Empresa")
-fig_oil_company = px.area(
-    company_summary_aggregated,
-    x='date', y='total_oil_rate', color='empresaNEW',
-    title="Caudal de Petróleo por Empresa"
-)
-fig_oil_company.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)",
-    legend_title="Empresa"
-)
-st.plotly_chart(fig_oil_company)
-
-# Yearly data aggregation
-data_sorted['start_year'] = data_sorted['anio']
-yearly_summary = (
-    data_sorted.groupby(['date', 'start_year'])
-    .agg(total_gas_rate=('gas_rate', 'sum'), total_oil_rate=('oil_rate', 'sum'))
-    .reset_index()
-)
-
-st.subheader("Caudal de Gas por Año de Puesta en Marcha de Pozo")
-fig_gas_year = px.area(
-    yearly_summary,
-    x='date', y='total_gas_rate', color='start_year',
-    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
-)
-fig_gas_year.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    legend_title="Año de Puesta en Marcha de Pozo"
-)
-st.plotly_chart(fig_gas_year)
-
-st.subheader("Caudal de Petróleo por Año de Puesta en Marcha de Pozo")
-fig_oil_year = px.area(
-    yearly_summary,
-    x='date', y='total_oil_rate', color='start_year',
-    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
-)
-fig_oil_year.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)",
-    legend_title="Año de Puesta en Marcha de Pozo"
-)
-st.plotly_chart(fig_oil_year)
