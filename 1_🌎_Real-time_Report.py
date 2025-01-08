@@ -129,7 +129,12 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-st.write("Fecha de Última Alocación Finalizada: ", latest_date.date())
+st.write("Fecha de Última Alocación Finalizada y Consolidada: ", latest_date.date())
+st.sidebar.write("Tener en cuenta que a mediados del mes cierra la carga oficial\
+    del mes anterior. Por lo tanto para evitar mostrar datos no consolidados\
+    que no representan los totales del mes al estar incompletos, se considera\
+    la alocacion del mes anterior que ya se encuentra completa y es representativa")
+                 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
 col1.metric(label=":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
