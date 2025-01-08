@@ -73,14 +73,19 @@ latest_data = data_filtered[data_filtered['date'] == latest_date]
 
 
 # ------------------------ DATA CLEANING ------------------------
+
 @st.cache_data
-def load_and_sort_data(dataset_url):
-    # Load the fracture data
-    df_frac = load_and_sort_data_frac(dataset_frac_url)
+# Load and preprocess the fracture data
+def load_and_sort_data_frac(dataset_url):
+    df_frac = pd.read_csv(dataset_url)
     return df_frac
 
-# Print the initial info about the dataset
-# print(df_frac.info())
+# URL of the fracture dataset
+dataset_frac_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-7f35e41f58d7/resource/2280ad92-6ed3-403e-a095-50139863ab0d/download/datos-de-fractura-de-pozos-de-hidrocarburos-adjunto-iv-actualizacin-diaria.csv"
+
+# Load the fracture data
+df_frac = load_and_sort_data_frac(dataset_frac_url)
+
 
 # Create a new column for the total amount of arena (sum of national and imported arena)
 df_frac['arena_total_tn'] = df_frac['arena_bombeada_nacional_tn'] + df_frac['arena_bombeada_importada_tn']
