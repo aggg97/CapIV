@@ -348,4 +348,79 @@ fig.show()
 
 st.plotly_chart(fig, use_container_width=True)
 
+# --------------------
+
+# Get the current year (based on the most recent data in the dataset)
+current_year = df_merged_VMUT['start_year'].max()
+
+# Filter the dataset for the current year
+wells_current_year = df_merged_VMUT[df_merged_VMUT['start_year'] == current_year]
+
+# Count wells per company and well type (Petrolífero and Gasífero)
+wells_per_company_type_current_year = wells_current_year.groupby(['empresaNEW', 'tipopozoNEW'])['sigla'].nunique().reset_index()
+wells_per_company_type_current_year.columns = ['empresaNEW', 'tipopozoNEW', 'well_count']
+
+# Separate the data into two DataFrames: one for Petrolífero and one for Gasífero
+wells_petrolifero = wells_per_company_type_current_year[wells_per_company_type_current_year['tipopozoNEW'] == 'Petrolífero']
+wells_gasifero = wells_per_company_type_current_year[wells_per_company_type_current_year['tipopozoNEW'] == 'Gasífero']
+
+# Get the top 10 companies for Petrolífero wells
+top_petrolifero_companies = wells_petrolifero.groupby('empresaNEW')['well_count'].sum().nlargest(10).index
+wells_petrolifero_top_10 = wells_petrolifero[wells_petrolifero['empresaNEW'].isin(top_petrolifero_companies)]
+
+# Get the top 10 companies for Gasífero wells
+top_gasifero_companies = wells_gasifero.groupby('empresaNEW')['well_count'].sum().nlargest(10).index
+wells_gasifero_top_10 = wells_gasifero[wells_gasifero['empresaNEW'].isin(top_gasifero_companies)]
+
+# Plot for Petrolífero wells (top 10 companies) with horizontal bars
+fig_petrolifero = px.bar(
+    wells_petrolifero_top_10,
+    x='well_count',
+    y='empresaNEW',
+    title=f'Pozos Petrolíferos por Empresa (Año {int(current_year)})',
+    labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
+    color='empresaNEW',
+    color_discrete_sequence=px.colors.qualitative.Set1,
+    orientation='h',  # Set bars to be horizontal
+    text='well_count'
+)
+
+# Update layout for Petrolífero plot
+fig_petrolifero.update_layout(
+    xaxis_title='Número de Pozos',
+    yaxis_title='Empresa',
+    template='plotly_white'
+)
+
+# Show the Petrolífero plot
+fig_petrolifero.show()
+st.plotly_chart(fig_petrolifero, use_container_width=True)
+
+# Plot for Gasífero wells (top 10 companies) with horizontal bars
+fig_gasifero = px.bar(
+    wells_gasifero_top_10,
+    x='well_count',
+    y='empresaNEW',
+    title=f'Pozos Gasíferos por Empresa (Año {int(current_year)})',
+    labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
+    color='empresaNEW',
+    color_discrete_sequence=px.colors.qualitative.Set1,
+    orientation='h' , # Set bars to be horizontal
+    text='well_count'
+)
+
+# Update layout for Gasífero plot
+fig_gasifero.update_layout(
+    xaxis_title='Número de Pozos',
+    yaxis_title='Empresa',
+    template='plotly_white'
+)
+
+# Show the Gasífero plot
+fig_gasifero.show()
+st.plotly_chart(fig_gasifero, use_container_width=True)
+
+
+#-------------------
+
 
