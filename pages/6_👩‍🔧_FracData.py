@@ -270,4 +270,82 @@ df_merged_VMUT = df_merged_final[
     (df_merged_final['formprod'] == 'VMUT') & (df_merged_final['sub_tipo_recurso'] == 'SHALE')
 ]
 
+# ----------------------- Pivot Tables + Plots ------------
+
+# Group by 'start_year' and 'tipopozoNEW', then count the number of wells
+table_wells_by_start_year = (
+    df_merged_VMUT.groupby(['start_year', 'tipopozoNEW'])['sigla']
+    .nunique()
+    .reset_index(name='count')
+)
+
+# Pivot the table to display start years as rows and 'tipopozoNEW' as columns
+table_wells_pivot = table_wells_by_start_year.pivot_table(
+    index='start_year', columns='tipopozoNEW', values='count', fill_value=0
+)
+
+# Drop unwanted columns
+table_wells_pivot = table_wells_pivot.drop(
+    columns=['Inyección de Agua', 'Inyección de Gas'], errors='ignore'
+)
+
+# Create a Plotly figure for line plot
+fig = go.Figure()
+
+# Add petrolífero wells (green line)
+if 'Petrolífero' in table_wells_pivot.columns:
+    fig.add_trace(go.Scatter(
+        x=table_wells_pivot.index,
+        y=table_wells_pivot['Petrolífero'],
+        mode='lines+markers',
+        name='Petrolífero',
+        line=dict(color='green'),
+        marker=dict(size=8),
+    ))
+    # Add annotations for each point
+    for x, y in zip(table_wells_pivot.index, table_wells_pivot['Petrolífero']):
+        fig.add_annotation(
+            x=x,
+            y=y,
+            text=str(int(y)),  # Convert to integer and remove decimals
+            showarrow=False,  # Disable the arrow
+            yshift=15,  # Shift the annotation above the point
+            font=dict(size=10, color="green")
+        )
+
+# Add gasífero wells (red line)
+if 'Gasífero' in table_wells_pivot.columns:
+    fig.add_trace(go.Scatter(
+        x=table_wells_pivot.index,
+        y=table_wells_pivot['Gasífero'],
+        mode='lines+markers',
+        name='Gasífero',
+        line=dict(color='red'),
+        marker=dict(size=8),
+    ))
+    # Add annotations for each point
+    for x, y in zip(table_wells_pivot.index, table_wells_pivot['Gasífero']):
+        fig.add_annotation(
+            x=x,
+            y=y,
+            text=str(int(y)),  # Convert to integer and remove decimals
+            showarrow=False,  # Disable the arrow
+            yshift=15,  # Shift the annotation above the point
+            font=dict(size=10, color="red")
+        )
+
+# Update layout with labels and title
+fig.update_layout(
+    title='Pozos enganchados por campaña (Fm. Vaca Muerta)',
+    xaxis_title='Año de Puesta en Marcha',
+    yaxis_title='Cantidad de Pozos',
+    legend_title='Tipo de Pozo',
+    template='plotly_white',
+)
+
+# Show the plot
+fig.show()
+
+st.plotly_chart(fig, use_container_width=True)
+
 
