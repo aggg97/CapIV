@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from PIL import Image
 
 # Load and preprocess the production data
 @st.cache_data
