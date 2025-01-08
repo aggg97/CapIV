@@ -36,13 +36,6 @@ if data_sorted.empty:
     st.error("Failed to load production data.")
     st.stop()
 
-# Load the fracture data
-data_frac = load_and_sort_data_frac(dataset_frac_url)
-
-if data_frac.empty:
-    st.error("Failed to load fracture data.")
-    st.stop()
-
 # Replace company names in production data
 replacement_dict = {
     'PAN AMERICAN ENERGY (SUCURSAL ARGENTINA) LLC': 'PAN AMERICAN ENERGY',
@@ -89,24 +82,36 @@ fig_oil_company.update_layout(
 )
 st.plotly_chart(fig_oil_company)
 
-# Display fracture data summary
-st.subheader("Fractura de Pozos")
-st.dataframe(data_frac.head())
-
-# Fracture data visualization (example)
-frac_summary = (
-    data_frac.groupby(['fecha_frac', 'empresa'])
-    .agg(total_etapas=('cantidad_etapas', 'sum'))
+# Yearly data aggregation
+data_sorted['start_year'] = data_sorted['anio']
+yearly_summary = (
+    data_sorted.groupby(['date', 'start_year'])
+    .agg(total_gas_rate=('gas_rate', 'sum'), total_oil_rate=('oil_rate', 'sum'))
     .reset_index()
 )
-fig_frac = px.bar(
-    frac_summary,
-    x='fecha_frac', y='total_etapas', color='empresa',
-    title="Número de Etapas de Fractura por Empresa"
+
+st.subheader("Caudal de Gas por Año de Puesta en Marcha de Pozo")
+fig_gas_year = px.area(
+    yearly_summary,
+    x='date', y='total_gas_rate', color='start_year',
+    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
 )
-fig_frac.update_layout(
-    xaxis_title="Fecha de Fractura",
-    yaxis_title="Número de Etapas",
-    legend_title="Empresa"
+fig_gas_year.update_layout(
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km³/d)",
+    legend_title="Año de Puesta en Marcha de Pozo"
 )
-st.plotly_chart(fig_frac)
+st.plotly_chart(fig_gas_year)
+
+st.subheader("Caudal de Petróleo por Año de Puesta en Marcha de Pozo")
+fig_oil_year = px.area(
+    yearly_summary,
+    x='date', y='total_oil_rate', color='start_year',
+    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
+)
+fig_oil_year.update_layout(
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m³/d)",
+    legend_title="Año de Puesta en Marcha de Pozo"
+)
+st.plotly_chart(fig_oil_year)
