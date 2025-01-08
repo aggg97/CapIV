@@ -169,7 +169,7 @@ fig_gas_company.update_layout(
 )
 
 # Checkbox for logarithmic scale for gas
-log_scale_gas = st.checkbox('Escala semilog')
+log_scale_gas = st.checkbox('Escala semilog Caudal de Gas')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
@@ -201,7 +201,7 @@ fig_oil_company.update_layout(
 )  
 
 # Checkbox for logarithmic scale for oil
-log_scale_oil = st.checkbox('Escala semilog')
+log_scale_oil = st.checkbox('Escala semilog Caudal de Petróleo')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_oil:
