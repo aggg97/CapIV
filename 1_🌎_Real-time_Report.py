@@ -172,6 +172,8 @@ fig_gas_company.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
+st.plotly_chart(fig_gas_company)
+log_scale_gas = st.checkbox('Escala semilog')
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
     fig_gas_company.update_layout(
@@ -200,6 +202,11 @@ fig_oil_company.update_layout(
     xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
+
+
+
+st.plotly_chart(fig_oil_company)
+log_scale_oil = st.checkbox('Escala semilog')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_oil:
@@ -264,10 +271,8 @@ if log_scale_oil:
     )
 
 # Plot the charts
-st.plotly_chart(fig_gas_company)
-log_scale_gas = st.checkbox('Escala semilog')
-st.plotly_chart(fig_oil_company)
-log_scale_oil = st.checkbox('Escala semilog')
+
+
 st.plotly_chart(fig_gas_year)
 st.plotly_chart(fig_oil_year)
 
