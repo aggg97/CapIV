@@ -112,7 +112,7 @@ columns_to_check = [
 
 # ------------------------ DATA CLEANING ------------------------
 
-st.sidebar.caption("NOTA:Para evitar pozos con clasificacion Otro tipo \
+st.sidebar.caption("NOTA: Para evitar pozos con clasificacion Otro tipo \
 Se define una columna nueva que utilizara la definicion de Fluido \
 segun McCain a partir el GOR para definir si estos pozos caen en \
 tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW (agregar foto tabla McCain")
@@ -177,15 +177,7 @@ df_merged = pd.merge(
 
 print(df_merged.info())
 
-# Merge the dataframes on 'sigla'
-df_merged = pd.merge(
-    df_frac,
-    cum_df,
-    on='sigla',
-    how='outer'
-).drop_duplicates()
-
-print(df_merged.info())
+# --- Tabla consolidada por siglas para usar en reporte ---------
 
 # Merge the dataframes on 'sigla'
 df_merged = pd.merge(
