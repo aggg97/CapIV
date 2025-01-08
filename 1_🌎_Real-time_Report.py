@@ -142,12 +142,9 @@ col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_
 col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # ------------------------ PLOTS ------------------------
-
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-
-
 
 # Plot gas rate by company
 fig_gas_company = px.area(
@@ -172,13 +169,17 @@ fig_gas_company.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-st.plotly_chart(fig_gas_company)
-log_scale_gas = st.checkbox('Escala semilog')
+# Checkbox for logarithmic scale for gas
+log_scale_gas = st.checkbox('Escala semilog para Caudal de Gas')
+
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
     fig_gas_company.update_layout(
         yaxis=dict(type='log')
     )
+
+# Display the chart with the log scale adjustment (if applicable)
+st.plotly_chart(fig_gas_company)
 
 # Plot oil rate by company
 fig_oil_company = px.area(
@@ -203,16 +204,17 @@ fig_oil_company.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-
-
-st.plotly_chart(fig_oil_company)
-log_scale_oil = st.checkbox('Escala semilog')
+# Checkbox for logarithmic scale for oil
+log_scale_oil = st.checkbox('Escala semilog para Caudal de Petróleo')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_oil:
     fig_oil_company.update_layout(
         yaxis=dict(type='log')
     )
+
+# Display the chart with the log scale adjustment (if applicable)
+st.plotly_chart(fig_oil_company)
 
 # Plot for gas rate by start year
 fig_gas_year = px.area(
@@ -264,11 +266,15 @@ fig_oil_year.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
+# If the checkbox for log scale is selected, update y-axis to log scale
+if log_scale_oil:
+    fig_oil_year.update_layout(
+        yaxis=dict(type='log')
+    )
 
 # Plot the charts
-
-
 st.plotly_chart(fig_gas_year)
 st.plotly_chart(fig_oil_year)
+
 
 
