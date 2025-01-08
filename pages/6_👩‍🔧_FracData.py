@@ -160,12 +160,12 @@ fig_oil_company.update_layout(
 )
 
 # Gas Rate Plot
-fig_widget_gas_company = go.FigureWidget(fig_gas_company)
-st.plotly_chart(fig_widget_gas_company)
+
+st.plotly_chart(fig_gas_company)
 
 # Oil Rate Plot
-fig_widget_oil_company = go.FigureWidget(fig_oil_company)
-st.plotly_chart(fig_widget_oil_company)
+
+st.plotly_chart(fig_oil_company)
 
 # Plot for gas rate by start year
 fig_gas_year = px.area(
