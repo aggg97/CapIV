@@ -77,7 +77,7 @@ latest_data = data_filtered[data_filtered['date'] == latest_date]
 def load_and_sort_data(dataset_url):
     # Load the fracture data
     df_frac = load_and_sort_data_frac(dataset_frac_url)
-return df
+    return df_frac
 
 # Print the initial info about the dataset
 print(df_frac.info())
