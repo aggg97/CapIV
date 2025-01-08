@@ -200,7 +200,7 @@ fig_gas_year = px.area(
     title="Caudal de Gas Campaña"
 )
 fig_gas_year.update_layout(
-    legend_title="Campaña,
+    legend_title="Campaña",
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the bottom
