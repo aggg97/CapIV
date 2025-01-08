@@ -110,20 +110,95 @@ columns_to_check = [
     'arena_total_tn',
 ]
 
-# Create histograms to inspect the distribution for filtered data
-for column in columns_to_check:
-    # Histogram with 50 bins to inspect distribution and outliers (filtered data)
-    plt.figure(figsize=(10, 6))
-    plt.hist(df_frac[column], bins=50, color='lightgreen', edgecolor='black', alpha=0.7)
-    plt.title(f'Histogram of {column} - Filtered Data')
-    plt.xlabel(column)
-    plt.ylabel('Frequency')
-    
-    # Add more divisions on the x-axis
-    plt.xticks(range(int(df_frac[column].min()), int(df_frac[column].max()) + 1, int((df_frac[column].max() - df_frac[column].min()) // 10)))
-    
-    plt.show()
-
 # ------------------------ DATA CLEANING ------------------------
 
+st.caption("Para evitar pozos con clasificacion Otro tipo \
+Se define una columna nueva que utilizara la definicion de Fluido \
+segun McCain a partir el GOR para definir si estos pozos caen en \
+tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW")
+
+# Step 1: Create a Pivot Table with Cumulated Values
+pivot_table = data_filtered.pivot_table(
+    values=['Np', 'Gp', 'Wp'],
+    index=['sigla'],
+    aggfunc={'Np': 'max', 'Gp': 'max', 'Wp': 'max'}
+)
+
+print(pivot_table.info())
+
+# Step 2: Create a New DataFrame with GOR
+cum_df = pivot_table.reset_index()
+cum_df['GOR'] = (cum_df['Gp'] / cum_df['Np']) * 1000
+cum_df['GOR'] = cum_df['GOR'].fillna(100000)  # Handle NaN values
+
+# Step 3: Add a new column "Fluido McCain" based on conditions
+cum_df['Fluido McCain'] = cum_df.apply(
+    lambda row: 'Gasífero' if row['Np'] == 0 or row['GOR'] > 3000 else 'Petrolífero',
+    axis=1
+)
+
+# Step 4: Ensure `tipopozo` is unique for each `sigla` and merge it
+tipopozo_unique = data_filtered[['sigla', 'tipopozo']].drop_duplicates(subset=['sigla'])
+cum_df = cum_df.merge(tipopozo_unique, on='sigla', how='left')
+
+# Step 5: Create the 'tipopozoNEW' column based on the 'tipopozo' and 'Fluido McCain'
+cum_df['tipopozoNEW'] = cum_df.apply(
+    lambda row: row['Fluido McCain'] if row['tipopozo'] == 'Otro tipo' else row['tipopozo'],
+    axis=1
+)
+
+# Step 6: Calculate WOR and WGR
+cum_df['WOR'] = cum_df['Wp'] / cum_df['Np']
+cum_df['WOR'] = cum_df['WOR'].fillna(100000)  # Handle NaN values
+cum_df['WGR'] = (cum_df['Wp'] / cum_df['Gp']) * 1000
+cum_df['WGR'] = cum_df['WGR'].fillna(100000)  # Handle NaN values
+
+# Step 7: Create the final table with the desired columns
+cum_df = cum_df[['sigla', 'WGR', 'WOR', 'GOR', 'Fluido McCain', 'tipopozoNEW']]
+
+# Step 8: Merge `tipopozoNEW` back into `data_filtered`
+data_filtered = data_filtered.merge(
+    cum_df[['sigla', 'tipopozoNEW']],
+    on='sigla',
+    how='left'
+)
+
+# Display the updated data_filtered
+print(data_filtered.columns)
+print(cum_df.columns)
+
+# Merge the dataframes on 'sigla'
+df_merged = pd.merge(
+    df_frac,
+    cum_df,
+    on='sigla',
+    how='outer'
+).drop_duplicates()
+
+print(df_merged.info())
+
+# Merge the dataframes on 'sigla'
+df_merged = pd.merge(
+    df_frac,
+    cum_df,
+    on='sigla',
+    how='outer'
+).drop_duplicates()
+
+print(df_merged.info())
+
+# Merge the dataframes on 'sigla'
+df_merged = pd.merge(
+    df_frac,
+    cum_df,
+    on='sigla',
+    how='outer'
+).drop_duplicates()
+
+print(df_merged.info())
+
+# Only keep VMUT as the target formation and filter for SHALE resource type
+df_merged_VMUT = df_merged_final[
+    (df_merged_final['formprod'] == 'VMUT') & (df_merged_final['sub_tipo_recurso'] == 'SHALE')
+]
 
