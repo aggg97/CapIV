@@ -130,10 +130,11 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
 st.write("Fecha de Última Alocación Finalizada y Consolidada*: ", latest_date.date())
-st.caption("*Tener en cuenta que a mediados del mes cierra la carga oficial\
-    del mes anterior. Por lo tanto para evitar mostrar datos no consolidados\
-    que no representan los totales del mes al estar incompletos, se considera\
-    la alocacion del mes anterior que ya se encuentra completa y es representativa")
+st.caption("*A mediados de cada mes se realiza el cierre oficial \
+de los datos correspondientes al mes anterior. Para garantizar la\
+precisión y evitar mostrar información incompleta o no consolidada, \
+este reporte presenta únicamente los datos del mes anterior ya finalizados, \
+completos y representativos.")
                  
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
