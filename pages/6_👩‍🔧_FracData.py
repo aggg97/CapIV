@@ -115,7 +115,10 @@ columns_to_check = [
 st.sidebar.caption("NOTA: Para evitar pozos con clasificacion Otro tipo \
 Se define una columna nueva que utilizara la definicion de Fluido \
 segun McCain a partir el GOR para definir si estos pozos caen en \
-tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW (agregar foto tabla McCain")
+tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW")
+
+image = Image.open('McCain.png')
+st.sidebar.image(image)
 
 # Step 1: Create a Pivot Table with Cumulated Values
 pivot_table = data_filtered.pivot_table(
