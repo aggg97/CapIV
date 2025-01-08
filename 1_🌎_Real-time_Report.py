@@ -174,7 +174,7 @@ log_scale_gas = st.checkbox('Escala semilog Caudal de Gas')
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
     fig_gas_company.update_layout(
-        yaxis=dict(type='log')
+        yaxis=dict(type='log',dtick=1)
     )
 
 # Display the chart with the log scale adjustment (if applicable)
@@ -206,7 +206,7 @@ log_scale_oil = st.checkbox('Escala semilog Caudal de Petróleo')
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_oil:
     fig_oil_company.update_layout(
-        yaxis=dict(type='log')
+        yaxis=dict(type='log',dtick=1)
     )
 
 # Display the chart with the log scale adjustment (if applicable)
@@ -234,12 +234,6 @@ fig_gas_year.update_layout(
     
 )
 
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_gas:
-    fig_gas_year.update_layout(
-        yaxis=dict(type='log')
-    )
-
 # Plot for oil rate by start year
 fig_oil_year = px.area(
     yearly_summary, 
@@ -260,12 +254,6 @@ fig_oil_year.update_layout(
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
-
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_oil:
-    fig_oil_year.update_layout(
-        yaxis=dict(type='log')
-    )
 
 # Plot the charts
 st.plotly_chart(fig_gas_year)
