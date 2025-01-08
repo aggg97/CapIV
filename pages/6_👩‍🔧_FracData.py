@@ -152,7 +152,7 @@ fig_gas_company.update_layout(
     legend_title="Empresa",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="bottom",  # Position the legend at the bottom
+        yanchor="top",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -175,7 +175,7 @@ fig_oil_company.update_layout(
     legend_title="Empresa",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="bottom",  # Position the legend at the bottom
+        yanchor="top",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -196,7 +196,7 @@ fig_gas_year.update_layout(
     legend_title="Año de Puesta en Marcha de Pozo",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="bottom",  # Position the legend at the bottom
+        yanchor="top",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
@@ -218,7 +218,7 @@ fig_oil_year.update_layout(
     legend_title="Año de Puesta en Marcha de Pozo",
     legend=dict(
         orientation="h",  # Horizontal legend
-        yanchor="bottom",  # Position the legend at the bottom
+        yanchor="top",  # Position the legend at the bottom
         y=-0.4,  # Position the legend further below the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
