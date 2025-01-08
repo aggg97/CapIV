@@ -136,101 +136,82 @@ col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd
 
 # ------------------------ PLOTS ------------------------
 
-# Area plots for gas and oil rates by top 10 companies + Others
-st.subheader("Actividad de las principales empresas")
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
 
-# Plot for gas rate by company
-fig_gas_company = px.area(company_summary_aggregated, x='date', y='total_gas_rate', color='empresa', title="Caudal de Gas por Empresa")
+# Plot gas rate by company
+fig_gas_company = px.area(
+    company_summary_aggregated, 
+    x='date', y='total_gas_rate', color='empresaNEW', 
+    title="Caudal de Gas por Empresa"
+)
 fig_gas_company.update_layout(
-    legend_title_text='Empresa',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
+    yaxis_title="Caudal de Gas (km³/d)",
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size
+    ),
+    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels if needed to avoid overlap
+    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
 )
-st.plotly_chart(fig_gas_company, use_container_width=True)
 
-# Plot for oil rate by company
-fig_oil_company = px.area(company_summary_aggregated, x='date', y='total_oil_rate', color='empresa', title="Caudal de Petróleo por Empresa")
+# Plot oil rate by company
+fig_oil_company = px.area(
+    company_summary_aggregated, 
+    x='date', y='total_oil_rate', color='empresaNEW', 
+    title="Caudal de Petróleo por Empresa"
+)
 fig_oil_company.update_layout(
-    legend_title_text='Empresa',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
+    yaxis_title="Caudal de Petróleo (m³/d)",
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size
+    ),
+    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels if needed to avoid overlap
+    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
 )
-st.plotly_chart(fig_oil_company, use_container_width=True)
-
-# Treemap of the number of wells per company
-st.subheader("Número de Pozos por Empresa")
-
-fig_wells = px.treemap(well_count, path=['empresa'], values='well_count', title="Número de Pozos por Empresa")
-fig_wells.update_layout(
-    treemapcolorway=px.colors.qualitative.Pastel,
-    margin=dict(t=50, l=25, r=25, b=25)
-)
-st.plotly_chart(fig_wells, use_container_width=True)
-
-# Area plots for gas and oil rates by well start year
-st.subheader("Producción por Año de Inicio de Pozo")
 
 # Plot for gas rate by start year
-fig_gas_year = px.area(yearly_summary, x='date', y='total_gas_rate', color='start_year', title="Caudal de Gas por Año de Inicio de Pozo")
-fig_gas_year.update_layout(
-    legend_title_text='Año de Inicio de Pozo',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
+fig_gas_year = px.area(
+    yearly_summary, 
+    x='date', y='total_gas_rate', color='start_year', 
+    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
 )
-st.plotly_chart(fig_gas_year, use_container_width=True)
+fig_gas_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.3,  # Adjust the position further to avoid overlap with x-axis
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size
+    ),
+    margin=dict(b=200),  # Increase bottom margin significantly to give space for both x-axis and legend
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km³/d)",
+    xaxis_title_standoff=20  # Add more padding between x-axis and the plot
+)
 
 # Plot for oil rate by start year
-fig_oil_year = px.area(yearly_summary, x='date', y='total_oil_rate', color='start_year', title="Caudal de Petróleo por Año de Inicio de Pozo")
-fig_oil_year.update_layout(
-    legend_title_text='Año de Inicio de Pozo',
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
-    ),
-    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
-)
-st.plotly_chart(fig_oil_year, use_container_width=True)
+fig_oil_year = px.area(
+    yearly_summary, 
+    x='date', y
 
-# Option to download the filtered data
-csv = data_filtered.to_csv(index=False)
-st.sidebar.download_button(
-    label="Descargar datos",
-    data=csv,
-    file_name='filtered_data.csv',
-    mime='text/csv',
-)
 
 
