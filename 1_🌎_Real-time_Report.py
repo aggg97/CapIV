@@ -142,131 +142,82 @@ col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_
 col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # ------------------------ PLOTS ------------------------
+
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-# Plot gas rate by company
-fig_gas_company = px.area(
-    company_summary_aggregated, 
-    x='date', y='total_gas_rate', color='empresaNEW', 
-    title="Caudal de Gas por Empresa"
-)
-fig_gas_company.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    legend_title="Empresa",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the top
-        y=-0.3,  # Position the legend further above the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-  
-)
-
-# Checkbox for logarithmic scale for gas
-log_scale_gas = st.checkbox('Escala semilog')
-
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_gas:
-    fig_gas_company.update_layout(
-        yaxis=dict(type='log')
+# Function to create the area plot and handle the log scale toggle
+def create_area_plot(data, x_col, y_col, color_col, title, yaxis_title, log_scale_checkbox, is_yearly=False):
+    fig = px.area(
+        data,
+        x=x_col, y=y_col, color=color_col,
+        title=title
+    )
+    fig.update_layout(
+        xaxis_title="Fecha",
+        yaxis_title=yaxis_title,
+        legend_title="Empresa" if not is_yearly else "Campaña",
+        legend=dict(
+            orientation="h",  # Horizontal legend
+            yanchor="top",  # Position the legend at the top
+            y=-0.3,  # Position the legend further above the plot area
+            xanchor="center",  # Center the legend horizontally
+            x=0.5,  # Center the legend horizontally
+            font=dict(size=10)  # Adjust font size to fit space
+        ),
     )
 
-# Display the chart with the log scale adjustment (if applicable)
+    # If the checkbox for log scale is selected, update y-axis to log scale
+    if log_scale_checkbox:
+        fig.update_layout(
+            yaxis=dict(type='log')
+        )
+    
+    return fig
+
+# Checkboxes for logarithmic scale
+log_scale_gas = st.checkbox('Escala semilog (Gas)')
+log_scale_oil = st.checkbox('Escala semilog (Petróleo)')
+
+# Plot gas rate by company
+fig_gas_company = create_area_plot(
+    company_summary_aggregated, 
+    x_col='date', y_col='total_gas_rate', color_col='empresaNEW', 
+    title="Caudal de Gas por Empresa", 
+    yaxis_title="Caudal de Gas (km³/d)",
+    log_scale_checkbox=log_scale_gas
+)
 st.plotly_chart(fig_gas_company)
 
 # Plot oil rate by company
-fig_oil_company = px.area(
+fig_oil_company = create_area_plot(
     company_summary_aggregated, 
-    x='date', y='total_oil_rate', color='empresaNEW', 
-    title="Caudal de Petróleo por Empresa"
-)
-fig_oil_company.update_layout(
-    xaxis_title="Fecha",
+    x_col='date', y_col='total_oil_rate', color_col='empresaNEW', 
+    title="Caudal de Petróleo por Empresa", 
     yaxis_title="Caudal de Petróleo (m³/d)",
-    legend_title="Empresa",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the top
-        y=-0.3,  # Position the legend further above the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    )
-
-# Checkbox for logarithmic scale for oil
-log_scale_oil = st.checkbox('Escala semilog')
-
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_oil:
-    fig_oil_company.update_layout(
-        yaxis=dict(type='log')
-    )
-
-# Display the chart with the log scale adjustment (if applicable)
+    log_scale_checkbox=log_scale_oil
+)
 st.plotly_chart(fig_oil_company)
 
-# Plot for gas rate by start year
-fig_gas_year = px.area(
+# Plot gas rate by start year
+fig_gas_year = create_area_plot(
     yearly_summary, 
-    x='date', y='total_gas_rate', color='start_year', 
-    title="Caudal de Gas por Campaña"
+    x_col='date', y_col='total_gas_rate', color_col='start_year', 
+    title="Caudal de Gas por Campaña", 
+    yaxis_title="Caudal de Gas (km³/d)",
+    log_scale_checkbox=log_scale_gas, is_yearly=True
 )
-fig_gas_year.update_layout(
-    legend_title="Campaña",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the top
-        y=-0.3,  # Position the legend further above the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)"
-    
-)
-
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_gas:
-    fig_gas_year.update_layout(
-        yaxis=dict(type='log')
-    )
-
-# Plot for oil rate by start year
-fig_oil_year = px.area(
-    yearly_summary, 
-    x='date', y='total_oil_rate', color='start_year', 
-    title="Caudal de Petróleo por Campaña"
-)
-fig_oil_year.update_layout(
-    legend_title="Campaña",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the top
-        y=-0.3,  # Position the legend further above the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)"
-)
-
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_oil:
-    fig_oil_year.update_layout(
-        yaxis=dict(type='log')
-    )
-
-# Plot the charts
 st.plotly_chart(fig_gas_year)
+
+# Plot oil rate by start year
+fig_oil_year = create_area_plot(
+    yearly_summary, 
+    x_col='date', y_col='total_oil_rate', color_col='start_year', 
+    title="Caudal de Petróleo por Campaña", 
+    yaxis_title="Caudal de Petróleo (m³/d)",
+    log_scale_checkbox=log_scale_oil, is_yearly=True
+)
 st.plotly_chart(fig_oil_year)
 
 
