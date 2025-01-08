@@ -147,9 +147,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-# Add checkboxes to select logarithmic scale for y-axis
-log_scale_gas = st.checkbox('Usar escala logarítmica para Caudal de Gas')
-log_scale_oil = st.checkbox('Usar escala logarítmica para Caudal de Petróleo')
+
 
 # Plot gas rate by company
 fig_gas_company = px.area(
@@ -164,7 +162,7 @@ fig_gas_company.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the top
-        y=1.2,  # Position the legend further above the plot area
+        y=-0.3,  # Position the legend further above the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
@@ -193,7 +191,7 @@ fig_oil_company.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the top
-        y=1.2,  # Position the legend further above the plot area
+        y=-0.3,  # Position the legend further above the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
@@ -213,14 +211,14 @@ if log_scale_oil:
 fig_gas_year = px.area(
     yearly_summary, 
     x='date', y='total_gas_rate', color='start_year', 
-    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
+    title="Caudal de Gas por Campaña"
 )
 fig_gas_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
+    legend_title="Campaña",
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the top
-        y=1.2,  # Position the legend further above the plot area
+        y=-0.3,  # Position the legend further above the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
@@ -241,14 +239,14 @@ if log_scale_gas:
 fig_oil_year = px.area(
     yearly_summary, 
     x='date', y='total_oil_rate', color='start_year', 
-    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
+    title="Caudal de Petróleo por Campaña"
 )
 fig_oil_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
+    legend_title="Campaña",
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the top
-        y=1.2,  # Position the legend further above the plot area
+        y=-0.3,  # Position the legend further above the plot area
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
@@ -267,7 +265,9 @@ if log_scale_oil:
 
 # Plot the charts
 st.plotly_chart(fig_gas_company)
+log_scale_gas = st.checkbox('Escala semilog')
 st.plotly_chart(fig_oil_company)
+log_scale_oil = st.checkbox('Escala semilog')
 st.plotly_chart(fig_gas_year)
 st.plotly_chart(fig_oil_year)
 
