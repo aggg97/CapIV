@@ -164,13 +164,11 @@ fig_gas_company.update_layout(
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
+  
 )
 
 # Checkbox for logarithmic scale for gas
-log_scale_gas = st.checkbox('Escala semilog para Caudal de Gas')
+log_scale_gas = st.checkbox('Escala semilog')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
@@ -199,9 +197,7 @@ fig_oil_company.update_layout(
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
+   
 )
 
 # Checkbox for logarithmic scale for oil
@@ -234,8 +230,8 @@ fig_gas_year.update_layout(
     ),
     margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
+    yaxis_title="Caudal de Gas (km³/d)"
+    
 )
 
 # If the checkbox for log scale is selected, update y-axis to log scale
@@ -262,8 +258,7 @@ fig_oil_year.update_layout(
     ),
     margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
     xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)",
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
+    yaxis_title="Caudal de Petróleo (m³/d)"
 )
 
 # If the checkbox for log scale is selected, update y-axis to log scale
