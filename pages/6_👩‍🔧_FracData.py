@@ -110,7 +110,7 @@ columns_to_check = [
     'arena_total_tn',
 ]
 
-# ------------------------ DATA CLEANING ------------------------
+# ------------------------ Fluido segun McCain ------------------------
 
 st.sidebar.caption("NOTA: Para evitar pozos con clasificacion Otro tipo \
 Se define una columna nueva que utilizara la definicion de Fluido \
@@ -167,6 +167,8 @@ data_filtered = data_filtered.merge(
 print(data_filtered.columns)
 print(cum_df.columns)
 
+# -----------------------------------------------
+
 # Merge the dataframes on 'sigla'
 df_merged = pd.merge(
     df_frac,
@@ -179,18 +181,88 @@ print(df_merged.info())
 
 # --- Tabla consolidada por siglas para usar en reporte ---------
 
+# Calculate additional metrics and create the new DataFrame
+def create_summary_dataframe(data_filtered):
+    # Calculate Qo peak and Qg peak (maximum oil and gas rates)
+    data_filtered['Qo_peak'] = data_filtered[['sigla','oil_rate']].groupby('sigla').transform('max') 
+    data_filtered['Qg_peak'] = data_filtered[['sigla','gas_rate']].groupby('sigla').transform('max') 
+    
+    # Determine the starting year for each well
+    data_filtered['start_year'] = data_filtered.groupby('sigla')['anio'].transform('min')
+
+    # Calculate EUR at 30, 90, and 180 days based on dates
+    def calculate_eur(group):
+        group = group.sort_values('date')  # Ensure the data is sorted by date
+        
+        # Get the start date for the group
+        start_date = group['date'].iloc[0]
+        
+        # Define target dates
+        target_dates = {
+            'EUR_30': start_date + relativedelta(days=30),
+            'EUR_90': start_date + relativedelta(days=90),
+            'EUR_180': start_date + relativedelta(days=180)
+        }
+        
+        # Initialize EUR columns
+        for key, target_date in target_dates.items():
+            group[key] = group.loc[
+                group['date'] <= target_date,
+                'Np' if group['tipopozoNEW'].iloc[0] == 'Petrolífero' else 'Gp'
+            ].max()
+        
+        return group
+
+    data_filtered = data_filtered.groupby('sigla', group_keys=False).apply(calculate_eur)
+    
+    # Create the new DataFrame with selected columns
+    summary_df = data_filtered.groupby('sigla').agg({
+        'date': 'first',
+        'start_year': 'first',
+        'empresaNEW': 'first',
+        'formprod': 'first',
+        'sub_tipo_recurso': 'first',
+        'Np': 'max',
+        'Gp': 'max',
+        'Wp': 'max',
+        'Qo_peak': 'max',
+        'Qg_peak': 'max',
+        'EUR_30': 'max',
+        'EUR_90': 'max',
+        'EUR_180': 'max'
+    }).reset_index()
+    
+    return summary_df
+
+# Generate the summary DataFrame
+summary_df = create_summary_dataframe(data_filtered)
+
+
+print(summary_df.info())
+print(summary_df.columns)
+
+# -----------------------------------------------
+
 # Merge the dataframes on 'sigla'
-df_merged = pd.merge(
-    df_frac,
-    cum_df,
+df_merged_final = pd.merge(
+    df_merged,
+    summary_df,
     on='sigla',
     how='outer'
 ).drop_duplicates()
 
-print(df_merged.info())
+# Filter out rows where 'id_base_fractura_adjiv' is null
+df_merged_final = df_merged_final[df_merged_final['id_base_fractura_adjiv'].notna()] 
+
+# Check the dataframe info and columns
+print(df_merged_final.info())
+print(df_merged_final.columns)
+
+# -----------------------------------------------
 
 # Only keep VMUT as the target formation and filter for SHALE resource type
 df_merged_VMUT = df_merged_final[
     (df_merged_final['formprod'] == 'VMUT') & (df_merged_final['sub_tipo_recurso'] == 'SHALE')
 ]
+
 
