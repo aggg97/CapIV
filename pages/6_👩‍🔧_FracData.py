@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 from PIL import Image
 
@@ -126,7 +127,7 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-st.write("Fecha de Última Alocación finalizada: ", latest_date)
+st.write("Fecha de Última Alocación Finalizada: ", latest_date)
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
 col1.metric(label=":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
@@ -209,11 +210,11 @@ fig_oil_year.update_layout(
 )
 
 # Gas Rate Plot (for streamlit add st.plotly_chart(fig_gas_company))
-fig_widget_gas_year = go.FigureWidget(fig_gas_year)
-st.plotly_chart(fig_widget_gas_year)
+
+st.plotly_chart(fig_gas_year)
 
 # Oil Rate Plot 
-fig_widget_oil_year = go.FigureWidget(fig_oil_year)
-st.plotly_chart(fig_widget_oil_year) 
+
+st.plotly_chart(fig_oil_year) 
 
 
