@@ -264,11 +264,6 @@ fig_oil_year.update_layout(
     xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-# If the checkbox for log scale is selected, update y-axis to log scale
-if log_scale_oil:
-    fig_oil_year.update_layout(
-        yaxis=dict(type='log')
-    )
 
 # Plot the charts
 
