@@ -112,10 +112,10 @@ columns_to_check = [
 
 # ------------------------ DATA CLEANING ------------------------
 
-st.caption("Para evitar pozos con clasificacion Otro tipo \
+st.sidebar.caption("NOTA:Para evitar pozos con clasificacion Otro tipo \
 Se define una columna nueva que utilizara la definicion de Fluido \
 segun McCain a partir el GOR para definir si estos pozos caen en \
-tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW")
+tipo Gasifero o Petrolifero. Esta nueva columna se definira como tipopozoNEW (agregar foto tabla McCain")
 
 # Step 1: Create a Pivot Table with Cumulated Values
 pivot_table = data_filtered.pivot_table(
