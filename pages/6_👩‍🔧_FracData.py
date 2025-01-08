@@ -135,6 +135,11 @@ col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_
 col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # ------------------------ PLOTS ------------------------
+
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+
 # Plot gas rate by company
 fig_gas_company = px.area(
     company_summary_aggregated, 
@@ -144,7 +149,16 @@ fig_gas_company = px.area(
 fig_gas_company.update_layout(
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km³/d)",
-    legend_title="Empresa"
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Place the legend at the bottom
+        y=-0.3,  # Adjust the position to move it below
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size
+    ),
+    margin=dict(b=100)  # Increase the bottom margin to make space for the legend
 )
 
 # Plot oil rate by company
@@ -156,16 +170,17 @@ fig_oil_company = px.area(
 fig_oil_company.update_layout(
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)",
-    legend_title="Empresa"
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Place the legend at the bottom
+        y=-0.3,  # Adjust the position to move it below
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size
+    ),
+    margin=dict(b=100)  # Increase the bottom margin to make space for the legend
 )
-
-# Gas Rate Plot
-
-st.plotly_chart(fig_gas_company)
-
-# Oil Rate Plot
-
-st.plotly_chart(fig_oil_company)
 
 # Plot for gas rate by start year
 fig_gas_year = px.area(
@@ -176,12 +191,12 @@ fig_gas_year = px.area(
 fig_gas_year.update_layout(
     legend_title="Año de Puesta en Marcha de Pozo",
     legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Place the legend at the bottom
+        y=-0.3,  # Adjust the position to move it below
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust the font size
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
@@ -197,24 +212,23 @@ fig_oil_year = px.area(
 fig_oil_year.update_layout(
     legend_title="Año de Puesta en Marcha de Pozo",
     legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.3,  # Adjust this value to avoid overlapping
-        xanchor="center",
-        x=0.5,
-        font=dict(size=10)  # Adjust the font size to fit the space
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Place the legend at the bottom
+        y=-0.3,  # Adjust the position to move it below
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust the font size
     ),
     margin=dict(b=100),  # Increase the bottom margin to make space for the legend
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
 
-# Gas Rate Plot (for streamlit add st.plotly_chart(fig_gas_company))
-
+# Use Streamlit to display the plots directly
+st.plotly_chart(fig_gas_company)
+st.plotly_chart(fig_oil_company)
 st.plotly_chart(fig_gas_year)
+st.plotly_chart(fig_oil_year)
 
-# Oil Rate Plot 
-
-st.plotly_chart(fig_oil_year) 
 
 
