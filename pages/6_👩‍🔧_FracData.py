@@ -2,9 +2,6 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-# Streamlit configuration
-st.title("Análisis Completo de Datos de Producción y Completación en Vaca Muerta")
-
 # Load and preprocess the production data
 @st.cache_data
 def load_and_sort_data(dataset_url):
@@ -47,6 +44,19 @@ replacement_dict = {
     'WINTERSHALL ENERGÍA S.A.': 'WINTERSHALL'
 }
 data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
+
+# Create Streamlit app layout
+st.header(":blue[Reporte de Producción No Convencional]")
+
+image = Image.open('Vaca Muerta rig.png')
+st.sidebar.image(image)
+st.sidebar.title("Por favor filtrar aquí:")
+
+# Display total gas rate and oil rate metrics
+col1, col2, col3 = st.columns(3)
+col1.metric(label=":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
+col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_rate_rounded)
+col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 st.write(data_sorted[['empresa', 'empresaNEW']].head())
 
