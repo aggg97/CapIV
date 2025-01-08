@@ -45,12 +45,17 @@ replacement_dict = {
 }
 data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
 
-# Create Streamlit app layout
-st.header(":blue[Reporte de Producción No Convencional]")
-
+# Sidebar filters
+st.header(f":blue[Análisis de Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
+
+# Selectbox for companies
+selected_company = st.sidebar.selectbox(
+    "Seleccione la empresa",
+    options=data_sorted['empresa'].unique()
+)
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
