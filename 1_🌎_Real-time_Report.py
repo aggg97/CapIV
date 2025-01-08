@@ -201,7 +201,7 @@ fig_oil_company.update_layout(
 )
 
 # Checkbox for logarithmic scale for oil
-log_scale_oil = st.checkbox('Escala semilog para Caudal de Petróleo')
+log_scale_oil = st.checkbox('Escala semilog')
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_oil:
@@ -228,7 +228,7 @@ fig_gas_year.update_layout(
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km³/d)"
     
@@ -256,7 +256,7 @@ fig_oil_year.update_layout(
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size to fit space
     ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)"
 )
