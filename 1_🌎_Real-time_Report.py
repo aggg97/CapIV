@@ -58,7 +58,7 @@ data_filtered = data_sorted[(data_sorted['tef'] > 0)]
 # Find the latest date in the dataset
 latest_date = data_filtered['date'].max()
 
-st.write(latest_data)
+st.write(latest_date)
 
 from dateutil.relativedelta import relativedelta
 
