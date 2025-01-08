@@ -149,8 +149,18 @@ fig_gas_company = px.area(
 fig_gas_company.update_layout(
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km³/d)",
-    showlegend=False,  # Disable legend in the plot
-    margin=dict(b=150)  # Keep a bottom margin for the x-axis
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.4,  # Position the legend further below the plot area
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
+    ),
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot oil rate by company
@@ -162,8 +172,18 @@ fig_oil_company = px.area(
 fig_oil_company.update_layout(
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)",
-    showlegend=False,  # Disable legend in the plot
-    margin=dict(b=150)  # Keep a bottom margin for the x-axis
+    legend_title="Empresa",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.4,  # Position the legend further below the plot area
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
+    ),
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
+    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot for gas rate by start year
@@ -173,10 +193,19 @@ fig_gas_year = px.area(
     title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
 )
 fig_gas_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.4,  # Position the legend further below the plot area
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
+    ),
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
     xaxis_title="Fecha",
     yaxis_title="Caudal de Gas (km³/d)",
-    showlegend=False,  # Disable legend in the plot
-    margin=dict(b=150)  # Keep a bottom margin for the x-axis
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
 # Plot for oil rate by start year
@@ -186,39 +215,26 @@ fig_oil_year = px.area(
     title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
 )
 fig_oil_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Position the legend at the bottom
+        y=-0.4,  # Position the legend further below the plot area
+        xanchor="center",  # Center the legend horizontally
+        x=0.5,  # Center the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
+    ),
+    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
     xaxis_title="Fecha",
     yaxis_title="Caudal de Petróleo (m³/d)",
-    showlegend=False,  # Disable legend in the plot
-    margin=dict(b=150)  # Keep a bottom margin for the x-axis
+    xaxis_title_standoff=20  # Add more space between x-axis and plot content
 )
 
-# Plot the charts without the legend
+# Plot the charts
 st.plotly_chart(fig_gas_company)
 st.plotly_chart(fig_oil_company)
 st.plotly_chart(fig_gas_year)
 st.plotly_chart(fig_oil_year)
-
-# Now manually add the legends below the plots
-# Gas rate by company legend
-gas_legend = company_summary_aggregated['empresaNEW'].unique()
-st.write("**Leyenda de Caudal de Gas por Empresa**")
-st.write(gas_legend)
-
-# Oil rate by company legend
-oil_legend = company_summary_aggregated['empresaNEW'].unique()
-st.write("**Leyenda de Caudal de Petróleo por Empresa**")
-st.write(oil_legend)
-
-# Gas rate by start year legend
-gas_year_legend = yearly_summary['start_year'].unique()
-st.write("**Leyenda de Caudal de Gas por Año de Puesta en Marcha de Pozo**")
-st.write(gas_year_legend)
-
-# Oil rate by start year legend
-oil_year_legend = yearly_summary['start_year'].unique()
-st.write("**Leyenda de Caudal de Petróleo por Año de Puesta en Marcha de Pozo**")
-st.write(oil_year_legend)
-
 
 
 
