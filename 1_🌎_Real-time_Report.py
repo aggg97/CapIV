@@ -131,7 +131,7 @@ yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly
 
 st.write("Fecha de Última Alocación Finalizada y Consolidada*: ", latest_date.date())
 st.caption("*A mediados de cada mes se realiza el cierre oficial \
-de los datos correspondientes al mes anterior. Para garantizar la\
+de los datos correspondientes al mes anterior. Para garantizar la \
 precisión y evitar mostrar información incompleta o no consolidada, \
 este reporte presenta únicamente los datos del mes anterior ya finalizados, \
 completos y representativos.")
@@ -171,7 +171,7 @@ fig_gas_company.update_layout(
 
 # Checkbox for logarithmic scale for gas
 log_scale_gas = st.checkbox('Escala semilog Caudal de Gas')
-st.caption("Nota: Activar la escala semilog facilita la detección rápida\
+st.caption("Nota: Activar la escala semilog facilita la detección rápida \
 de tendencias lineales en los datos, permitiendo identificar patrones de \
 crecimiento exponencial en la producción de manera más efectiva.")
 
