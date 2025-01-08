@@ -47,7 +47,7 @@ data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
 
 # Sidebar filters
 st.header(f":blue[Análisis de Producción No Convencional]")
-image = Image.open('Vaca Muerta rig.png')
+image = Image.open('rig.webp')
 st.sidebar.image(image)
 st.sidebar.title("Por favor filtrar aquí:")
 
