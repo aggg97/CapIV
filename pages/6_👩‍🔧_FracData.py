@@ -153,7 +153,7 @@ fig_gas_company.update_layout(
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="bottom",  # Place the legend at the bottom
-        y=-0.5,  # Adjust the position to move it below
+        y=-5,  # Adjust the position to move it below
         xanchor="center",  # Center the legend horizontally
         x=0.5,  # Center the legend horizontally
         font=dict(size=10)  # Adjust font size
