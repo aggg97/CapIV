@@ -73,20 +73,11 @@ latest_data = data_filtered[data_filtered['date'] == latest_date]
 
 
 # ------------------------ DATA CLEANING ------------------------
-
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# Load and preprocess the fracture data
-def load_and_sort_data_frac(dataset_url):
-    df_frac = pd.read_csv(dataset_url)
-    return df_frac
-
-# URL of the fracture dataset
-dataset_frac_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-7f35e41f58d7/resource/2280ad92-6ed3-403e-a095-50139863ab0d/download/datos-de-fractura-de-pozos-de-hidrocarburos-adjunto-iv-actualizacin-diaria.csv"
-
-# Load the fracture data
-df_frac = load_and_sort_data_frac(dataset_frac_url)
+@st.cache_data
+def load_and_sort_data(dataset_url):
+    # Load the fracture data
+    df_frac = load_and_sort_data_frac(dataset_frac_url)
+return df
 
 # Print the initial info about the dataset
 print(df_frac.info())
