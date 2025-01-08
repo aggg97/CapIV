@@ -71,61 +71,6 @@ print(latest_date)
 # Filter the dataset to include only rows from the latest date
 latest_data = data_filtered[data_filtered['date'] == latest_date]
 
-# Calculate total gas and oil rates for the latest date
-total_gas_rate = latest_data['gas_rate'].sum() / 1000
-total_oil_rate = latest_data['oil_rate'].sum() / 1000
-
-# Convert oil rate to barrels per day (bpd)
-oil_rate_bpd = total_oil_rate * 6.28981
-
-# Round the total rates to one decimal place
-total_gas_rate_rounded = round(total_gas_rate, 1)
-total_oil_rate_rounded = round(total_oil_rate, 1)
-oil_rate_bpd_rounded = round(oil_rate_bpd, 1)
-
-print(total_gas_rate_rounded,total_oil_rate_rounded,oil_rate_bpd_rounded)
-
-# Group and aggregate data for plotting
-company_summary = data_filtered.groupby(['empresaNEW', 'date']).agg(
-    total_gas_rate=('gas_rate', 'sum'),
-    total_oil_rate=('oil_rate', 'sum')
-).reset_index()
-
-# Determine top 10 companies by total oil production
-top_companies = company_summary.groupby('empresaNEW')['total_oil_rate'].sum().nlargest(10).index
-
-# Aggregate data for top companies and "Others"
-company_summary['empresaNEW'] = company_summary['empresaNEW'].apply(lambda x: x if x in top_companies else 'Otros')
-company_summary_aggregated = company_summary.groupby(['empresaNEW', 'date']).agg(
-    total_gas_rate=('total_gas_rate', 'sum'),
-    total_oil_rate=('total_oil_rate', 'sum')
-).reset_index()
-
-# Count wells per company
-well_count = data_filtered.groupby('empresaNEW')['sigla'].nunique().reset_index()
-well_count.columns = ['empresaNEW', 'well_count']
-
-# Determine top 10 companies by number of wells
-top_wells_companies = well_count.nlargest(10, 'well_count')['empresaNEW']
-
-# Filter well_count to include only top companies
-well_count_top = well_count[well_count['empresaNEW'].isin(top_wells_companies)]
-
-# Determine the starting year for each well
-well_start_year = data_filtered.groupby('sigla')['anio'].min().reset_index()
-well_start_year.columns = ['sigla', 'start_year']
-
-# Merge the start year back to the original data
-data_with_start_year = pd.merge(data_filtered, well_start_year, on='sigla')
-
-# Group data by start year and date for stacked area plots
-yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
-    total_gas_rate=('gas_rate', 'sum'),
-    total_oil_rate=('oil_rate', 'sum')
-).reset_index()
-
-# Filter out rows where cumulative gas and oil production are zero or less
-yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
 # ------------------------ DATA CLEANING ------------------------
 
