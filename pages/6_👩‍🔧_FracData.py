@@ -126,39 +126,94 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-
+st.write("Fecha de Última Alocación finalizada: ", latest_date)
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
 col1.metric(label=":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
 col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_rate_rounded)
 col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
-st.write(data_sorted[['empresa', 'empresaNEW']].head())
+# ------------------------ PLOTS ------------------------
+# Plot gas rate by company
+fig_gas_company = px.area(
+    company_summary_aggregated, 
+    x='date', y='total_gas_rate', color='empresaNEW', 
+    title="Caudal de Gas por Empresa"
+)
+fig_gas_company.update_layout(
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km³/d)",
+    legend_title="Empresa"
+)
 
-# Debug: Inspect the date column
-st.write("Unique dates in filtered data:", data_filtered['date'].unique())
+# Plot oil rate by company
+fig_oil_company = px.area(
+    company_summary_aggregated, 
+    x='date', y='total_oil_rate', color='empresaNEW', 
+    title="Caudal de Petróleo por Empresa"
+)
+fig_oil_company.update_layout(
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m³/d)",
+    legend_title="Empresa"
+)
 
-# Find the latest date in the dataset
-latest_date_non_official = data_filtered['date'].max()
-st.write("Latest date (non-official):", latest_date_non_official)
+# Gas Rate Plot
+fig_widget_gas_company = go.FigureWidget(fig_gas_company)
+st.plotly_chart(fig_widget_gas_company)
 
-# Subtract 1 month from the latest date if valid
-if pd.notnull(latest_date_non_official):
-    latest_date = latest_date_non_official - relativedelta(months=1)
-    latest_date = latest_date.replace(hour=0, minute=0, second=0, microsecond=0)  # Normalize
-    st.write("Latest date (official):", latest_date)
-else:
-    st.error("Invalid latest_date_non_official. Check your dataset.")
-    st.stop()
+# Oil Rate Plot
+fig_widget_oil_company = go.FigureWidget(fig_oil_company)
+st.plotly_chart(fig_widget_oil_company)
 
-# Ensure the date column in the data is also normalized
-data_filtered['date'] = data_filtered['date'].dt.floor('D')
+# Plot for gas rate by start year
+fig_gas_year = px.area(
+    yearly_summary, 
+    x='date', y='total_gas_rate', color='start_year', 
+    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
+)
+fig_gas_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
+        xanchor="center",
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
+    ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Gas (km³/d)"
+)
 
-# Filter the dataset to include only rows from the latest date
-latest_data = data_filtered[data_filtered['date'] == latest_date]
+# Plot for oil rate by start year
+fig_oil_year = px.area(
+    yearly_summary, 
+    x='date', y='total_oil_rate', color='start_year', 
+    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
+)
+fig_oil_year.update_layout(
+    legend_title="Año de Puesta en Marcha de Pozo",
+    legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.3,  # Adjust this value to avoid overlapping
+        xanchor="center",
+        x=0.5,
+        font=dict(size=10)  # Adjust the font size to fit the space
+    ),
+    margin=dict(b=100),  # Increase the bottom margin to make space for the legend
+    xaxis_title="Fecha",
+    yaxis_title="Caudal de Petróleo (m³/d)"
+)
 
-# Check if the filtering worked
-if latest_data.empty:
-    st.error(f"No data available for the latest date: {latest_date}")
-    st.stop()
+# Gas Rate Plot (for streamlit add st.plotly_chart(fig_gas_company))
+fig_widget_gas_year = go.FigureWidget(fig_gas_year)
+st.plotly_chart(fig_widget_gas_year)
+
+# Oil Rate Plot 
+fig_widget_oil_year = go.FigureWidget(fig_oil_year)
+st.plotly_chart(fig_widget_oil_year) 
+
 
