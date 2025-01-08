@@ -26,24 +26,8 @@ def load_and_sort_data(dataset_url):
         st.error(f"Error loading data: {e}")
         return pd.DataFrame()
 
-# Load and preprocess the fracture data
-@st.cache_data
-def load_and_sort_data_frac(dataset_url):
-    try:
-        COLUMNS_FRAC = [
-            'sigla', 'empresa', 'anio', 'mes', 'yacimiento', 'cantidad_etapas',
-            'profundidad', 'fecha_frac', 'prod_frac_gas', 'prod_frac_pet'
-        ]
-        df_frac = pd.read_csv(dataset_url, usecols=COLUMNS_FRAC)
-        df_frac['fecha_frac'] = pd.to_datetime(df_frac['fecha_frac'])
-        return df_frac
-    except Exception as e:
-        st.error(f"Error loading fracture data: {e}")
-        return pd.DataFrame()
-
 # URLs for datasets
 dataset_url = "http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad3543b407c/resource/b5b58cdc-9e07-41f9-b392-fb9ec68b0725/download/produccin-de-pozos-de-gas-y-petrleo-no-convencional.csv"
-dataset_frac_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-7f35e41f58d7/resource/2280ad92-6ed3-403e-a095-50139863ab0d/download/datos-de-fractura-de-pozos-de-hidrocarburos-adjunto-iv-actualizacin-diaria.csv"
 
 # Load the production data
 data_sorted = load_and_sort_data(dataset_url)
