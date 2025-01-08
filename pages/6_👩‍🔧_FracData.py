@@ -48,7 +48,7 @@ replacement_dict = {
 data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
 
 # Sidebar filters
-st.header(f":blue[Reporte de Producción No Convencional]")
+st.header(f":blue[Reporte Extensivo de Completación y Producción de Vaca Muerta")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 
@@ -127,114 +127,8 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-st.write("Fecha de Última Alocación Finalizada: ", latest_date)
-# Display total gas rate and oil rate metrics
-col1, col2, col3 = st.columns(3)
-col1.metric(label=":red[Total Caudal de Gas (MMm³/d)]", value=total_gas_rate_rounded)
-col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_rate_rounded)
-col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 # ------------------------ PLOTS ------------------------
-
-import plotly.express as px
-import plotly.graph_objects as go
-import streamlit as st
-
-# Plot gas rate by company
-fig_gas_company = px.area(
-    company_summary_aggregated, 
-    x='date', y='total_gas_rate', color='empresaNEW', 
-    title="Caudal de Gas por Empresa"
-)
-fig_gas_company.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    legend_title="Empresa",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
-        y=-0.4,  # Position the legend further below the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
-)
-
-# Plot oil rate by company
-fig_oil_company = px.area(
-    company_summary_aggregated, 
-    x='date', y='total_oil_rate', color='empresaNEW', 
-    title="Caudal de Petróleo por Empresa"
-)
-fig_oil_company.update_layout(
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)",
-    legend_title="Empresa",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
-        y=-0.4,  # Position the legend further below the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis=dict(tickangle=45),  # Rotate x-axis labels to prevent overlap
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
-)
-
-# Plot for gas rate by start year
-fig_gas_year = px.area(
-    yearly_summary, 
-    x='date', y='total_gas_rate', color='start_year', 
-    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
-)
-fig_gas_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
-        y=-0.4,  # Position the legend further below the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Gas (km³/d)",
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
-)
-
-# Plot for oil rate by start year
-fig_oil_year = px.area(
-    yearly_summary, 
-    x='date', y='total_oil_rate', color='start_year', 
-    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
-)
-fig_oil_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="top",  # Position the legend at the bottom
-        y=-0.4,  # Position the legend further below the plot area
-        xanchor="center",  # Center the legend horizontally
-        x=0.5,  # Center the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
-    ),
-    margin=dict(b=200),  # Increase bottom margin to accommodate the legend without overlap
-    xaxis_title="Fecha",
-    yaxis_title="Caudal de Petróleo (m³/d)",
-    xaxis_title_standoff=20  # Add more space between x-axis and plot content
-)
-
-# Plot the charts
-st.plotly_chart(fig_gas_company)
-st.plotly_chart(fig_oil_company)
-st.plotly_chart(fig_gas_year)
-st.plotly_chart(fig_oil_year)
 
 
 
