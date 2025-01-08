@@ -51,7 +51,6 @@ st.header(f":blue[Reporte de Producción No Convencional]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 
-
 # Filter out rows where TEF is zero for calculating metrics
 data_filtered = data_sorted[(data_sorted['tef'] > 0)]
 
@@ -127,7 +126,6 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
-st.write("Fecha Cierre de Última Alocación: " , latest_date)
 
 # Display total gas rate and oil rate metrics
 col1, col2, col3 = st.columns(3)
@@ -136,4 +134,31 @@ col2.metric(label=":green[Total Caudal de Petróleo (km³/d)]", value=total_oil_
 col3.metric(label=":green[Total Caudal de Petróleo (kbpd)]", value=oil_rate_bpd_rounded)
 
 st.write(data_sorted[['empresa', 'empresaNEW']].head())
+
+# Debug: Inspect the date column
+st.write("Unique dates in filtered data:", data_filtered['date'].unique())
+
+# Find the latest date in the dataset
+latest_date_non_official = data_filtered['date'].max()
+st.write("Latest date (non-official):", latest_date_non_official)
+
+# Subtract 1 month from the latest date if valid
+if pd.notnull(latest_date_non_official):
+    latest_date = latest_date_non_official - relativedelta(months=1)
+    latest_date = latest_date.replace(hour=0, minute=0, second=0, microsecond=0)  # Normalize
+    st.write("Latest date (official):", latest_date)
+else:
+    st.error("Invalid latest_date_non_official. Check your dataset.")
+    st.stop()
+
+# Ensure the date column in the data is also normalized
+data_filtered['date'] = data_filtered['date'].dt.floor('D')
+
+# Filter the dataset to include only rows from the latest date
+latest_data = data_filtered[data_filtered['date'] == latest_date]
+
+# Check if the filtering worked
+if latest_data.empty:
+    st.error(f"No data available for the latest date: {latest_date}")
+    st.stop()
 
