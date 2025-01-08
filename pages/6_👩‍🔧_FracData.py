@@ -127,9 +127,62 @@ yearly_summary = data_with_start_year.groupby(['start_year', 'date']).agg(
 # Filter out rows where cumulative gas and oil production are zero or less
 yearly_summary = yearly_summary[(yearly_summary['total_gas_rate'] > 0) & (yearly_summary['total_oil_rate'] > 0)]
 
+# ------------------------ DATA CLEANING ------------------------
 
-# ------------------------ PLOTS ------------------------
+import pandas as pd
+import matplotlib.pyplot as plt
 
+# Load and preprocess the fracture data
+def load_and_sort_data_frac(dataset_url):
+    df_frac = pd.read_csv(dataset_url)
+    return df_frac
 
+# URL of the fracture dataset
+dataset_frac_url = "http://datos.energia.gob.ar/dataset/71fa2e84-0316-4a1b-af68-7f35e41f58d7/resource/2280ad92-6ed3-403e-a095-50139863ab0d/download/datos-de-fractura-de-pozos-de-hidrocarburos-adjunto-iv-actualizacin-diaria.csv"
+
+# Load the fracture data
+df_frac = load_and_sort_data_frac(dataset_frac_url)
+
+# Print the initial info about the dataset
+print(df_frac.info())
+
+# Create a new column for the total amount of arena (sum of national and imported arena)
+df_frac['arena_total_tn'] = df_frac['arena_bombeada_nacional_tn'] + df_frac['arena_bombeada_importada_tn']
+
+# Apply the cut-off conditions:
+# longitud_rama_horizontal_m > 100
+# cantidad_fracturas > 6
+# arena_total_tn > 100
+df_frac = df_frac[
+    (df_frac['longitud_rama_horizontal_m'] > 100) &
+    (df_frac['cantidad_fracturas'] > 6) &
+    (df_frac['arena_total_tn'] > 100)
+]
+
+# Check the filtered data
+print(df_frac.info())
+
+# Define the columns to check for outliers (now using 'arena_total_tn' as the total arena)
+columns_to_check = [
+    'longitud_rama_horizontal_m',
+    'cantidad_fracturas',
+    'arena_total_tn',
+]
+
+# Create histograms to inspect the distribution for filtered data
+for column in columns_to_check:
+    # Histogram with 50 bins to inspect distribution and outliers (filtered data)
+    plt.figure(figsize=(10, 6))
+    plt.hist(df_frac[column], bins=50, color='lightgreen', edgecolor='black', alpha=0.7)
+    plt.title(f'Histogram of {column} - Filtered Data')
+    plt.xlabel(column)
+    plt.ylabel('Frequency')
+    
+    # Add more divisions on the x-axis
+    plt.xticks(range(int(df_frac[column].min()), int(df_frac[column].max()) + 1, int((df_frac[column].max() - df_frac[column].min()) // 10)))
+    
+    plt.show()
+
+# ------------------------ DATA CLEANING ------------------------
 
 
