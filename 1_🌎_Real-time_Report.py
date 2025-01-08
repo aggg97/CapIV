@@ -197,10 +197,10 @@ fig_oil_company.update_layout(
 fig_gas_year = px.area(
     yearly_summary, 
     x='date', y='total_gas_rate', color='start_year', 
-    title="Caudal de Gas por Año de Puesta en Marcha de Pozo"
+    title="Caudal de Gas Campaña"
 )
 fig_gas_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
+    legend_title="Campaña,
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the bottom
@@ -219,10 +219,10 @@ fig_gas_year.update_layout(
 fig_oil_year = px.area(
     yearly_summary, 
     x='date', y='total_oil_rate', color='start_year', 
-    title="Caudal de Petróleo por Año de Puesta en Marcha de Pozo"
+    title="Caudal de Petróleo por Campaña"
 )
 fig_oil_year.update_layout(
-    legend_title="Año de Puesta en Marcha de Pozo",
+    legend_title="Campaña",
     legend=dict(
         orientation="h",  # Horizontal legend
         yanchor="top",  # Position the legend at the bottom
