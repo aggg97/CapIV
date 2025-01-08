@@ -171,6 +171,9 @@ fig_gas_company.update_layout(
 
 # Checkbox for logarithmic scale for gas
 log_scale_gas = st.checkbox('Escala semilog Caudal de Gas')
+st.caption("Nota: Activar la escala semilog facilita la detección rápida\
+de tendencias lineales en los datos, permitiendo identificar patrones de \
+crecimiento exponencial en la producción de manera más efectiva.")
 
 # If the checkbox for log scale is selected, update y-axis to log scale
 if log_scale_gas:
