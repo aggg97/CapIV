@@ -350,22 +350,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # --------------------
 
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# Example dataframe for testing
-# Replace `df_merged_VMUT` with your actual dataset
-# Ensure it has columns: 'start_year', 'empresaNEW', 'tipopozoNEW', 'sigla'
-
-# Sample structure for `df_merged_VMUT`
-# df_merged_VMUT = pd.DataFrame({
-#     'start_year': [2023, 2022, 2023, 2022],
-#     'empresaNEW': ['Company A', 'Company B', 'Company A', 'Company C'],
-#     'tipopozoNEW': ['Petrolífero', 'Gasífero', 'Gasífero', 'Petrolífero'],
-#     'sigla': ['W1', 'W2', 'W3', 'W4']
-# })
-
 # Get the current and previous years
 current_year = df_merged_VMUT['start_year'].max()
 previous_year = current_year - 1
