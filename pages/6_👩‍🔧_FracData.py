@@ -462,13 +462,91 @@ fig2 = go.Figure(data=[go.Table(
 )])
 
 # Update layout for better visualization
-fig2.update_layout(
+fig_rama.update_layout(
     title="Estadistica Anual de Longitud de rama",
     template="plotly_white"
 )
 
 # Show the plot
-fig2.show()
-st.plotly_chart(fig2, use_container_width=True)
+fig_rama.show()
+st.plotly_chart(fig_rama, use_container_width=True)
 
+# -----------------------
+
+
+# Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
+df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
+
+# Aggregate data to calculate min, median, max, avg, and standard deviation by year and type of well (tipopozoNEW)
+statistics = df_merged_VMUT_filtered.groupby(['start_year', 'tipopozoNEW']).agg(
+    min_lenght=('longitud_rama_horizontal_m', 'min'),
+    avg_lenght=('longitud_rama_horizontal_m', 'mean'),
+    max_lenght=('longitud_rama_horizontal_m', 'max'),
+    std_lenght=('longitud_rama_horizontal_m', 'std'),
+).reset_index()
+
+# Round the values to 0 decimal places
+statistics['min_lenght'] = statistics['min_lenght'].round(0)
+statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+statistics['max_lenght'] = statistics['max_lenght'].round(0)
+statistics['std_lenght'] = statistics['std_lenght'].round(0)
+
+# Create separate dataframes for Petrolífero and Gasífero wells
+statistics_petrolifero = statistics[statistics['tipopozoNEW'] == 'Petrolífero']
+statistics_gasifero = statistics[statistics['tipopozoNEW'] == 'Gasífero']
+
+# Plot the pivot tables and line plots for max_lenght and avg_lenght
+fig= go.Figure()
+
+# Add Petrolífero wells - Max length
+fig.add_trace(go.Scatter(
+    x=statistics_petrolifero['start_year'],
+    y=statistics_petrolifero['max_lenght'],
+    mode='lines+markers',
+    name='Max Longitud Petrolífero',
+    line=dict(color='green',dash='dash'),
+    marker=dict(size=8),
+))
+
+# Add Gasífero wells - Max length
+fig.add_trace(go.Scatter(
+    x=statistics_gasifero['start_year'],
+    y=statistics_gasifero['max_lenght'],
+    mode='lines+markers',
+    name='Max Longitud Gasífero',
+    line=dict(color='red',dash='dash'),
+    marker=dict(size=8),
+))
+
+# Add Petrolífero wells - Avg length
+fig.add_trace(go.Scatter(
+    x=statistics_petrolifero['start_year'],
+    y=statistics_petrolifero['avg_lenght'],
+    mode='lines+markers',
+    name='Avg Longitud Petrolífero',
+    line=dict(color='green'),
+    marker=dict(size=8),
+))
+
+# Add Gasífero wells - Avg length
+fig.add_trace(go.Scatter(
+    x=statistics_gasifero['start_year'],
+    y=statistics_gasifero['avg_lenght'],
+    mode='lines+markers',
+    name='Avg Longitud Gasífero',
+    line=dict(color='red'),
+    marker=dict(size=8),
+))
+
+# Update layout with labels and title
+fig.update_layout(
+    title='Evolucion de la Rama Lateral (Fm Vaca Muerta)',
+    xaxis_title='Campaña',
+    yaxis_title='Longitud de Rama (metros)',
+    legend_title='Tipo de Longitud y Pozo',
+    template='plotly_white'
+)
+
+# Show the plot
+fig.show()
 
