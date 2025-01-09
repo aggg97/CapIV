@@ -469,7 +469,7 @@ fig.update_layout(
 
 # Show the plot
 fig.show()
-st.plotly_chart(fig_rama, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------
 
