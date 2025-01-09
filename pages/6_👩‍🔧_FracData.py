@@ -351,8 +351,8 @@ st.plotly_chart(fig, use_container_width=True)
 # --------------------
 
 # Get the current and previous years
-current_year = df_merged_VMUT['start_year'].max()
-previous_year = current_year - 1
+current_year = int(df_merged_VMUT['start_year'].max())
+previous_year = int(current_year - 1)
 
 # Create a Streamlit selectbox for year selection
 selected_year = st.selectbox("Select Year", [current_year, previous_year])
