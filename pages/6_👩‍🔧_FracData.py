@@ -350,19 +350,39 @@ st.plotly_chart(fig, use_container_width=True)
 
 # --------------------
 
-# Get the current year (based on the most recent data in the dataset)
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# Example dataframe for testing
+# Replace `df_merged_VMUT` with your actual dataset
+# Ensure it has columns: 'start_year', 'empresaNEW', 'tipopozoNEW', 'sigla'
+
+# Sample structure for `df_merged_VMUT`
+# df_merged_VMUT = pd.DataFrame({
+#     'start_year': [2023, 2022, 2023, 2022],
+#     'empresaNEW': ['Company A', 'Company B', 'Company A', 'Company C'],
+#     'tipopozoNEW': ['Petrolífero', 'Gasífero', 'Gasífero', 'Petrolífero'],
+#     'sigla': ['W1', 'W2', 'W3', 'W4']
+# })
+
+# Get the current and previous years
 current_year = df_merged_VMUT['start_year'].max()
+previous_year = current_year - 1
 
-# Filter the dataset for the current year
-wells_current_year = df_merged_VMUT[df_merged_VMUT['start_year'] == current_year]
+# Create a Streamlit selectbox for year selection
+selected_year = st.selectbox("Select Year", [current_year, previous_year])
 
-# Count wells per company and well type (Petrolífero and Gasífero)
-wells_per_company_type_current_year = wells_current_year.groupby(['empresaNEW', 'tipopozoNEW'])['sigla'].nunique().reset_index()
-wells_per_company_type_current_year.columns = ['empresaNEW', 'tipopozoNEW', 'well_count']
+# Filter the dataset based on the selected year
+filtered_data = df_merged_VMUT[df_merged_VMUT['start_year'] == selected_year]
+
+# Count wells per company and well type
+wells_per_company_type = filtered_data.groupby(['empresaNEW', 'tipopozoNEW'])['sigla'].nunique().reset_index()
+wells_per_company_type.columns = ['empresaNEW', 'tipopozoNEW', 'well_count']
 
 # Separate the data into two DataFrames: one for Petrolífero and one for Gasífero
-wells_petrolifero = wells_per_company_type_current_year[wells_per_company_type_current_year['tipopozoNEW'] == 'Petrolífero']
-wells_gasifero = wells_per_company_type_current_year[wells_per_company_type_current_year['tipopozoNEW'] == 'Gasífero']
+wells_petrolifero = wells_per_company_type[wells_per_company_type['tipopozoNEW'] == 'Petrolífero']
+wells_gasifero = wells_per_company_type[wells_per_company_type['tipopozoNEW'] == 'Gasífero']
 
 # Get the top 10 companies for Petrolífero wells
 top_petrolifero_companies = wells_petrolifero.groupby('empresaNEW')['well_count'].sum().nlargest(10).index
@@ -377,11 +397,11 @@ fig_petrolifero = px.bar(
     wells_petrolifero_top_10,
     x='well_count',
     y='empresaNEW',
-    title=f'Pozos Petrolíferos por Empresa (Año {int(current_year)})',
+    title=f'Pozos Petrolíferos por Empresa (Año {selected_year})',
     labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
     color='empresaNEW',
     color_discrete_sequence=px.colors.qualitative.Set1,
-    orientation='h',  # Set bars to be horizontal
+    orientation='h',
     text='well_count'
 )
 
@@ -392,8 +412,7 @@ fig_petrolifero.update_layout(
     template='plotly_white'
 )
 
-# Show the Petrolífero plot
-fig_petrolifero.show()
+# Show the Petrolífero plot in Streamlit
 st.plotly_chart(fig_petrolifero, use_container_width=True)
 
 # Plot for Gasífero wells (top 10 companies) with horizontal bars
@@ -401,11 +420,11 @@ fig_gasifero = px.bar(
     wells_gasifero_top_10,
     x='well_count',
     y='empresaNEW',
-    title=f'Pozos Gasíferos por Empresa (Año {int(current_year)})',
+    title=f'Pozos Gasíferos por Empresa (Año {selected_year})',
     labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
     color='empresaNEW',
     color_discrete_sequence=px.colors.qualitative.Set1,
-    orientation='h' , # Set bars to be horizontal
+    orientation='h',
     text='well_count'
 )
 
@@ -416,11 +435,9 @@ fig_gasifero.update_layout(
     template='plotly_white'
 )
 
-# Show the Gasífero plot
-fig_gasifero.show()
+# Show the Gasífero plot in Streamlit
 st.plotly_chart(fig_gasifero, use_container_width=True)
 
-# --------------- AGREGAR AÑO ANTERIOR + AÑO ACTUAL (usar relative data library)----
 #-------------------
 
 # Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
