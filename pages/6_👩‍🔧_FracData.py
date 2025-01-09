@@ -423,4 +423,52 @@ st.plotly_chart(fig_gasifero, use_container_width=True)
 # --------------- AGREGAR AÑO ANTERIOR + AÑO ACTUAL (usar relative data library)----
 #-------------------
 
+# Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
+df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
+
+# Example: Calculate statistics for a specific column (longitud_rama_horizontal_m)
+# Aggregate data to calculate min, median, max, and standard deviation for each year
+statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
+    min_lenght=('longitud_rama_horizontal_m', 'min'),
+    avg_lenght=('longitud_rama_horizontal_m', 'mean'),
+    max_lenght=('longitud_rama_horizontal_m', 'max'),
+    std_lenght=('longitud_rama_horizontal_m', 'std'),
+).reset_index()
+
+# Round the values to 0 decimal places
+statistics['min_lenght'] = statistics['min_lenght'].round(0)
+statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+statistics['max_lenght'] = statistics['max_lenght'].round(0)
+statistics['std_lenght'] = statistics['std_lenght'].round(0)
+
+# Create a pivot table for better visualization (year on rows, statistics on columns)
+pivot_table = statistics.pivot_table(
+    index='start_year',
+    values=['min_lenght', 'avg_lenght', 'max_lenght', 'std_lenght'],
+    aggfunc='sum',  # You can change this to 'mean' or another aggregation function if necessary
+    fill_value=0
+)
+
+# Plot the pivot table using Plotly Table
+fig = go.Figure(data=[go.Table(
+    header=dict(values=["Campaña", "Longitud de Rama Minima (metros)", "Longitud de Rama Promedio (metros)", "Longitud de Rama Maxima (metros)", "Desviación Estándar (metros)"]),
+    cells=dict(
+        values=[pivot_table.index,  # Row values (years)
+                pivot_table['min_lenght'].values,  # Min length values
+                pivot_table['avg_lenght'].values,  # Avg length values
+                pivot_table['max_lenght'].values,  # Max length values
+                pivot_table['std_lenght'].values]  # Std dev length values
+    )
+)])
+
+# Update layout for better visualization
+fig.update_layout(
+    title="Estadistica Anual de Longitud de rama",
+    template="plotly_white"
+)
+
+# Show the plot
+fig.show()
+st.plotly_chart(fig, use_container_width=True)
+
 
