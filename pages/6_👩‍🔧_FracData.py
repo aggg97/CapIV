@@ -420,7 +420,7 @@ fig_gasifero.update_layout(
 fig_gasifero.show()
 st.plotly_chart(fig_gasifero, use_container_width=True)
 
-
+# --------------- AGREGAR AÑO ANTERIOR + AÑO ACTUAL (usar relative data library)----
 #-------------------
 
 
