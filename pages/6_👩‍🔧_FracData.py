@@ -450,7 +450,7 @@ pivot_table = statistics.pivot_table(
 )
 
 # Plot the pivot table using Plotly Table
-fig = go.Figure(data=[go.Table(
+fig2 = go.Figure(data=[go.Table(
     header=dict(values=["Campaña", "Longitud de Rama Minima (metros)", "Longitud de Rama Promedio (metros)", "Longitud de Rama Maxima (metros)", "Desviación Estándar (metros)"]),
     cells=dict(
         values=[pivot_table.index,  # Row values (years)
@@ -462,13 +462,13 @@ fig = go.Figure(data=[go.Table(
 )])
 
 # Update layout for better visualization
-fig.update_layout(
+fig2.update_layout(
     title="Estadistica Anual de Longitud de rama",
     template="plotly_white"
 )
 
 # Show the plot
-fig.show()
-st.plotly_chart(fig, use_container_width=True)
+fig2.show()
+st.plotly_chart(fig2, use_container_width=True)
 
 
