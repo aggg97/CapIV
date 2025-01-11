@@ -553,6 +553,9 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
+import pandas as pd
+import streamlit as st
+
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -581,9 +584,16 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
+# Function to highlight the first occurrence of start_year (remove duplicates)
+def highlight_start_year(s):
+    return ['' if s[i] == s[i-1] else 'font-weight: bold;' for i in range(len(s))]
+
+# Apply the style to the 'start_year' column only (using subset)
+styled_max_lenght_df = max_lenght_table_df.style.apply(highlight_start_year, subset=["Campaña"])
+
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(max_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
+st.dataframe(styled_max_lenght_df, use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -613,7 +623,10 @@ avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
+# Apply the style to the 'start_year' column only (using subset)
+styled_avg_lenght_df = avg_lenght_table_df.style.apply(highlight_start_year, subset=["Campaña"])
+
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(avg_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
+st.dataframe(styled_avg_lenght_df, use_container_width=True)
 
