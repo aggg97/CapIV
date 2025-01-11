@@ -553,9 +553,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-import pandas as pd
-import streamlit as st
-
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
