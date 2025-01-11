@@ -441,9 +441,6 @@ statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
 statistics['max_lenght'] = statistics['max_lenght'].round(0)
 statistics['std_lenght'] = statistics['std_lenght'].round(0)
 
-# Display statistics in a table
-st.subheader("Calculated Statistics")
-st.dataframe(statistics)
 
 # Create a pivot table for visualization
 pivot_table = statistics.pivot_table(
@@ -471,6 +468,8 @@ fig = go.Figure(data=[go.Table(
 fig.update_layout(
     title="Estadística Anual de Longitud de Rama Horizontal",
     template="plotly_white"
+    paper_bgcolor="white",  # White outer background
+    plot_bgcolor="white"   # White inner background
 )
 
 # Show the plot
