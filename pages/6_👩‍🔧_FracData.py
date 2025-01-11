@@ -441,40 +441,19 @@ statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
 statistics['max_lenght'] = statistics['max_lenght'].round(0)
 statistics['std_lenght'] = statistics['std_lenght'].round(0)
 
+# Rename columns to match desired output format
+statistics.rename(columns={
+    'start_year': 'Campaña',
+    'min_lenght': 'Longitud de Rama Minima (metros)',
+    'avg_lenght': 'Longitud de Rama Promedio (metros)',
+    'max_lenght': 'Longitud de Rama Maxima (metros)',
+    'std_lenght': 'Desviación Estándar (metros)'
+}, inplace=True)
 
-# Create a pivot table for visualization
-pivot_table = statistics.pivot_table(
-    index='start_year',
-    values=['min_lenght', 'avg_lenght', 'max_lenght', 'std_lenght'],
-    aggfunc='sum',
-    fill_value=0
-)
-
-# Plot the pivot table using Plotly Table
-fig = go.Figure(data=[go.Table(
-    header=dict(values=["Campaña", "Longitud de Rama Minima (metros)", "Longitud de Rama Promedio (metros)", "Longitud de Rama Maxima (metros)", "Desviación Estándar (metros)"]),
-    cells=dict(
-        values=[
-            pivot_table.index,  # Row values (years)
-            pivot_table['min_lenght'].values,  # Min length values
-            pivot_table['avg_lenght'].values,  # Avg length values
-            pivot_table['max_lenght'].values,  # Max length values
-            pivot_table['std_lenght'].values  # Std dev length values
-        ]
-    )
-)])
-
-# Update layout for better visualization
-fig.update_layout(
-    title="Estadística Anual de Longitud de Rama Horizontal",
-    template="plotly_white",
-    paper_bgcolor="white",  # White outer background
-    plot_bgcolor="white"   # White inner background
-)
-
-# Show the plot
+# Display the DataFrame in Streamlit
 st.subheader("Estadística Visualizada")
-st.plotly_chart(fig, use_container_width=True)
+st.dataframe(statistics, use_container_width=True)
+
 
 
 # -----------------------
