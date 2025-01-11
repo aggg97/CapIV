@@ -541,6 +541,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
+
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -559,7 +560,8 @@ top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 data_for_max_lenght_table = []
 previous_year = None
 for _, row in top_max_lenght.iterrows():
-    year_value = row['start_year'] if row['start_year'] != previous_year else " "  # Use blank for repeated years
+    # Round the start_year to 0 decimals
+    year_value = str(int(round(row['start_year'], 0))) if row['start_year'] != previous_year else " "  # Round and convert to string
     data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
     previous_year = row['start_year']
 
@@ -588,12 +590,12 @@ company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year'
 top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
 
 # Create data for the table with the year appearing only once for each start_year
-data_for_max_lenght_table = []
+data_for_avg_lenght_table = []
 previous_year = None
-for _, row in top_max_lenght.iterrows():
+for _, row in top_avg_lenght.iterrows():
     # Round the start_year to 0 decimals
     year_value = str(int(round(row['start_year'], 0))) if row['start_year'] != previous_year else " "  # Round and convert to string
-    data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
+    data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
     previous_year = row['start_year']
 
 # Create a DataFrame from the data for display
@@ -605,6 +607,7 @@ avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df[
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
 st.dataframe(avg_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
+
 
 
 
