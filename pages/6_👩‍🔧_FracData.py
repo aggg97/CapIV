@@ -588,11 +588,12 @@ company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year'
 top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
 
 # Create data for the table with the year appearing only once for each start_year
-data_for_avg_lenght_table = []
+data_for_max_lenght_table = []
 previous_year = None
-for _, row in top_avg_lenght.iterrows():
-    year_value = row['start_year'] if row['start_year'] != previous_year else " "  # Use blank for repeated years
-    data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
+for _, row in top_max_lenght.iterrows():
+    # Round the start_year to 0 decimals
+    year_value = str(int(round(row['start_year'], 0))) if row['start_year'] != previous_year else " "  # Round and convert to string
+    data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
     previous_year = row['start_year']
 
 # Create a DataFrame from the data for display
