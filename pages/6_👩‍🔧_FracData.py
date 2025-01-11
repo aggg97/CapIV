@@ -463,6 +463,9 @@ st.dataframe(statistics, use_container_width=True)
 
 # -----------------------
 
+import plotly.graph_objects as go
+import streamlit as st
+
 # Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
 df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
 
@@ -485,7 +488,7 @@ statistics_petrolifero = statistics[statistics['tipopozoNEW'] == 'Petrolífero']
 statistics_gasifero = statistics[statistics['tipopozoNEW'] == 'Gasífero']
 
 # Plot the pivot tables and line plots for max_lenght and avg_lenght
-fig= go.Figure()
+fig = go.Figure()
 
 # Add Petrolífero wells - Max length
 fig.add_trace(go.Scatter(
@@ -493,7 +496,7 @@ fig.add_trace(go.Scatter(
     y=statistics_petrolifero['max_lenght'],
     mode='lines+markers',
     name='Longitud Máxima (Tipo Petrolífero)',
-    line=dict(color='green',dash='dash'),
+    line=dict(color='green', dash='dash'),
     marker=dict(size=8),
 ))
 
@@ -503,7 +506,7 @@ fig.add_trace(go.Scatter(
     y=statistics_gasifero['max_lenght'],
     mode='lines+markers',
     name='Longitud Máxima (Tipo Gasífero)',
-    line=dict(color='red',dash='dash'),
+    line=dict(color='red', dash='dash'),
     marker=dict(size=8),
 ))
 
@@ -527,17 +530,24 @@ fig.add_trace(go.Scatter(
     marker=dict(size=8),
 ))
 
-# Update layout with labels and title
+# Update layout with labels, title, and legend below the plot
 fig.update_layout(
     title='Evolución de la Rama Lateral (Fm Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Longitud de Rama (metros)',
-    template='plotly_white'
+    template='plotly_white',
+    legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='top',  # Aligns the legend to the bottom of the plot
+        y=-0.2,  # Adjusts the position of the legend (negative value places it below the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5  # Centers the legend horizontally
+    )
 )
 
 # Show the plot
-fig.show()
 st.plotly_chart(fig, use_container_width=True)
+
 
 # -----------------------------
 
