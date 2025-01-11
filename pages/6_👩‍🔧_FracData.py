@@ -553,6 +553,9 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
+import pandas as pd
+import streamlit as st
+
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -581,22 +584,13 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply alternating row colors for even and odd years using set_table_styles
-def highlight_even_odd_years(df):
-    styles = []
-    for i, row in df.iterrows():
-        color = '#f2f2f2' if int(row['Campaña']) % 2 == 0 else '#e6f7ff'
-        styles.append({'selector': f'tr:nth-child({i+2})', 'props': [('background-color', color)]})
-    
-    # Return styles using set_table_styles
-    return df.style.set_table_styles(styles)
-
-# Apply the styling to the dataframe
-styled_df = highlight_even_odd_years(max_lenght_table_df)
+# Apply alternating row colors for even and odd years
+def highlight_even_odd_years(s):
+    return ['background-color: #f2f2f2' if int(s[i]) % 2 == 0 else 'background-color: #e6f7ff' for i in range(len(s))]
 
 # Display the max_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(styled_df, use_container_width=True)
+st.dataframe(max_lenght_table_df.style.apply(highlight_even_odd_years, subset=["Campaña"]), use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -626,11 +620,12 @@ avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply alternating row colors for even and odd years using set_table_styles
-styled_df_avg = highlight_even_odd_years(avg_lenght_table_df)
+# Apply alternating row colors for even and odd years
+def highlight_even_odd_years_avg(s):
+    return ['background-color: #f2f2f2' if int(s[i]) % 2 == 0 else 'background-color: #e6f7ff' for i in range(len(s))]
 
 # Display the avg_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(styled_df_avg, use_container_width=True)
+st.dataframe(avg_lenght_table_df.style.apply(highlight_even_odd_years_avg, subset=["Campaña"]), use_container_width=True)
 
 
