@@ -529,7 +529,7 @@ fig.add_trace(go.Scatter(
 
 # Update layout with labels and title
 fig.update_layout(
-    title='Evolucion de la Rama Lateral (Fm Vaca Muerta)',
+    title='Evolución de la Rama Lateral (Fm Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Longitud de Rama (metros)',
     template='plotly_white'
@@ -541,19 +541,22 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
+import streamlit as st
+import pandas as pd
+
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
 ).reset_index()
 
-# Round the avg_lenght to 2 decimal places
+# Round the max_lenght to 0 decimal places
 company_statistics['max_lenght'] = company_statistics['max_lenght'].round(0)
 
 # Sort by start_year and max_lenght to get the top 3 sigla per year
 company_statistics_sorted = company_statistics.sort_values(['start_year', 'max_lenght'], ascending=[True, False])
 
 # Select the top 3 sigla for each year based on max_lenght
-top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)  # Get the top 3 for each year
+top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 
 # Create data for the table with the year appearing only once for each start_year
 data_for_max_lenght_table = []
@@ -563,38 +566,26 @@ for _, row in top_max_lenght.iterrows():
     data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
     previous_year = row['start_year']
 
-# Create Plotly Table for max_lenght
-fig_max_lenght = go.Figure(data=[go.Table(
-    header=dict(values=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"]),
-    cells=dict(
-        values=list(zip(*data_for_max_lenght_table)),  # Transpose the list to match columns
-        fill_color=['white'] * len(data_for_max_lenght_table),  # Keep the default background
-    )
-)])
+# Create a DataFrame from the data for display
+max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
 
-fig_max_lenght.update_layout(
-    title="Top 3 Pozos anuales con Longitud de Rama Maxima",
-    template="plotly_white"
-)
-
-fig_max_lenght.show()
-st.plotly_chart(fig_max_lenght, use_container_width=True)
-
-import plotly.graph_objects as go
+# Display the max_lenght table in Streamlit
+st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
+st.dataframe(max_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
     avg_lenght=('longitud_rama_horizontal_m', 'mean')
 ).reset_index()
 
-# Round the avg_lenght to 2 decimal places
+# Round the avg_lenght to 0 decimal places
 company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
 
 # Sort by start_year and avg_lenght to get the top 3 empresasNEW per year
 company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year', 'avg_lenght'], ascending=[True, False])
 
 # Select the top 3 empresasNEW for each year based on avg_lenght
-top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)  # Get the top 3 for each year
+top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
 
 # Create data for the table with the year appearing only once for each start_year
 data_for_avg_lenght_table = []
@@ -603,6 +594,19 @@ for _, row in top_avg_lenght.iterrows():
     year_value = row['start_year'] if row['start_year'] != previous_year else " "  # Use blank for repeated years
     data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
     previous_year = row['start_year']
+
+# Create a DataFrame from the data for display
+avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
+
+# Display the avg_lenght table in Streamlit
+st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
+st.dataframe(avg_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
+
+
+
+
+
+
 
 
 
