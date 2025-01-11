@@ -456,7 +456,9 @@ statistics.rename(columns={
 
 # Display the DataFrame in Streamlit
 st.subheader("Estadística Visualizada")
-st.dataframe(statistics, use_container_width=True)
+
+# Center-align all columns in the DataFrame
+st.dataframe(statistics.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
 
 
 # -----------------------
