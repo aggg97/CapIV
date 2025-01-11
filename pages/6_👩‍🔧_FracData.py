@@ -552,7 +552,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # -----------------------------
-
 import pandas as pd
 import streamlit as st
 
@@ -595,9 +594,7 @@ styled_max_lenght_table_df = max_lenght_table_df.style.applymap(group_border, su
 
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-# st.dataframe(styled_max_lenght_table_df, use_container_width=True)
-st.dataframe(max_lenght_table_df)
-st.dataframe(max_lenght_table_df.style.background_gradient(axis=0, gmap=max_lenght_table_df['Campaña'], cmap='YlOrRd'))
+st.dataframe(styled_max_lenght_table_df, use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -632,5 +629,6 @@ styled_avg_lenght_table_df = avg_lenght_table_df.style.applymap(group_border, su
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
 st.dataframe(styled_avg_lenght_table_df, use_container_width=True)
+
 
 
