@@ -552,7 +552,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # -----------------------------
-
 import pandas as pd
 import streamlit as st
 
@@ -573,14 +572,17 @@ top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 # Create data for the table without the logic to make the year appear once for each start_year
 data_for_max_lenght_table = []
 previous_year = None
+
+# Function to apply border-top and bold styling to new years
 def group_border(row):
     global previous_year
-    style = []
+    style = [''] * len(row)  # Start with no style for the row
+    
+    # Check if the year changes and apply styles
     if row['Campaña'] != previous_year:
         previous_year = row['Campaña']
-        style = ['border-top: 2px solid black'] * len(row)
-    else:
-        style = [''] * len(row)
+        style[0] = 'border-top: 2px solid black; font-weight: bold;'  # Bold and border-top for "Campaña" column
+    
     return style
 
 for _, row in top_max_lenght.iterrows():
@@ -593,7 +595,7 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply the border-top style for grouping
+# Apply the custom styling function for border and bold
 styled_max_lenght_table_df = max_lenght_table_df.style.apply(group_border, axis=1)
 
 # Display the max_lenght table in Streamlit
@@ -621,6 +623,7 @@ avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña
 
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
+# Apply the same styling function for the avg_lenght table
 styled_avg_lenght_table_df = avg_lenght_table_df.style.apply(group_border, axis=1)
 
 # Display the avg_lenght table in Streamlit
