@@ -552,6 +552,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # -----------------------------
+
 import pandas as pd
 import streamlit as st
 
@@ -572,12 +573,15 @@ top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 # Create data for the table without the logic to make the year appear once for each start_year
 data_for_max_lenght_table = []
 previous_year = None
-def group_border(val):
+def group_border(row):
     global previous_year
-    if val != previous_year:
-        previous_year = val
-        return 'border-top: 2px solid black'  # Add border for new year
-    return ''
+    style = []
+    if row['Campaña'] != previous_year:
+        previous_year = row['Campaña']
+        style = ['border-top: 2px solid black'] * len(row)
+    else:
+        style = [''] * len(row)
+    return style
 
 for _, row in top_max_lenght.iterrows():
     year_value = str(int(round(row['start_year'], 0)))  # Round and convert to string
@@ -590,41 +594,34 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
 # Apply the border-top style for grouping
-styled_max_lenght_table_df = max_lenght_table_df.style.applymap(group_border, subset=['Campaña'])
+styled_max_lenght_table_df = max_lenght_table_df.style.apply(group_border, axis=1)
 
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
 st.dataframe(styled_max_lenght_table_df, use_container_width=True)
 
-# Aggregate the data to calculate avg length for each empresaNEW and start_year
+# The same steps can be followed for the avg_lenght table
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
     avg_lenght=('longitud_rama_horizontal_m', 'mean')
 ).reset_index()
 
-# Round the avg_lenght to 0 decimal places
 company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
 
-# Sort by start_year and avg_lenght to get the top 3 empresasNEW per year
 company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year', 'avg_lenght'], ascending=[True, False])
 
-# Select the top 3 empresasNEW for each year based on avg_lenght
 top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
 
-# Create data for the table without the logic to make the year appear once for each start_year
 data_for_avg_lenght_table = []
 previous_year = None
 for _, row in top_avg_lenght.iterrows():
     year_value = str(int(round(row['start_year'], 0)))  # Round and convert to string
     data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
 
-# Create a DataFrame from the data for display
 avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
-# Format numeric columns as strings without commas and decimals
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply the border-top style for grouping
-styled_avg_lenght_table_df = avg_lenght_table_df.style.applymap(group_border, subset=['Campaña'])
+styled_avg_lenght_table_df = avg_lenght_table_df.style.apply(group_border, axis=1)
 
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
