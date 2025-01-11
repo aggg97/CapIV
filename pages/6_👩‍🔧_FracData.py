@@ -541,9 +541,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-import streamlit as st
-import pandas as pd
-
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -568,6 +565,9 @@ for _, row in top_max_lenght.iterrows():
 
 # Create a DataFrame from the data for display
 max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
+
+# Format numeric columns as strings without commas
+max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].astype(str)
 
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
@@ -597,6 +597,9 @@ for _, row in top_avg_lenght.iterrows():
 
 # Create a DataFrame from the data for display
 avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
+
+# Format numeric columns as strings without commas
+avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].astype(str)
 
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
