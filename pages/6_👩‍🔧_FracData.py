@@ -441,6 +441,9 @@ statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
 statistics['max_lenght'] = statistics['max_lenght'].round(0)
 statistics['std_lenght'] = statistics['std_lenght'].round(0)
 
+# Convert 'start_year' to string without commas
+statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
+
 # Rename columns to match desired output format
 statistics.rename(columns={
     'start_year': 'Campaña',
@@ -450,9 +453,6 @@ statistics.rename(columns={
     'std_lenght': 'Desviación Estándar (metros)'
 }, inplace=True)
 
-
-# Convert 'start_year' to string without commas
-statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
 
 # Display the DataFrame in Streamlit
 st.subheader("Estadística Visualizada")
