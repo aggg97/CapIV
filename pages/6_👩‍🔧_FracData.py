@@ -595,7 +595,9 @@ styled_max_lenght_table_df = max_lenght_table_df.style.applymap(group_border, su
 
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(styled_max_lenght_table_df, use_container_width=True)
+# st.dataframe(styled_max_lenght_table_df, use_container_width=True)
+st.dataframe(max_lenght_table_df)
+st.dataframe(max_lenght_table_df.style.background_gradient(axis=0, gmap=max_lenght_table_df['Campaña'], cmap='YlOrRd'))
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
