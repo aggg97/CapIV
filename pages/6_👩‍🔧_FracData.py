@@ -435,11 +435,11 @@ statistics = df_filtered.groupby(['start_year']).agg(
     std_lenght=('longitud_rama_horizontal_m', 'std'),
 ).reset_index()
 
-# Round the values
-statistics['min_lenght'] = statistics['min_lenght'].round(0)
-statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
-statistics['max_lenght'] = statistics['max_lenght'].round(0)
-statistics['std_lenght'] = statistics['std_lenght'].round(0)
+# Format numerical columns as strings without commas
+statistics['min_lenght'] = statistics['min_lenght'].map('{:.0f}'.format)
+statistics['avg_lenght'] = statistics['avg_lenght'].map('{:.0f}'.format)
+statistics['max_lenght'] = statistics['max_lenght'].map('{:.0f}'.format)
+statistics['std_lenght'] = statistics['std_lenght'].map('{:.0f}'.format)
 
 # Rename columns to match desired output format
 statistics.rename(columns={
