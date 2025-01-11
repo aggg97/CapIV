@@ -435,11 +435,11 @@ statistics = df_filtered.groupby(['start_year']).agg(
     std_lenght=('longitud_rama_horizontal_m', 'std'),
 ).reset_index()
 
-# Format numerical columns as strings without commas
-statistics['min_lenght'] = statistics['min_lenght'].map('{:.0f}'.format)
-statistics['avg_lenght'] = statistics['avg_lenght'].map('{:.0f}'.format)
-statistics['max_lenght'] = statistics['max_lenght'].map('{:.0f}'.format)
-statistics['std_lenght'] = statistics['std_lenght'].map('{:.0f}'.format)
+# Round the values
+statistics['min_lenght'] = statistics['min_lenght'].round(0)
+statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+statistics['max_lenght'] = statistics['max_lenght'].round(0)
+statistics['std_lenght'] = statistics['std_lenght'].round(0)
 
 # Rename columns to match desired output format
 statistics.rename(columns={
@@ -449,6 +449,10 @@ statistics.rename(columns={
     'max_lenght': 'Longitud de Rama Maxima (metros)',
     'std_lenght': 'Desviación Estándar (metros)'
 }, inplace=True)
+
+
+# Convert 'start_year' to string without commas
+statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
 
 # Display the DataFrame in Streamlit
 st.subheader("Estadística Visualizada")
