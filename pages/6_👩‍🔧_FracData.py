@@ -334,6 +334,7 @@ if 'Gasífero' in table_wells_pivot.columns:
             font=dict(size=10, color="red")
         )
 
+
 # Update layout with labels and title
 fig.update_layout(
     title='Pozos enganchados por campaña (Fm. Vaca Muerta)',
@@ -541,9 +542,11 @@ fig.update_layout(
         yanchor='top',  # Aligns the legend to the bottom of the plot
         y=-0.4,  # Adjusts the position of the legend (negative value places it below the plot)
         xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5  # Centers the legend horizontally
+        x=0.5, # Centers the legend horizontally
+        font=dict(size=10)  # Adjust font size to fit space
     )
 )
+
 
 # Show the plot
 st.plotly_chart(fig, use_container_width=True)
