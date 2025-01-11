@@ -532,7 +532,6 @@ fig.update_layout(
     title='Evolucion de la Rama Lateral (Fm Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Longitud de Rama (metros)',
-    legend_title='Referencias',
     template='plotly_white'
 )
 
