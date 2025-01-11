@@ -553,9 +553,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-import pandas as pd
-import streamlit as st
-
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -590,7 +587,7 @@ def highlight_even_odd_years(s):
 
 # Display the max_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(max_lenght_table_df.style.apply(highlight_even_odd_years, axis=1, subset=["Campaña"]).hide(axis="index"), use_container_width=True)
+st.dataframe(max_lenght_table_df.style.apply(highlight_even_odd_years, axis=1, subset=["Campaña"]), use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -627,9 +624,6 @@ def highlight_even_odd_years_avg(s):
 # Display the avg_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
 st.dataframe(avg_lenght_table_df.style.apply(highlight_even_odd_years_avg, axis=1, subset=["Campaña"]), use_container_width=True)
-
-
-
 
 
 
