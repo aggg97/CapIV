@@ -542,8 +542,7 @@ fig.update_layout(
         yanchor='top',  # Aligns the legend to the bottom of the plot
         y=-0.4,  # Adjusts the position of the legend (negative value places it below the plot)
         xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5, # Centers the legend horizontally
-        font=dict(size=10)  # Adjust font size to fit space
+        x=0.5 # Centers the legend horizontally
     )
 )
 
