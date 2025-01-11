@@ -566,8 +566,8 @@ for _, row in top_max_lenght.iterrows():
 # Create a DataFrame from the data for display
 max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
 
-# Format numeric columns as strings without commas
-max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].astype(str)
+# Format numeric columns as strings without commas and decimals
+max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
 # Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
@@ -598,12 +598,13 @@ for _, row in top_avg_lenght.iterrows():
 # Create a DataFrame from the data for display
 avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
-# Format numeric columns as strings without commas
-avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].astype(str)
+# Format numeric columns as strings without commas and decimals
+avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
 st.dataframe(avg_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
+
 
 
 
