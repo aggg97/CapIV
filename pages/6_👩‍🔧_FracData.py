@@ -626,7 +626,7 @@ def highlight_even_odd_years_avg(s):
 
 # Display the avg_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(avg_lenght_table_df.style.apply(highlight_even_odd_years_avg, axis=1, subset=["Campaña"]).hide(axis="index"), use_container_width=True)
+st.dataframe(avg_lenght_table_df.style.apply(highlight_even_odd_years_avg, axis=1, use_container_width=True)
 
 
 
