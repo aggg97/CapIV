@@ -467,7 +467,7 @@ fig = go.Figure(data=[go.Table(
 # Update layout for better visualization
 fig.update_layout(
     title="Estadística Anual de Longitud de Rama Horizontal",
-    template="plotly_white"
+    template="plotly_white",
     paper_bgcolor="white",  # White outer background
     plot_bgcolor="white"   # White inner background
 )
