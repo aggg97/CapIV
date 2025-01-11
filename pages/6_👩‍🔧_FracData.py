@@ -423,7 +423,6 @@ fig_gasifero.update_layout(
 st.plotly_chart(fig_gasifero, use_container_width=True)
 
 #-------------------
-
 # Filter rows where longitud_rama_horizontal_m > 0 and remove duplicates by 'sigla'
 df_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
 
@@ -436,10 +435,10 @@ statistics = df_filtered.groupby(['start_year']).agg(
 ).reset_index()
 
 # Round the values
-statistics['min_lenght'] = statistics['min_lenght'].round(0).astype(int)
-statistics['avg_lenght'] = statistics['avg_lenght'].round(0).astype(int)
-statistics['max_lenght'] = statistics['max_lenght'].round(0).astype(int)
-statistics['std_lenght'] = statistics['std_lenght'].round(0).astype(int)
+statistics['min_lenght'] = statistics['min_lenght'].round(0)
+statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+statistics['max_lenght'] = statistics['max_lenght'].round(0)
+statistics['std_lenght'] = statistics['std_lenght'].round(0)
 
 # Rename columns to match desired output format
 statistics.rename(columns={
@@ -450,14 +449,9 @@ statistics.rename(columns={
     'std_lenght': 'Desviación Estándar (metros)'
 }, inplace=True)
 
-# Display the DataFrame in Streamlit without commas in numerical values
+# Display the DataFrame in Streamlit
 st.subheader("Estadística Visualizada")
-st.dataframe(statistics.style.format({
-    'Longitud de Rama Minima (metros)': '{:.0f}',
-    'Longitud de Rama Promedio (metros)': '{:.0f}',
-    'Longitud de Rama Maxima (metros)': '{:.0f}',
-    'Desviación Estándar (metros)': '{:.0f}'
-}), use_container_width=True)
+st.dataframe(statistics, use_container_width=True)
 
 
 # -----------------------
