@@ -553,10 +553,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-
-import pandas as pd
-import streamlit as st
-
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -585,13 +581,13 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply alternating row colors to highlight year changes
-def highlight_year_changes(s):
-    return ['background-color: #f2f2f2' if s[i] != s[i-1] else '' for i in range(1, len(s))] + ['']  # Alternate color after each year change
+# Apply alternating row colors for even and odd years
+def highlight_even_odd_years(s):
+    return ['background-color: #f2f2f2' if int(s[i]) % 2 == 0 else 'background-color: #e6f7ff' for i in range(len(s))]
 
-# Display the max_lenght table in Streamlit with alternating row colors
+# Display the max_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(max_lenght_table_df.style.apply(highlight_year_changes, subset=["Campaña"]), use_container_width=True)
+st.dataframe(max_lenght_table_df.style.apply(highlight_even_odd_years, subset=["Campaña"]), use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -621,20 +617,13 @@ avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
-# Apply alternating row colors to highlight year changes
-def highlight_year_changes_avg(s):
-    return ['background-color: #f2f2f2' if s[i] != s[i-1] else '' for i in range(1, len(s))] + ['']  # Alternate color after each year change
+# Apply alternating row colors for even and odd years
+def highlight_even_odd_years_avg(s):
+    return ['background-color: #f2f2f2' if int(s[i]) % 2 == 0 else 'background-color: #e6f7ff' for i in range(len(s))]
 
-# Display the avg_lenght table in Streamlit with alternating row colors
+# Display the avg_lenght table in Streamlit with alternating row colors for even and odd years
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(avg_lenght_table_df.style.apply(highlight_year_changes_avg, subset=["Campaña"]), use_container_width=True)
-
-
-
-
-
-
-
+st.dataframe(avg_lenght_table_df.style.apply(highlight_even_odd_years_avg, subset=["Campaña"]), use_container_width=True)
 
 
 
