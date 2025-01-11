@@ -553,9 +553,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-import pandas as pd
-import streamlit as st
-
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -584,17 +581,9 @@ max_lenght_table_df = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 max_lenght_table_df['Longitud de Rama Maxima (metros)'] = max_lenght_table_df['Longitud de Rama Maxima (metros)'].apply(lambda x: f"{int(x)}")
 
-# Highlight even/odd years in the 'Campaña' column using applymap
-def highlight_even_odd(val):
-    # Check if year is even or odd
-    return 'background-color: #f2f2f2' if int(val) % 2 == 0 else 'background-color: #e6f7ff'
-
-# Apply the style to the 'Campaña' column
-styled_df = max_lenght_table_df.style.applymap(highlight_even_odd, subset=["Campaña"])
-
-# Display the max_lenght table in Streamlit with alternating row colors for even and odd years
+# Display the max_lenght table in Streamlit
 st.subheader("Top 3 Pozos Anuales con Longitud de Rama Maxima")
-st.dataframe(styled_df, use_container_width=True)
+st.dataframe(max_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -624,12 +613,7 @@ avg_lenght_table_df = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña
 # Format numeric columns as strings without commas and decimals
 avg_lenght_table_df['Longitud de Rama Promedio (metros)'] = avg_lenght_table_df['Longitud de Rama Promedio (metros)'].apply(lambda x: f"{int(x)}")
 
-# Highlight even/odd years in the 'Campaña' column using applymap
-styled_df_avg = avg_lenght_table_df.style.applymap(highlight_even_odd, subset=["Campaña"])
-
-# Display the avg_lenght table in Streamlit with alternating row colors for even and odd years
+# Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(styled_df_avg, use_container_width=True)
-
-
+st.dataframe(avg_lenght_table_df.style.set_properties(**{'text-align': 'center'}), use_container_width=True)
 
