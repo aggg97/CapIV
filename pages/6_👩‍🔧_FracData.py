@@ -48,7 +48,7 @@ replacement_dict = {
 data_sorted['empresaNEW'] = data_sorted['empresa'].replace(replacement_dict)
 
 # Sidebar filters
-st.header(f":blue[Reporte Extensivo de Completación y Producción de Vaca Muerta]")
+st.header(f":blue[Reporte Extensivo de Completación y Producción en Vaca Muerta]")
 image = Image.open('Vaca Muerta rig.png')
 st.sidebar.image(image)
 
@@ -455,7 +455,7 @@ statistics.rename(columns={
 
 
 # Display the DataFrame in Streamlit
-st.subheader("Estadística Visualizada")
+st.subheader("Estadística Anual de Longitud de Rama")
 
 # Center-align all columns in the DataFrame
 st.dataframe(statistics, use_container_width=True)
@@ -492,7 +492,7 @@ fig.add_trace(go.Scatter(
     x=statistics_petrolifero['start_year'],
     y=statistics_petrolifero['max_lenght'],
     mode='lines+markers',
-    name='Max Longitud Petrolífero',
+    name='Longitud Máxima (Tipo Petrolífero)',
     line=dict(color='green',dash='dash'),
     marker=dict(size=8),
 ))
@@ -502,7 +502,7 @@ fig.add_trace(go.Scatter(
     x=statistics_gasifero['start_year'],
     y=statistics_gasifero['max_lenght'],
     mode='lines+markers',
-    name='Max Longitud Gasífero',
+    name='Longitud Máxima (Tipo Gasífero)',
     line=dict(color='red',dash='dash'),
     marker=dict(size=8),
 ))
@@ -512,7 +512,7 @@ fig.add_trace(go.Scatter(
     x=statistics_petrolifero['start_year'],
     y=statistics_petrolifero['avg_lenght'],
     mode='lines+markers',
-    name='Avg Longitud Petrolífero',
+    name='Longitud Promedio (Tipo Petrolífero)',
     line=dict(color='green'),
     marker=dict(size=8),
 ))
@@ -522,7 +522,7 @@ fig.add_trace(go.Scatter(
     x=statistics_gasifero['start_year'],
     y=statistics_gasifero['avg_lenght'],
     mode='lines+markers',
-    name='Avg Longitud Gasífero',
+    name='Longitud Promedio (Tipo Gasífero)',
     line=dict(color='red'),
     marker=dict(size=8),
 ))
@@ -532,7 +532,7 @@ fig.update_layout(
     title='Evolucion de la Rama Lateral (Fm Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Longitud de Rama (metros)',
-    legend_title='Tipo de Longitud y Pozo',
+    legend_title='Referencias',
     template='plotly_white'
 )
 
