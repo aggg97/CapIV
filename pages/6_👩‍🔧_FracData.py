@@ -436,10 +436,10 @@ statistics = df_filtered.groupby(['start_year']).agg(
 ).reset_index()
 
 # Round the values
-statistics['min_lenght'] = statistics['min_lenght'].round(0)
-statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
-statistics['max_lenght'] = statistics['max_lenght'].round(0)
-statistics['std_lenght'] = statistics['std_lenght'].round(0)
+statistics['min_lenght'] = statistics['min_lenght'].round(0).astype(int)
+statistics['avg_lenght'] = statistics['avg_lenght'].round(0).astype(int)
+statistics['max_lenght'] = statistics['max_lenght'].round(0).astype(int)
+statistics['std_lenght'] = statistics['std_lenght'].round(0).astype(int)
 
 # Rename columns to match desired output format
 statistics.rename(columns={
@@ -450,10 +450,14 @@ statistics.rename(columns={
     'std_lenght': 'Desviación Estándar (metros)'
 }, inplace=True)
 
-# Display the DataFrame in Streamlit
+# Display the DataFrame in Streamlit without commas in numerical values
 st.subheader("Estadística Visualizada")
-st.dataframe(statistics, use_container_width=True)
-
+st.dataframe(statistics.style.format({
+    'Longitud de Rama Minima (metros)': '{:.0f}',
+    'Longitud de Rama Promedio (metros)': '{:.0f}',
+    'Longitud de Rama Maxima (metros)': '{:.0f}',
+    'Desviación Estándar (metros)': '{:.0f}'
+}), use_container_width=True)
 
 
 # -----------------------
