@@ -539,7 +539,7 @@ fig.update_layout(
     legend=dict(
         orientation='h',  # Horizontal orientation
         yanchor='top',  # Aligns the legend to the bottom of the plot
-        y=-0.2,  # Adjusts the position of the legend (negative value places it below the plot)
+        y=-0.4,  # Adjusts the position of the legend (negative value places it below the plot)
         xanchor='center',  # Aligns the legend to the center of the plot
         x=0.5  # Centers the legend horizontally
     )
