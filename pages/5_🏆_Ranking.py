@@ -419,6 +419,63 @@ st.write("**Top 3 Empresa con Máxima Cantidad Promedio de Etapas**")
 st.dataframe(df_avg_lenght,use_container_width=True)
 
 
+#----------
+
+st.subheader("Ranking según de Longitud de Rama Máxima", divider="blue")
+
+# Aggregate data to calculate max length for each sigla, empresaNEW, and start_year
+company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
+    max_lenght=('longitud_rama_horizontal_m', 'max')
+).reset_index()
+
+# Round max_lenght to 0 decimal places (integer)
+company_statistics['max_lenght'] = company_statistics['max_lenght'].round(0)
+
+# Sort by start_year and max_lenght to get the top 3 sigla per year
+company_statistics_sorted = company_statistics.sort_values(['start_year', 'max_lenght'], ascending=[True, False])
+
+# Select the top 3 sigla for each year based on max_lenght
+top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
+
+# Rename columns for better display
+top_max_lenght.rename(columns={
+    'start_year': 'Campaña',
+    'sigla': 'Sigla',
+    'empresaNEW': 'Empresa',
+    'max_lenght': 'Longitud de Rama Máxima (metros)'
+}, inplace=True)
+
+# Display as Streamlit dataframe
+st.subheader("Top 3 Pozos por Año con Longitud de Rama Máxima")
+st.dataframe(top_max_lenght, use_container_width=True)
+
+# ----------------- AVERAGE LENGTH TABLE -----------------
+
+# Aggregate data to calculate avg length for each empresaNEW and start_year
+company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
+    avg_lenght=('longitud_rama_horizontal_m', 'mean')
+).reset_index()
+
+# Round avg_lenght to 0 decimal places (integer)
+company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
+
+# Sort by start_year and avg_lenght to get the top 3 empresaNEW per year
+company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year', 'avg_lenght'], ascending=[True, False])
+
+# Select the top 3 empresaNEW for each year based on avg_lenght
+top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
+
+# Rename columns for better display
+top_avg_lenght.rename(columns={
+    'start_year': 'Campaña',
+    'empresaNEW': 'Empresa',
+    'avg_lenght': 'Longitud de Rama Promedio (metros)'
+}, inplace=True)
+
+# Display as Streamlit dataframe
+st.subheader("Top 3 Empresas por Año con Longitud de Rama Promedio")
+st.dataframe(top_avg_lenght, use_container_width=True)
+
 
 #------------------------------------
 
@@ -528,58 +585,4 @@ st.dataframe(df_petrolifero, use_container_width=True)
 st.write("**Tipo Gasífero: Top 3 Pozos con Mayor Caudal Pico**")
 st.dataframe(df_gasifero, use_container_width=True)
 
-#----------
-
-# Aggregate data to calculate max length for each sigla, empresaNEW, and start_year
-company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
-    max_lenght=('longitud_rama_horizontal_m', 'max')
-).reset_index()
-
-# Round max_lenght to 0 decimal places (integer)
-company_statistics['max_lenght'] = company_statistics['max_lenght'].round(0)
-
-# Sort by start_year and max_lenght to get the top 3 sigla per year
-company_statistics_sorted = company_statistics.sort_values(['start_year', 'max_lenght'], ascending=[True, False])
-
-# Select the top 3 sigla for each year based on max_lenght
-top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
-
-# Rename columns for better display
-top_max_lenght.rename(columns={
-    'start_year': 'Campaña',
-    'sigla': 'Sigla',
-    'empresaNEW': 'Empresa',
-    'max_lenght': 'Longitud de Rama Máxima (metros)'
-}, inplace=True)
-
-# Display as Streamlit dataframe
-st.subheader("Top 3 Pozos por Año con Longitud de Rama Máxima")
-st.dataframe(top_max_lenght, use_container_width=True)
-
-# ----------------- AVERAGE LENGTH TABLE -----------------
-
-# Aggregate data to calculate avg length for each empresaNEW and start_year
-company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
-    avg_lenght=('longitud_rama_horizontal_m', 'mean')
-).reset_index()
-
-# Round avg_lenght to 0 decimal places (integer)
-company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
-
-# Sort by start_year and avg_lenght to get the top 3 empresaNEW per year
-company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year', 'avg_lenght'], ascending=[True, False])
-
-# Select the top 3 empresaNEW for each year based on avg_lenght
-top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
-
-# Rename columns for better display
-top_avg_lenght.rename(columns={
-    'start_year': 'Campaña',
-    'empresaNEW': 'Empresa',
-    'avg_lenght': 'Longitud de Rama Promedio (metros)'
-}, inplace=True)
-
-# Display as Streamlit dataframe
-st.subheader("Top 3 Empresas por Año con Longitud de Rama Promedio")
-st.dataframe(top_avg_lenght, use_container_width=True)
 
