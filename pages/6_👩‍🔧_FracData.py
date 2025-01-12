@@ -551,6 +551,19 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 
+text = """
+** El gran avance en longitud de rama se dio en 2017 y 2018, donde se aumentó la longitud promedio un 24% cada año
+** En los últimos 4 años la longitud promedio viene aumentando a un 6-7% anual
+** El promedio de rama lateral corresponde generalmente al 60% de la rama máxima alcanzada en cada campaña
+** El pozo más largo hasta el 2022 es de 4477m, perteneciente a YPF en Loma Campana
+** En los últimos 4 años la longitud máxima viene aumentando a un 10% anual
+** Para el 2023 se puede esperar una longitud de rama promedio de 2800m y un máximo de 4900m
+** No hay diferencia en la longitud de rama entre pozos de petróleo y pozos de gas
+"""
+
+st.write(text)
+
+
 # -----------------------------
 
 import pandas as pd
