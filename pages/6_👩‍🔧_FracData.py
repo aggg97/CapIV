@@ -271,9 +271,27 @@ df_merged_VMUT = df_merged_final[
 ]
 
 # ----------------------- Pivot Tables + Plots ------------
-st.expander("Indicadores de Actividad")
-st.expander("Estrategias de Completación")
-st.expander("Indicadores de Productividad")
+
+# Create tabs
+tab1, tab2, tab3 = st.tabs(["Indicadores de Actividad", "Estrategia de Completación", "Productividad"])
+
+# --- Tab 1: Indicadores de Actividad ---
+with tab1:
+    st.subheader("Indicadores de Actividad")
+    
+ 
+
+# --- Tab 2: Estrategia de Completación ---
+with tab2:
+    st.subheader("Estrategia de Completación")
+    
+
+
+# --- Tab 3: Productividad ---
+with tab3:
+    st.subheader("Productividad")
+    
+
 # ----------------------- 
 # Group by 'start_year' and 'tipopozoNEW', then count the number of wells
 table_wells_by_start_year = (
