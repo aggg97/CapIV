@@ -274,6 +274,8 @@ df_merged_VMUT = df_merged_final[
 
 # --------------------
 
+st.subheader("Ranking de Mayor Actividad por Empresa", divider="gray")
+
 # Get the current and previous years
 current_year = int(df_merged_VMUT['start_year'].max())
 previous_year = int(current_year - 1)
@@ -354,6 +356,8 @@ df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizonta
 import pandas as pd
 import streamlit as st
 
+st.subheader("Ranking según Cantidad de Etapas", divider="gray")
+
 # Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
 company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
     max_lenght=('longitud_rama_horizontal_m', 'max')
@@ -418,7 +422,7 @@ st.dataframe(df_avg_lenght,use_container_width=True)
 
 #------------------------------------
 
-st.divider()
+st.subheader("Ranking según Caudales Pico", divider="gray")
 
 # Process Data for Petrolífero
 grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
