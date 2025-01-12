@@ -752,5 +752,107 @@ st.dataframe(pivot_table_gasifero, use_container_width=True)
 st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos y Promedios)**")
 st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
+#------------------------------------
 
+import pandas as pd
+import streamlit as st
+
+# Process Data for Petrolífero
+grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
+    ['start_year', 'sigla', 'empresaNEW']
+).agg({
+    'Qo_peak': 'max',
+    'longitud_rama_horizontal_m': 'mean',
+    'cantidad_fracturas': 'mean',
+    'arena_bombeada_nacional_tn': 'sum',
+    'arena_bombeada_importada_tn': 'sum'
+}).reset_index()
+
+grouped_petrolifero['fracspacing'] = grouped_petrolifero['longitud_rama_horizontal_m'] / grouped_petrolifero['cantidad_fracturas']
+grouped_petrolifero['agente_etapa'] = (
+    grouped_petrolifero['arena_bombeada_nacional_tn'] + grouped_petrolifero['arena_bombeada_importada_tn']
+) / grouped_petrolifero['cantidad_fracturas']
+
+grouped_petrolifero = grouped_petrolifero.drop_duplicates(subset=['start_year', 'sigla'], keep='first')
+grouped_petrolifero_sorted = grouped_petrolifero.sort_values(['start_year', 'Qo_peak'], ascending=[True, False])
+top_petrolifero = grouped_petrolifero_sorted.groupby('start_year').head(3)
+
+# Handle repeated years in Petrolífero table
+data_petrolifero_table = []
+previous_year = None
+for _, row in top_petrolifero.iterrows():
+    year_value = str(row['start_year']) if row['start_year'] != previous_year else " "
+    data_petrolifero_table.append({
+        'start_year': year_value,
+        'sigla': row['sigla'],
+        'empresaNEW': row['empresaNEW'],
+        'Qo_peak': int(row['Qo_peak']),
+        'cantidad_fracturas': int(row['cantidad_fracturas']),
+        'fracspacing': int(row['fracspacing']),
+        'agente_etapa': int(row['agente_etapa'])
+    })
+    previous_year = row['start_year']
+
+# Process Data for Gasífero
+grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
+    ['start_year', 'sigla', 'empresaNEW']
+).agg({
+    'Qg_peak': 'max',
+    'longitud_rama_horizontal_m': 'mean',
+    'cantidad_fracturas': 'mean',
+    'arena_bombeada_nacional_tn': 'sum',
+    'arena_bombeada_importada_tn': 'sum'
+}).reset_index()
+
+grouped_gasifero['fracspacing'] = grouped_gasifero['longitud_rama_horizontal_m'] / grouped_gasifero['cantidad_fracturas']
+grouped_gasifero['agente_etapa'] = (
+    grouped_gasifero['arena_bombeada_nacional_tn'] + grouped_gasifero['arena_bombeada_importada_tn']
+) / grouped_gasifero['cantidad_fracturas']
+
+grouped_gasifero = grouped_gasifero.drop_duplicates(subset=['start_year', 'sigla'], keep='first')
+grouped_gasifero_sorted = grouped_gasifero.sort_values(['start_year', 'Qg_peak'], ascending=[True, False])
+top_gasifero = grouped_gasifero_sorted.groupby('start_year').head(3)
+
+# Handle repeated years in Gasífero table
+data_gasifero_table = []
+previous_year = None
+for _, row in top_gasifero.iterrows():
+    year_value = str(row['start_year']) if row['start_year'] != previous_year else " "
+    data_gasifero_table.append({
+        'start_year': year_value,
+        'sigla': row['sigla'],
+        'empresaNEW': row['empresaNEW'],
+        'Qg_peak': int(row['Qg_peak']),
+        'cantidad_fracturas': int(row['cantidad_fracturas']),
+        'fracspacing': int(row['fracspacing']),
+        'agente_etapa': int(row['agente_etapa'])
+    })
+    previous_year = row['start_year']
+
+# Convert to DataFrame for Petrolífero and Gasífero tables
+df_petrolifero = pd.DataFrame(data_petrolifero_table)
+df_gasifero = pd.DataFrame(data_gasifero_table)
+
+# Rename columns for both DataFrames
+df_petrolifero.rename(columns={
+    'start_year': 'Campaña',
+    'Qo_peak': 'Caudal Pico de Petróleo (m3/d)',
+    'cantidad_fracturas': 'Cantidad de Fracturas',
+    'fracspacing': 'Fracspacing (m/fractura)',
+    'agente_etapa': 'Agente de Sosten por Etapa (tn/fractura)'
+}, inplace=True)
+
+df_gasifero.rename(columns={
+    'start_year': 'Campaña',
+    'Qg_peak': 'Caudal Pico de Gas (km3/d)',
+    'cantidad_fracturas': 'Cantidad de Fracturas',
+    'fracspacing': 'Fracspacing (m/etapa)',
+    'agente_etapa': 'Agente de Sosten por Etapa (tn/etapa)'
+}, inplace=True)
+
+# Display tables using st.dataframe
+st.dataframe(df_petrolifero, use_container_width=True)
+st.dataframe(df_gasifero, use_container_width=True)
+
+#---------------------
 
