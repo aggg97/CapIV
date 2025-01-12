@@ -1024,3 +1024,69 @@ st.plotly_chart(fig,use_container_width=True)
 #---------------------------
 st.divider()
 
+import streamlit as st
+import pandas as pd
+
+# Group by 'start_year' and aggregate the data
+pivot_table_arena = df_merged_VMUT.groupby('start_year').agg({
+    'arena_bombeada_nacional_tn': 'sum',
+    'arena_bombeada_importada_tn': 'sum',
+    'arena_total_tn': 'sum',
+}).reset_index()
+
+# Calculate %Arena Importada
+pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_importada_tn'] / pivot_table_arena['arena_total_tn']) * 100
+
+# Calculate average arena bombeada (average of national and imported)
+pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
+
+# Round values to avoid decimals in the final output
+pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
+pivot_table_arena['arena_bombeada_importada_tn'] = pivot_table_arena['arena_bombeada_importada_tn'].astype(int)
+pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype(int)
+pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
+pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
+
+# Display the DataFrame in Streamlit
+st.write("### Pivot Table: Arena por Año")
+st.dataframe(pivot_table_arena, use_container_width=True)
+
+# Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
+fig_arena_plot = go.Figure()
+
+# Plot Total Arena Bombeada per Year
+fig_arena_plot.add_trace(go.Scatter(
+    x=pivot_table_arena['start_year'],
+    y=pivot_table_arena['arena_total_tn'],
+    mode='lines+markers',
+    name='Arena Total (tn)',
+    line=dict(dash='solid', width=3)
+))
+
+
+# Plot % Arena Importada on secondary axis
+fig_arena_plot.add_trace(go.Scatter(
+    x=pivot_table_arena['start_year'],
+    y=pivot_table_arena['perc_arena_importada'],
+    mode='lines+markers',
+    name='% Arena Importada',
+    line=dict(color='green', width=3),
+    yaxis='y2'
+))
+
+fig_arena_plot.update_layout(
+    title="Total Arena Bombeada vs % Arena Importada por Año",
+    xaxis_title="Campaña",
+    yaxis_title="Arena Bombeada (tn)",
+    yaxis2=dict(
+        title="% Arena Importada",
+        overlaying="y",
+        side="right"
+    ),
+    template="plotly_white"
+)
+
+fig_arena_plot.show()
+st.plotly_chart(fig_arena_plot)
+
+
