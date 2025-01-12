@@ -463,7 +463,7 @@ fig_max_lenght.update_layout(
 # Convert to a dataframe
 df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Máxima (metros)"])
 
-
+st.write("**Top 3 Pozos con Mayor Longitud de Rama**")
 st.dataframe(df_max_lenght, use_container_width=True)
 
 
@@ -495,7 +495,7 @@ for _, row in top_avg_lenght.iterrows():
 # Convert to a dataframe
 df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
-
+st.write("**Top 3 Empresa con Mayor Longitud de Rama Promedio**")
 st.dataframe(df_avg_lenght, use_container_width=True)
 
 
