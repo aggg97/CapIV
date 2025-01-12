@@ -444,7 +444,7 @@ with tab1:
     st.write("### Evolución de Arena Bombeada")
     st.dataframe(pivot_table_arena, use_container_width=True)
     
-    fig_arena_plot.show()
+    # fig_arena_plot.show()
     st.plotly_chart(fig_arena_plot)
 
 # --- Tab 2: Estrategia de Completación ---
