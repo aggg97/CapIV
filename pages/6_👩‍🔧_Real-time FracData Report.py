@@ -535,26 +535,26 @@ with tab2:
     ))
 
     # Add annotations for Max Etapas
-for i, row in statistics.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['max_lenght'],
-        text=f"{row['max_lenght']:.0f}",  # Zero decimals
-        showarrow=False,
-        yshift=15,  # Position above the point
-        font=dict(color="blue", size=10)
-    )
+    for i, row in statistics.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['max_lenght'],
+            text=f"{row['max_lenght']:.0f}",  # Zero decimals
+            showarrow=False,
+            yshift=15,  # Position above the point
+            font=dict(color="blue", size=10)
+        )
 
-# Add annotations for Avg Etapas
-for i, row in statistics.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['avg_lenght'],
-        text=f"{row['avg_lenght']:.0f}",  # Zero decimals
-        showarrow=False,
-        yshift=15,  # Position above the point
-        font=dict(color="magenta", size=10)
-    )
+    # Add annotations for Avg Etapas
+    for i, row in statistics.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['avg_lenght'],
+            text=f"{row['avg_lenght']:.0f}",  # Zero decimals
+            showarrow=False,
+            yshift=15,  # Position above the point
+            font=dict(color="magenta", size=10)
+        )
 
     
     # Update layout with labels, title, and legend below the plot
