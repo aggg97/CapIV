@@ -1041,7 +1041,7 @@ pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_i
 # Calculate average arena bombeada (average of national and imported)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
 
-pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(string)
+pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(str)
 
 # Round values to avoid decimals in the final output for all numeric columns
 pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
