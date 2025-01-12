@@ -271,7 +271,10 @@ df_merged_VMUT = df_merged_final[
 ]
 
 # ----------------------- Pivot Tables + Plots ------------
-
+st.expander("Indicadores de Actividad")
+st.expander("Estrategias de Completación")
+st.expander("Indicadores de Productividad")
+# ----------------------- 
 # Group by 'start_year' and 'tipopozoNEW', then count the number of wells
 table_wells_by_start_year = (
     df_merged_VMUT.groupby(['start_year', 'tipopozoNEW'])['sigla']
@@ -350,78 +353,6 @@ fig.show()
 st.plotly_chart(fig, use_container_width=True)
 
 # --------------------
-
-# Get the current and previous years
-current_year = int(df_merged_VMUT['start_year'].max())
-previous_year = int(current_year - 1)
-
-# Create a Streamlit selectbox for year selection
-selected_year = st.selectbox("Seleccionar Año (Anterior o Actual)", [current_year, previous_year])
-
-# Filter the dataset based on the selected year
-filtered_data = df_merged_VMUT[df_merged_VMUT['start_year'] == selected_year]
-
-# Count wells per company and well type
-wells_per_company_type = filtered_data.groupby(['empresaNEW', 'tipopozoNEW'])['sigla'].nunique().reset_index()
-wells_per_company_type.columns = ['empresaNEW', 'tipopozoNEW', 'well_count']
-
-# Separate the data into two DataFrames: one for Petrolífero and one for Gasífero
-wells_petrolifero = wells_per_company_type[wells_per_company_type['tipopozoNEW'] == 'Petrolífero']
-wells_gasifero = wells_per_company_type[wells_per_company_type['tipopozoNEW'] == 'Gasífero']
-
-# Get the top 10 companies for Petrolífero wells
-top_petrolifero_companies = wells_petrolifero.groupby('empresaNEW')['well_count'].sum().nlargest(10).index
-wells_petrolifero_top_10 = wells_petrolifero[wells_petrolifero['empresaNEW'].isin(top_petrolifero_companies)]
-
-# Get the top 10 companies for Gasífero wells
-top_gasifero_companies = wells_gasifero.groupby('empresaNEW')['well_count'].sum().nlargest(10).index
-wells_gasifero_top_10 = wells_gasifero[wells_gasifero['empresaNEW'].isin(top_gasifero_companies)]
-
-# Plot for Petrolífero wells (top 10 companies) with horizontal bars
-fig_petrolifero = px.bar(
-    wells_petrolifero_top_10,
-    x='well_count',
-    y='empresaNEW',
-    title=f'Pozos Petrolíferos por Empresa (Año {selected_year})',
-    labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
-    color='empresaNEW',
-    color_discrete_sequence=px.colors.qualitative.Set1,
-    orientation='h',
-    text='well_count'
-)
-
-# Update layout for Petrolífero plot
-fig_petrolifero.update_layout(
-    xaxis_title='Número de Pozos',
-    yaxis_title='Empresa',
-    template='plotly_white'
-)
-
-# Show the Petrolífero plot in Streamlit
-st.plotly_chart(fig_petrolifero, use_container_width=True)
-
-# Plot for Gasífero wells (top 10 companies) with horizontal bars
-fig_gasifero = px.bar(
-    wells_gasifero_top_10,
-    x='well_count',
-    y='empresaNEW',
-    title=f'Pozos Gasíferos por Empresa (Año {selected_year})',
-    labels={'empresaNEW': 'Empresa', 'well_count': 'Número de Pozos'},
-    color='empresaNEW',
-    color_discrete_sequence=px.colors.qualitative.Set1,
-    orientation='h',
-    text='well_count'
-)
-
-# Update layout for Gasífero plot
-fig_gasifero.update_layout(
-    xaxis_title='Número de Pozos',
-    yaxis_title='Empresa',
-    template='plotly_white'
-)
-
-# Show the Gasífero plot in Streamlit
-st.plotly_chart(fig_gasifero, use_container_width=True)
 
 #-------------------
 
@@ -552,71 +483,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------
 
-import pandas as pd
-import streamlit as st
-
-# Aggregate the data to calculate max length for each sigla, empresaNEW, and start_year
-company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW', 'sigla']).agg(
-    max_lenght=('longitud_rama_horizontal_m', 'max')
-).reset_index()
-
-# Round the max_lenght to 0 decimal places
-company_statistics['max_lenght'] = company_statistics['max_lenght'].round(0)
-
-# Sort by start_year and max_lenght to get the top 3 sigla per year
-company_statistics_sorted = company_statistics.sort_values(['start_year', 'max_lenght'], ascending=[True, False])
-
-# Select the top 3 sigla for each year based on max_lenght
-top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
-
-# Create data for the table with the year appearing only once for each start_year
-data_for_max_lenght_table = []
-previous_year = None
-for _, row in top_max_lenght.iterrows():
-    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
-    data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
-    previous_year = row['start_year']
-
-# Convert to a dataframe
-df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
-
-# Display the DataFrame in Streamlit
-st.write("**Top 3 Pozos con Máxima Cantidad de Etapas**")
-# Display the dataframe in Streamlit
-st.dataframe(df_max_lenght,use_container_width=True)
-
-# Aggregate the data to calculate avg length for each empresaNEW and start_year
-company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
-    avg_lenght=('longitud_rama_horizontal_m', 'mean')
-).reset_index()
-
-# Round the avg_lenght to 0 decimal places
-company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
-
-# Sort by start_year and avg_lenght to get the top 3 empresasNEW per year
-company_statistics_sorted_avg = company_statistics_avg.sort_values(['start_year', 'avg_lenght'], ascending=[True, False])
-
-# Select the top 3 empresasNEW for each year based on avg_lenght
-top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
-
-# Create data for the table with the year appearing only once for each start_year
-data_for_avg_lenght_table = []
-previous_year = None
-for _, row in top_avg_lenght.iterrows():
-    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
-    data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
-    previous_year = row['start_year']
-
-# Convert to a dataframe
-df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
-
-# Display the DataFrame in Streamlit
-st.write("**Top 3 Empresa con Máxima Cantidad Promedio de Etapas**")
-# Display the dataframe in Streamlit
-st.dataframe(df_avg_lenght,use_container_width=True)
-
-
-#------------------------------------
 
 # Aggregate data to calculate max and avg by year
 statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
@@ -755,109 +621,6 @@ st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
 #------------------------------------
 
-st.divider()
-
-# Process Data for Petrolífero
-grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
-    ['start_year', 'sigla', 'empresaNEW']
-).agg({
-    'Qo_peak': 'max',
-    'longitud_rama_horizontal_m': 'mean',
-    'cantidad_fracturas': 'mean',
-    'arena_bombeada_nacional_tn': 'sum',
-    'arena_bombeada_importada_tn': 'sum'
-}).reset_index()
-
-grouped_petrolifero['fracspacing'] = grouped_petrolifero['longitud_rama_horizontal_m'] / grouped_petrolifero['cantidad_fracturas']
-grouped_petrolifero['agente_etapa'] = (
-    grouped_petrolifero['arena_bombeada_nacional_tn'] + grouped_petrolifero['arena_bombeada_importada_tn']
-) / grouped_petrolifero['cantidad_fracturas']
-
-grouped_petrolifero = grouped_petrolifero.drop_duplicates(subset=['start_year', 'sigla'], keep='first')
-grouped_petrolifero_sorted = grouped_petrolifero.sort_values(['start_year', 'Qo_peak'], ascending=[True, False])
-top_petrolifero = grouped_petrolifero_sorted.groupby('start_year').head(3)
-
-# Handle repeated years in Petrolífero table
-data_petrolifero_table = []
-previous_year = None
-for _, row in top_petrolifero.iterrows():
-    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "
-    data_petrolifero_table.append({
-        'start_year': year_value,
-        'sigla': row['sigla'],
-        'empresaNEW': row['empresaNEW'],
-        'Qo_peak': int(row['Qo_peak']),
-        'cantidad_fracturas': int(row['cantidad_fracturas']),
-        'fracspacing': int(row['fracspacing']),
-        'agente_etapa': int(row['agente_etapa'])
-    })
-    previous_year = row['start_year']
-
-# Process Data for Gasífero
-grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
-    ['start_year', 'sigla', 'empresaNEW']
-).agg({
-    'Qg_peak': 'max',
-    'longitud_rama_horizontal_m': 'mean',
-    'cantidad_fracturas': 'mean',
-    'arena_bombeada_nacional_tn': 'sum',
-    'arena_bombeada_importada_tn': 'sum'
-}).reset_index()
-
-grouped_gasifero['fracspacing'] = grouped_gasifero['longitud_rama_horizontal_m'] / grouped_gasifero['cantidad_fracturas']
-grouped_gasifero['agente_etapa'] = (
-    grouped_gasifero['arena_bombeada_nacional_tn'] + grouped_gasifero['arena_bombeada_importada_tn']
-) / grouped_gasifero['cantidad_fracturas']
-
-grouped_gasifero = grouped_gasifero.drop_duplicates(subset=['start_year', 'sigla'], keep='first')
-grouped_gasifero_sorted = grouped_gasifero.sort_values(['start_year', 'Qg_peak'], ascending=[True, False])
-top_gasifero = grouped_gasifero_sorted.groupby('start_year').head(3)
-
-# Handle repeated years in Gasífero table
-data_gasifero_table = []
-previous_year = None
-for _, row in top_gasifero.iterrows():
-    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "
-    data_gasifero_table.append({
-        'start_year': year_value,
-        'sigla': row['sigla'],
-        'empresaNEW': row['empresaNEW'],
-        'Qg_peak': int(row['Qg_peak']),
-        'cantidad_fracturas': int(row['cantidad_fracturas']),
-        'fracspacing': int(row['fracspacing']),
-        'agente_etapa': int(row['agente_etapa'])
-    })
-    previous_year = row['start_year']
-
-# Convert to DataFrame for Petrolífero and Gasífero tables
-df_petrolifero = pd.DataFrame(data_petrolifero_table)
-df_gasifero = pd.DataFrame(data_gasifero_table)
-
-# Rename columns for both DataFrames
-df_petrolifero.rename(columns={
-    'start_year': 'Campaña',
-    'Qo_peak': 'Caudal Pico de Petróleo (m3/d)',
-    'cantidad_fracturas': 'Cantidad de Fracturas',
-    'fracspacing': 'Fracspacing (m/fractura)',
-    'agente_etapa': 'Agente de Sosten por Etapa (tn/fractura)'
-}, inplace=True)
-
-df_gasifero.rename(columns={
-    'start_year': 'Campaña',
-    'Qg_peak': 'Caudal Pico de Gas (km3/d)',
-    'cantidad_fracturas': 'Cantidad de Fracturas',
-    'fracspacing': 'Fracspacing (m/etapa)',
-    'agente_etapa': 'Agente de Sosten por Etapa (tn/etapa)'
-}, inplace=True)
-
-
-# Display tables using st.dataframe
-st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
-st.dataframe(df_petrolifero, use_container_width=True)
-st.write("**Tipo Gasífero: Top 3 Pozos con Mayor Caudal Pico**")
-st.dataframe(df_gasifero, use_container_width=True)
-
-#---------------------
 st.divider()
 
 
