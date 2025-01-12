@@ -573,13 +573,15 @@ top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 data_for_max_lenght_table = []
 previous_year = None
 for _, row in top_max_lenght.iterrows():
-    year_value = int(['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
+    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
     data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
     previous_year = row['start_year']
 
 # Convert to a dataframe
 df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
 
+# Display the DataFrame in Streamlit
+st.subheader("Top 3 Pozos con Máxima Cantidad de Etapas")
 # Display the dataframe in Streamlit
 st.dataframe(df_max_lenght)
 
@@ -601,13 +603,15 @@ top_avg_lenght = company_statistics_sorted_avg.groupby('start_year').head(3)
 data_for_avg_lenght_table = []
 previous_year = None
 for _, row in top_avg_lenght.iterrows():
-    year_value = row['start_year'] if row['start_year'] != previous_year else " "  # Use blank for repeated years
+    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
     data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
     previous_year = row['start_year']
 
 # Convert to a dataframe
 df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
+# Display the DataFrame in Streamlit
+st.subheader("Top 3 Empresa con Máxima Cantidad Promedio de Etapas")
 # Display the dataframe in Streamlit
 st.dataframe(df_avg_lenght)
 
