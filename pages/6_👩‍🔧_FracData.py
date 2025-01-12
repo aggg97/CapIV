@@ -1049,19 +1049,6 @@ pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_import
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
 
 
-# Rename columns to desired names
-pivot_table_arena = pivot_table_arena.rename(columns={
-    'start_year': 'Campaña',
-    'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
-    'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
-    'arena_total_tn': 'Arena Total (tn)',
-    'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
-    'perc_arena_importada': '% de Arena Importada'
-})
-
-# Display the DataFrame in Streamlit
-st.write("### Evolución de Arena Bombeada")
-st.dataframe(pivot_table_arena, use_container_width=True)
 
 # Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
 fig_arena_plot = go.Figure()
@@ -1096,6 +1083,21 @@ fig_arena_plot.update_layout(
     ),
     template="plotly_white"
 )
+
+
+# Rename columns to desired names
+pivot_table_arena = pivot_table_arena.rename(columns={
+    'start_year': 'Campaña',
+    'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
+    'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
+    'arena_total_tn': 'Arena Total (tn)',
+    'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
+    'perc_arena_importada': '% de Arena Importada'
+})
+
+# Display the DataFrame in Streamlit
+st.write("### Evolución de Arena Bombeada")
+st.dataframe(pivot_table_arena, use_container_width=True)
 
 fig_arena_plot.show()
 st.plotly_chart(fig_arena_plot)
