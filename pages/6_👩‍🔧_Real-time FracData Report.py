@@ -488,6 +488,44 @@ with tab2:
     st.dataframe(statistics, use_container_width=True)
 
     # -----------------------
+    # Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
+    df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['cantidad_fracturas'] > 0].drop_duplicates(subset='sigla')
+    
+    # Example: Calculate statistics for a specific column (longitud_rama_horizontal_m)
+    # Aggregate data to calculate min, median, max, and standard deviation for each year
+    statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
+        min_etapas=('cantidad_fracturas', 'min'),
+        avg_etapas=('cantidad_fracturas', 'mean'),
+        max_etapas=('cantidad_fracturas', 'max'),
+        std_etapas=('cantidad_fracturas', 'std'),
+    ).reset_index()
+    
+    # Round the values to 0 decimal places
+    statistics['min_etapas'] = statistics['min_etapas'].round(0)
+    statistics['avg_etapas'] = statistics['avg_etapas'].round(0)
+    statistics['max_etapas'] = statistics['max_etapas'].round(0)
+    statistics['std_etapas'] = statistics['std_etapas'].round(0)
+    
+    # Convert 'start_year' to string without commas
+    statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
+    
+    # Rename columns to match desired output format
+    statistics.rename(columns={
+        'start_year': 'Campaña',
+        'min_lenght': 'Cantidad de Etapas Mínima',
+        'avg_lenght': 'Cantidad de Etapas Promedio',
+        'max_lenght': 'Cantidad de Etapas Máxima',
+        'std_lenght': 'Desviación Estándar'
+    }, inplace=True)
+    
+    
+    # Display the DataFrame in Streamlit
+    st.subheader("Estadística Anual de Cantidad de Etapas")
+    
+    # Center-align all columns in the DataFrame
+    st.dataframe(statistics, use_container_width=True)
+
+    # ---------------
 
     import plotly.graph_objects as go
     import streamlit as st
