@@ -731,6 +731,16 @@ pivot_table_petrolifero.rename(columns={
     'oil_avg': 'Caudal Pico de Petróleo - Promedio (m3/d)'
 }, inplace=True)
 
+# Convert 'Campaña' to string, other columns to integers
+pivot_table_gasifero['Campaña'] = pivot_table_gasifero['Campaña'].map('{:.0f}'.format)
+pivot_table_petrolifero['Campaña'] = pivot_table_petrolifero['Campaña'].map('{:.0f}'.format)
+
+pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']] = \
+    pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']].astype(int)
+
+pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']] = \
+    pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']].astype(int)
+
 
 # Step 3: Display the tables using st.dataframe
 
