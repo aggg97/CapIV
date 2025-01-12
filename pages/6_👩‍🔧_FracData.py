@@ -781,7 +781,7 @@ top_petrolifero = grouped_petrolifero_sorted.groupby('start_year').head(3)
 data_petrolifero_table = []
 previous_year = None
 for _, row in top_petrolifero.iterrows():
-    year_value = str(row['start_year']) if row['start_year'] != previous_year else " "
+    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "
     data_petrolifero_table.append({
         'start_year': year_value,
         'sigla': row['sigla'],
@@ -817,7 +817,7 @@ top_gasifero = grouped_gasifero_sorted.groupby('start_year').head(3)
 data_gasifero_table = []
 previous_year = None
 for _, row in top_gasifero.iterrows():
-    year_value = str(row['start_year']) if row['start_year'] != previous_year else " "
+    year_value = int(row['start_year']) if row['start_year'] != previous_year else " "
     data_gasifero_table.append({
         'start_year': year_value,
         'sigla': row['sigla'],
@@ -850,9 +850,6 @@ df_gasifero.rename(columns={
     'agente_etapa': 'Agente de Sosten por Etapa (tn/etapa)'
 }, inplace=True)
 
-# Convert start_year to string without decimals
-df_petrolifero['Campaña'] = df_petrolifero['Campaña'].map('{:.0f}'.format)
-df_gasifero['Campaña'] = df_gasifero['Campaña'].map('{:.0f}'.format)
 
 # Display tables using st.dataframe
 st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
