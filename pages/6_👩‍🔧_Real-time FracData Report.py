@@ -353,7 +353,7 @@ with tab1:
     )
     
     # Show the plot
-    fig.show()
+     #fig.show()
     
     st.plotly_chart(fig, use_container_width=True)
 
