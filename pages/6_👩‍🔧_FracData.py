@@ -573,7 +573,7 @@ top_max_lenght = company_statistics_sorted.groupby('start_year').head(3)
 data_for_max_lenght_table = []
 previous_year = None
 for _, row in top_max_lenght.iterrows():
-    year_value = row['start_year'] if row['start_year'] != previous_year else " "  # Use blank for repeated years
+    year_value = int(['start_year']) if row['start_year'] != previous_year else " "  # Use blank for repeated years
     data_for_max_lenght_table.append([year_value, row['sigla'], row['empresaNEW'], row['max_lenght']])
     previous_year = row['start_year']
 
