@@ -540,13 +540,12 @@ fig.update_layout(
     legend=dict(
     orientation='h',  # Horizontal orientation
     yanchor='bottom',  # Aligns the legend to the top of the plot (bottom of the legend box)
-    y=1.0,  # Adjusts the position of the legend (move it slightly above the plot)
+    y=0.9,  # Adjusts the position of the legend (move it slightly above the plot)
     xanchor='center',  # Aligns the legend to the center of the plot
     x=0.5  # Centers the legend horizontally
 )
 
 )
-
 
 # Show the plot
 st.plotly_chart(fig, use_container_width=True)
@@ -582,9 +581,9 @@ for _, row in top_max_lenght.iterrows():
 df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
 
 # Display the DataFrame in Streamlit
-st.subheader("Top 3 Pozos con Máxima Cantidad de Etapas")
+st.write("Top 3 Pozos con Máxima Cantidad de Etapas")
 # Display the dataframe in Streamlit
-st.dataframe(df_max_lenght)
+st.dataframe(df_max_lenght,use_container_width=True)
 
 # Aggregate the data to calculate avg length for each empresaNEW and start_year
 company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW']).agg(
@@ -612,9 +611,9 @@ for _, row in top_avg_lenght.iterrows():
 df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
 # Display the DataFrame in Streamlit
-st.subheader("Top 3 Empresa con Máxima Cantidad Promedio de Etapas")
+st.write("Top 3 Empresa con Máxima Cantidad Promedio de Etapas")
 # Display the dataframe in Streamlit
-st.dataframe(df_avg_lenght)
+st.dataframe(df_avg_lenght,use_container_width=True)
 
 
 #------------------------------------
@@ -762,6 +761,11 @@ fig_petrolifero.update_layout(
 )
 
 # Step 4: Show the Tables
+
 fig_gasifero.show()
+st.dataframe(fig_gasifero,use_container_width=True)
+
 fig_petrolifero.show()
+st.dataframe(fig_petrolifero,use_container_width=True)
+
 
