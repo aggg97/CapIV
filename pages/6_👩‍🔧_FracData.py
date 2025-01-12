@@ -928,7 +928,7 @@ fig.update_layout(
     title="Tipo Petrolífero: Evolución de Caudal Pico (Maximos y Promedios)",
     xaxis_title="Campaña",
     yaxis_title="Caudal de Petróleo (m3/d)",
-    template="plotly_white"
+    template="plotly_white",
     legend=dict(
         orientation='h',  # Horizontal orientation
         yanchor='bottom',  # Aligns the legend to the bottom of the plot
