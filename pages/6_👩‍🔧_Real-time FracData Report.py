@@ -542,7 +542,7 @@ for i, row in statistics.iterrows():
         text=f"{row['max_lenght']:.0f}",  # Zero decimals
         showarrow=False,
         yshift=15,  # Position above the point
-        font=dict(color="magenta", size=10)
+        font=dict(color="blue", size=10)
     )
 
 # Add annotations for Avg Etapas
@@ -553,7 +553,7 @@ for i, row in statistics.iterrows():
         text=f"{row['avg_lenght']:.0f}",  # Zero decimals
         showarrow=False,
         yshift=15,  # Position above the point
-        font=dict(color="blue", size=10)
+        font=dict(color="magenta", size=10)
     )
 
     
