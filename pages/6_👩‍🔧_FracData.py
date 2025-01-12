@@ -690,6 +690,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 #----------------------------------
 
+st.divider()
 # Only keep VMUT as the target formation and filter for SHALE resource type
 data_filtered = df_merged_VMUT[
     (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
@@ -754,8 +755,7 @@ st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
 #------------------------------------
 
-import pandas as pd
-import streamlit as st
+st.divider()
 
 # Process Data for Petrolífero
 grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
@@ -850,8 +850,14 @@ df_gasifero.rename(columns={
     'agente_etapa': 'Agente de Sosten por Etapa (tn/etapa)'
 }, inplace=True)
 
+# Convert start_year to string without decimals
+df_petrolifero['Campaña'] = df_petrolifero['Campaña'].map('{:.0f}'.format).astype(str)
+df_gasifero['Campaña'] = df_gasifero['Campaña'].map('{:.0f}'.format).astype(str)
+
 # Display tables using st.dataframe
+st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
 st.dataframe(df_petrolifero, use_container_width=True)
+st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
 st.dataframe(df_gasifero, use_container_width=True)
 
 #---------------------
