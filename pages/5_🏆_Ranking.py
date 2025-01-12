@@ -503,6 +503,8 @@ df_gasifero = pd.DataFrame(data_gasifero_table)
 # Rename columns for both DataFrames
 df_petrolifero.rename(columns={
     'start_year': 'Campaña',
+    'sigla': 'Sigla',
+    'empresaNEW': 'Empresa',
     'Qo_peak': 'Caudal Pico de Petróleo (m3/d)',
     'cantidad_fracturas': 'Cantidad de Fracturas',
     'fracspacing': 'Fracspacing (m/fractura)',
