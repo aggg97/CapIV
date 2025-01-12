@@ -1048,8 +1048,6 @@ pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype
 pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
 
-# Convert 'start_year' to string for display purposes
-pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(str)
 
 # Rename columns to desired names
 pivot_table_arena = pivot_table_arena.rename(columns={
