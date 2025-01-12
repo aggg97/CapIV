@@ -880,9 +880,9 @@ fig.add_trace(go.Scatter(
     x=grouped_petrolifero['start_year'],
     y=grouped_petrolifero['max_oil_rate'],
     mode='lines+markers',
-    name='Max Oil Rate',
+    name='Caudal Pico de Petróleo (Máximo Anual)',
     line=dict(dash='dot', color='red'),
-    marker=dict(symbol='circle', size=8, color='red')
+    marker=dict(symbol='circle', size=8, color='green')
 ))
 
 # Plot average oil rate (solid line)
@@ -890,9 +890,9 @@ fig.add_trace(go.Scatter(
     x=grouped_petrolifero['start_year'],
     y=grouped_petrolifero['avg_oil_rate'],
     mode='lines+markers',
-    name='Avg Oil Rate',
+    name='Caudal Pico de Petróleo (Promedio Anual)',
     line=dict(color='blue'),
-    marker=dict(symbol='circle', size=8, color='blue')
+    marker=dict(symbol='circle', size=8, color='green')
 ))
 
 # Add annotations for max oil rate
@@ -905,7 +905,7 @@ for i, row in grouped_petrolifero.iterrows():
         arrowhead=2,
         ax=0,
         ay=-40,
-        font=dict(size=10, color='red'),
+        font=dict(size=10, color='green'),
         bgcolor='white'
     )
 
@@ -919,7 +919,7 @@ for i, row in grouped_petrolifero.iterrows():
         arrowhead=2,
         ax=0,
         ay=40,
-        font=dict(size=10, color='blue'),
+        font=dict(size=10, color='green'),
         bgcolor='white'
     )
 
@@ -960,7 +960,7 @@ fig.add_trace(go.Scatter(
     x=grouped_gasifero['start_year'],
     y=grouped_gasifero['max_gas_rate'],
     mode='lines+markers',
-    name='Max Gas Rate',
+    name='Caudal Pico de Gas (Máximo Anual)',
     line=dict(dash='dot', color='red'),
     marker=dict(symbol='circle', size=8, color='red')
 ))
@@ -970,9 +970,9 @@ fig.add_trace(go.Scatter(
     x=grouped_gasifero['start_year'],
     y=grouped_gasifero['avg_gas_rate'],
     mode='lines+markers',
-    name='Avg Gas Rate',
+    name='Caudal Pico de Gas (Promedio Anual)',
     line=dict(color='blue'),
-    marker=dict(symbol='circle', size=8, color='blue')
+    marker=dict(symbol='circle', size=8, color='red')
 ))
 
 # Add annotations for max gas rate
@@ -999,7 +999,7 @@ for i, row in grouped_gasifero.iterrows():
         arrowhead=2,
         ax=0,
         ay=40,
-        font=dict(size=10, color='blue'),
+        font=dict(size=10, color='red'),
         bgcolor='white'
     )
 
@@ -1020,4 +1020,7 @@ fig.update_layout(
 
 fig.show()
 st.plotly_chart(fig,use_container_width=True)
+
+#---------------------------
+st.divider()
 
