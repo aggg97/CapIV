@@ -356,7 +356,7 @@ current_year = int(df_merged_VMUT['start_year'].max())
 previous_year = int(current_year - 1)
 
 # Create a Streamlit selectbox for year selection
-selected_year = st.selectbox("Select Year", [current_year, previous_year])
+selected_year = st.selectbox("Seleccionar Año (Anterior o Actual)", [current_year, previous_year])
 
 # Filter the dataset based on the selected year
 filtered_data = df_merged_VMUT[df_merged_VMUT['start_year'] == selected_year]
