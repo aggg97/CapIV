@@ -353,7 +353,7 @@ with tab1:
     )
     
     # Show the plot
-     #fig.show()
+    #fig.show()
     
     st.plotly_chart(fig, use_container_width=True)
 
@@ -644,7 +644,7 @@ with tab2:
     )
     
     # Show the plot
-    fig.show()
+    #fig.show()
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -800,7 +800,7 @@ with tab3:
         )
     )
     
-    fig.show()
+     #fig.show()
     st.plotly_chart(fig,use_container_width=True)
     
     
@@ -880,7 +880,7 @@ with tab3:
         )
     )
     
-    fig.show()
+     #fig.show()
     st.plotly_chart(fig,use_container_width=True)
 
 # --------------------
