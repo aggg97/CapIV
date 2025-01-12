@@ -854,8 +854,89 @@ df_gasifero.rename(columns={
 # Display tables using st.dataframe
 st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
 st.dataframe(df_petrolifero, use_container_width=True)
-st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
+st.write("**Tipo Gasífero: Top 3 Pozos con Mayor Caudal Pico**")
 st.dataframe(df_gasifero, use_container_width=True)
 
 #---------------------
+st.divider()
 
+
+
+# Step 1: Process Data for Petrolífero to get max and average oil rate
+grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
+    ['start_year']
+).agg({
+    'Qo_peak': ['max', 'mean'],  # Get both max and mean oil rate
+}).reset_index()
+
+# Flatten column names
+grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate']
+
+# Step 2: Plot the data
+fig = go.Figure()
+
+# Plot maximum oil rate (dotted line)
+fig.add_trace(go.Scatter(
+    x=grouped_petrolifero['start_year'],
+    y=grouped_petrolifero['max_oil_rate'],
+    mode='lines+markers',
+    name='Max Oil Rate',
+    line=dict(dash='dot', color='red'),
+    marker=dict(symbol='circle', size=8, color='red')
+))
+
+# Plot average oil rate (solid line)
+fig.add_trace(go.Scatter(
+    x=grouped_petrolifero['start_year'],
+    y=grouped_petrolifero['avg_oil_rate'],
+    mode='lines+markers',
+    name='Avg Oil Rate',
+    line=dict(color='blue'),
+    marker=dict(symbol='circle', size=8, color='blue')
+))
+
+# Add annotations for max oil rate
+for i, row in grouped_petrolifero.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['max_oil_rate'],
+        text=str(int(row['max_oil_rate'])),  # Convert to integer (no decimals)
+        showarrow=False,
+        arrowhead=2,
+        ax=0,
+        ay=-40,
+        font=dict(size=10, color='red'),
+        bgcolor='white'
+    )
+
+# Add annotations for average oil rate
+for i, row in grouped_petrolifero.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['avg_oil_rate'],
+        text=str(int(row['avg_oil_rate'])),  # Convert to integer (no decimals)
+        showarrow=False,
+        arrowhead=2,
+        ax=0,
+        ay=40,
+        font=dict(size=10, color='blue'),
+        bgcolor='white'
+    )
+
+# Step 3: Customize Layout
+fig.update_layout(
+    title="Tipo Petrolífero: Evolución de Caudal Pico (Maximos y Promedios)",
+    xaxis_title="Campaña",
+    yaxis_title="Caudal de Petróleo (m3/d)",
+    template="plotly_white"
+    legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='bottom',  # Aligns the legend to the bottom of the plot
+        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5 # Centers the legend horizontally
+    )
+)
+
+fig.show()
+st.plotly_chart(fig,use_container_width=True)
