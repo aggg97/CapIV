@@ -540,7 +540,7 @@ fig.update_layout(
     legend=dict(
         orientation='h',  # Horizontal orientation
         yanchor='top',  # Aligns the legend to the bottom of the plot
-        y=-0.4,  # Adjusts the position of the legend (negative value places it below the plot)
+        y=0.4,  # Adjusts the position of the legend (negative value places it below the plot)
         xanchor='center',  # Aligns the legend to the center of the plot
         x=0.5 # Centers the legend horizontally
     )
@@ -632,7 +632,7 @@ fig.add_trace(go.Scatter(
     x=statistics['start_year'],
     y=statistics['max_etapas'],
     mode='lines+markers',
-    name='Max Etapas',
+    name='Máximo de Cantidad de Etapas',
     line=dict(color='blue', dash='dash'),
     marker=dict(size=8),
 ))
@@ -642,7 +642,7 @@ fig.add_trace(go.Scatter(
     x=statistics['start_year'],
     y=statistics['avg_etapas'],
     mode='lines+markers',
-    name='Avg Etapas',
+    name='Promedio de Cantidad de Etapas',
     line=dict(color='orange'),
     marker=dict(size=8),
 ))
@@ -671,13 +671,96 @@ for i, row in statistics.iterrows():
 
 # Update layout with labels and title
 fig.update_layout(
-    title='Evolución de Max y Promedio de Etapas (Fm. Vaca Muerta)',
+    title='Evolución de Cantidad de Etapas (Fm. Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Cantidad de Etapas',
-    legend_title='Estadística',
     template='plotly_white'
+    legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='top',  # Aligns the legend to the bottom of the plot
+        y=0.4,  # Adjusts the position of the legend (negative value places it below the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5 # Centers the legend horizontally
+    )
 )
 
 # Show the plot
 fig.show()
 st.plotly_chart(fig, use_container_width=True)
+
+#----------------------------------
+# Only keep VMUT as the target formation and filter for SHALE resource type
+data_filtered = df_merged_VMUT[
+    (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
+]
+# Step 1: Create Pivot Tables for Gasífero and Petrolífero separately
+
+# For Gasífero: Pivot table for max and avg gas_rate
+pivot_table_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].pivot_table(
+    values='Qg_peak',
+    index='start_year',
+    aggfunc={'Qg_peak': ['max', 'mean']}
+)
+
+# For Petrolífero: Pivot table for max and avg oil_rate
+pivot_table_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].pivot_table(
+    values='Qo_peak',
+    index='start_year',
+    aggfunc={'Qo_peak': ['max', 'mean']}
+)
+
+# Step 2: Rename columns for clarity
+pivot_table_gasifero.columns = ['gas_max', 'gas_avg']
+pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
+
+pivot_table_gasifero.reset_index(inplace=True)
+pivot_table_petrolifero.reset_index(inplace=True)
+
+# Step 3: Create Plotly tables for both Gasífero and Petrolífero
+
+# Gasífero Table
+fig_gasifero = go.Figure(data=[go.Table(
+    header=dict(
+        values=["Campaña", "Caudal Pico de Gas Maximo (km3/d)", "Caudal Pico de Gas Promedio (km3/d)"],
+        fill_color='lightgrey',
+        font=dict(size=12, color='black'),
+        align='center'
+    ),
+    cells=dict(
+        values=[pivot_table_gasifero[col].tolist() for col in pivot_table_gasifero.columns],
+        fill_color='white',
+        align='center',
+        format=["", ".0f", ".0f"]
+    )
+)])
+
+fig_gasifero.update_layout(
+    title="Tipo Gasífero: Caudales Pico de Gas por año (Maximos y Promedios)",
+    template="plotly_white"
+)
+
+# Petrolífero Table
+fig_petrolifero = go.Figure(data=[go.Table(
+    header=dict(
+        values=["Campaña", "Caudal Pico de Petroleo Maximo (m3/d)", "Caudal Pico de Petroleo Promedio (m3/d)"],
+        fill_color='lightgrey',
+        font=dict(size=12, color='black'),
+        align='center'
+    ),
+    cells=dict(
+        values=[pivot_table_petrolifero[col].tolist() for col in pivot_table_petrolifero.columns],
+        fill_color='white',
+        align='center',
+        format=["", ".0f", ".0f"]
+    )
+)])
+
+fig_petrolifero.update_layout(
+    title="Tipo Petrolifero: Caudales Pico de Petroleo por año (Maximos y Promedios)",
+    template="plotly_white"
+)
+
+# Step 4: Show the Tables
+fig_gasifero.show()
+fig_petrolifero.show()
+
