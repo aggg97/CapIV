@@ -674,7 +674,7 @@ fig.update_layout(
     title='Evolución de Cantidad de Etapas (Fm. Vaca Muerta)',
     xaxis_title='Campaña',
     yaxis_title='Cantidad de Etapas',
-    template='plotly_white'
+    template='plotly_white',
     legend=dict(
         orientation='h',  # Horizontal orientation
         yanchor='top',  # Aligns the legend to the bottom of the plot
