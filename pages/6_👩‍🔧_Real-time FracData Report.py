@@ -496,7 +496,7 @@ with tab2:
     df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
     
     # Aggregate data to calculate min, median, max, avg, and standard deviation by year and type of well (tipopozoNEW)
-    statistics = df_merged_VMUT_filtered.groupby(['start_year', 'tipopozoNEW']).agg(
+    statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
         min_lenght=('longitud_rama_horizontal_m', 'min'),
         avg_lenght=('longitud_rama_horizontal_m', 'mean'),
         max_lenght=('longitud_rama_horizontal_m', 'max'),
@@ -509,9 +509,6 @@ with tab2:
     statistics['max_lenght'] = statistics['max_lenght'].round(0)
     statistics['std_lenght'] = statistics['std_lenght'].round(0)
     
-    # Create separate dataframes for Petrolífero and Gasífero wells
-    statistics_petrolifero = statistics[statistics['tipopozoNEW'] == 'Petrolífero']
-    statistics_gasifero = statistics[statistics['tipopozoNEW'] == 'Gasífero']
     
     # Plot the pivot tables and line plots for max_lenght and avg_lenght
     fig = go.Figure()
@@ -521,40 +518,22 @@ with tab2:
         x=statistics_petrolifero['start_year'],
         y=statistics_petrolifero['max_lenght'],
         mode='lines+markers',
-        name='Longitud Máxima (Tipo Petrolífero)',
-        line=dict(color='green', dash='dash'),
+        name='Longitud Máxima',
+        line=dict(color='blue', dash='dash'),
         marker=dict(size=8),
     ))
     
-    # Add Gasífero wells - Max length
-    fig.add_trace(go.Scatter(
-        x=statistics_gasifero['start_year'],
-        y=statistics_gasifero['max_lenght'],
-        mode='lines+markers',
-        name='Longitud Máxima (Tipo Gasífero)',
-        line=dict(color='red', dash='dash'),
-        marker=dict(size=8),
-    ))
     
     # Add Petrolífero wells - Avg length
     fig.add_trace(go.Scatter(
         x=statistics_petrolifero['start_year'],
         y=statistics_petrolifero['avg_lenght'],
         mode='lines+markers',
-        name='Longitud Promedio (Tipo Petrolífero)',
-        line=dict(color='green'),
+        name='Longitud Promedio',
+        line=dict(color='magenta'),
         marker=dict(size=8),
     ))
     
-    # Add Gasífero wells - Avg length
-    fig.add_trace(go.Scatter(
-        x=statistics_gasifero['start_year'],
-        y=statistics_gasifero['avg_lenght'],
-        mode='lines+markers',
-        name='Longitud Promedio (Tipo Gasífero)',
-        line=dict(color='red'),
-        marker=dict(size=8),
-    ))
     
     # Update layout with labels, title, and legend below the plot
     fig.update_layout(
