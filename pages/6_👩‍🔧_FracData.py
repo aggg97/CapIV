@@ -628,7 +628,7 @@ styled_avg_lenght_table_df = avg_lenght_table_df.style.apply(group_border, axis=
 
 # Display the avg_lenght table in Streamlit
 st.subheader("Top 3 Empresas Anuales con Longitud de Rama Promedio")
-st.dataframe(styled_avg_lenght_table_df, use_container_width=True)
+st.table(styled_avg_lenght_table_df, use_container_width=True)
 
 
 
