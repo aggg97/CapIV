@@ -940,3 +940,84 @@ fig.update_layout(
 
 fig.show()
 st.plotly_chart(fig,use_container_width=True)
+
+
+# Step 1: Process Data for Gasífero to get max and average gas rate
+grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
+    ['start_year']
+).agg({
+    'Qg_peak': ['max', 'mean'],  # Get both max and mean gas rate
+}).reset_index()
+
+# Flatten column names
+grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate']
+
+# Step 2: Plot the data
+fig = go.Figure()
+
+# Plot maximum gas rate (dotted line)
+fig.add_trace(go.Scatter(
+    x=grouped_gasifero['start_year'],
+    y=grouped_gasifero['max_gas_rate'],
+    mode='lines+markers',
+    name='Max Gas Rate',
+    line=dict(dash='dot', color='red'),
+    marker=dict(symbol='circle', size=8, color='red')
+))
+
+# Plot average gas rate (solid line)
+fig.add_trace(go.Scatter(
+    x=grouped_gasifero['start_year'],
+    y=grouped_gasifero['avg_gas_rate'],
+    mode='lines+markers',
+    name='Avg Gas Rate',
+    line=dict(color='blue'),
+    marker=dict(symbol='circle', size=8, color='blue')
+))
+
+# Add annotations for max gas rate
+for i, row in grouped_gasifero.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['max_gas_rate'],
+        text=str(int(row['max_gas_rate'])),  # Convert to integer (no decimals)
+        showarrow=False,
+        arrowhead=2,
+        ax=0,
+        ay=-40,
+        font=dict(size=10, color='red'),
+        bgcolor='white'
+    )
+
+# Add annotations for average gas rate
+for i, row in grouped_gasifero.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['avg_gas_rate'],
+        text=str(int(row['avg_gas_rate'])),  # Convert to integer (no decimals)
+        showarrow=False,
+        arrowhead=2,
+        ax=0,
+        ay=40,
+        font=dict(size=10, color='blue'),
+        bgcolor='white'
+    )
+
+# Step 3: Customize Layout
+fig.update_layout(
+    title="Tipo Gasífero: Evolución de Caudal Pico (Maximos y Promedios)",
+    xaxis_title="Campaña",
+    yaxis_title="Caudal de Gas (km3/d)",
+    template="plotly_white",
+    legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='bottom',  # Aligns the legend to the bottom of the plot
+        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5 # Centers the legend horizontally
+    )
+)
+
+fig.show()
+st.plotly_chart(fig,use_container_width=True)
+
