@@ -457,7 +457,14 @@ fig_max_lenght.update_layout(
     template="plotly_white"
 )
 
-st.dataframe(fig_max_lenght)
+
+# Convert to a dataframe
+df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Máxima (metros)"])
+
+
+st.dataframe(df_max_lenght)
+
+
 
 import plotly.graph_objects as go
 
@@ -483,8 +490,11 @@ for _, row in top_avg_lenght.iterrows():
     data_for_avg_lenght_table.append([year_value, row['empresaNEW'], row['avg_lenght']])
     previous_year = row['start_year']
 
+# Convert to a dataframe
+df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
-st.dataframe(top_avg_lenght)
+
+st.dataframe(df_avg_lenght)
 
 
 
