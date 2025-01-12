@@ -512,10 +512,10 @@ with tab2:
     # Rename columns to match desired output format
     statistics.rename(columns={
         'start_year': 'Campaña',
-        'min_lenght': 'Cantidad de Etapas Mínima',
-        'avg_lenght': 'Cantidad de Etapas Promedio',
-        'max_lenght': 'Cantidad de Etapas Máxima',
-        'std_lenght': 'Desviación Estándar'
+        'min_etapas': 'Cantidad de Etapas Mínima',
+        'avg_etapas': 'Cantidad de Etapas Promedio',
+        'max_etapas': 'Cantidad de Etapas Máxima',
+        'std_etapas': 'Desviación Estándar'
     }, inplace=True)
     
     
