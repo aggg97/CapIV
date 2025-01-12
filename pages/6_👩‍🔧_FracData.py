@@ -1041,13 +1041,14 @@ pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_i
 # Calculate average arena bombeada (average of national and imported)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
 
+pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(string)
+
 # Round values to avoid decimals in the final output for all numeric columns
 pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
 pivot_table_arena['arena_bombeada_importada_tn'] = pivot_table_arena['arena_bombeada_importada_tn'].astype(int)
 pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype(int)
 pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
-
 
 
 # Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
@@ -1081,7 +1082,14 @@ fig_arena_plot.update_layout(
         overlaying="y",
         side="right"
     ),
-    template="plotly_white"
+    template="plotly_white",
+    legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='bottom',  # Aligns the legend to the bottom of the plot
+        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5 # Centers the legend horizontally
+    )
 )
 
 
