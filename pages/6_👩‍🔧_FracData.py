@@ -538,12 +538,13 @@ fig.update_layout(
     yaxis_title='Longitud de Rama (metros)',
     template='plotly_white',
     legend=dict(
-        orientation='h',  # Horizontal orientation
-        yanchor='top',  # Aligns the legend to the bottom of the plot
-        y=0.4,  # Adjusts the position of the legend (negative value places it below the plot)
-        xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5 # Centers the legend horizontally
-    )
+    orientation='h',  # Horizontal orientation
+    yanchor='bottom',  # Aligns the legend to the top of the plot (bottom of the legend box)
+    y=1.05,  # Adjusts the position of the legend (move it slightly above the plot)
+    xanchor='center',  # Aligns the legend to the center of the plot
+    x=0.5  # Centers the legend horizontally
+)
+
 )
 
 
