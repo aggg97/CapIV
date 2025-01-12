@@ -429,7 +429,7 @@ company_statistics = df_merged_VMUT_filtered.groupby(['start_year', 'empresaNEW'
 ).reset_index()
 
 # Round max_lenght to 0 decimal places (integer)
-company_statistics['start_year'] = company_statistics['max_lenght'].astype(int).astype(str)
+company_statistics['start_year'] = company_statistics['max_lenght'].astype(str)
 company_statistics['max_lenght'] = company_statistics['max_lenght'].astype(int)
 
 # Sort by start_year and max_lenght to get the top 3 sigla per year
@@ -458,6 +458,7 @@ company_statistics_avg = df_merged_VMUT_filtered.groupby(['start_year', 'empresa
 ).reset_index()
 
 # Round avg_lenght to 0 decimal places (integer)
+company_statistics['start_year'] = company_statistics['max_lenght'].astype(str)
 company_statistics_avg['avg_lenght'] = company_statistics_avg['avg_lenght'].round(0)
 
 # Sort by start_year and avg_lenght to get the top 3 empresaNEW per year
