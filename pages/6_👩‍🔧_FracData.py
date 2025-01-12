@@ -278,9 +278,8 @@ tab1, tab2, tab3 = st.tabs(["Indicadores de Actividad", "Estrategia de Completac
 
 # --- Tab 1: Indicadores de Actividad ---
 with tab1:
-    st.subheader("Indicadores de Actividad")
 
-#------------------
+    #------------------
     # Group by 'start_year' and 'tipopozoNEW', then count the number of wells
     table_wells_by_start_year = (
         df_merged_VMUT.groupby(['start_year', 'tipopozoNEW'])['sigla']
@@ -358,9 +357,8 @@ with tab1:
     
     st.plotly_chart(fig, use_container_width=True)
 
-#------------------
+    #------------------
 
-#---------------------------
     st.divider()
     
     import streamlit as st
@@ -451,9 +449,8 @@ with tab1:
 
 # --- Tab 2: Estrategia de Completación ---
 with tab2:
-    st.subheader("Estrategia de Completación")
-
-# ----------------
+  
+    # ----------------
     # Filter rows where longitud_rama_horizontal_m > 0 and remove duplicates by 'sigla'
     df_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
     
@@ -490,7 +487,7 @@ with tab2:
     # Center-align all columns in the DataFrame
     st.dataframe(statistics, use_container_width=True)
 
-# -----------------------
+    # -----------------------
 
     import plotly.graph_objects as go
     import streamlit as st
@@ -579,7 +576,7 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
 
 
-#----------------
+    #----------------
     # Aggregate data to calculate max and avg by year
     statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
         max_etapas=('cantidad_fracturas', 'max'),
@@ -653,10 +650,9 @@ with tab2:
 
 # --- Tab 3: Productividad ---
 with tab3:
-    st.subheader("Productividad")
+
     
 
-# ----------------------- 
     #----------------------------------
 
     st.divider()
