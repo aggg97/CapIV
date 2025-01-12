@@ -659,233 +659,233 @@ with tab3:
 # ----------------------- 
     #----------------------------------
 
-st.divider()
-# Only keep VMUT as the target formation and filter for SHALE resource type
-data_filtered = df_merged_VMUT[
-    (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
-]
-
-# Step 1: Create Pivot Tables for Gasífero and Petrolífero separately
-
-# For Gasífero: Pivot table for max and avg gas_rate
-pivot_table_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].pivot_table(
-    values='Qg_peak',
-    index='start_year',
-    aggfunc={'Qg_peak': ['max', 'mean']}
-)
-
-# For Petrolífero: Pivot table for max and avg oil_rate
-pivot_table_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].pivot_table(
-    values='Qo_peak',
-    index='start_year',
-    aggfunc={'Qo_peak': ['max', 'mean']}
-)
-
-# Step 2: Rename columns for clarity
-pivot_table_gasifero.columns = ['gas_max', 'gas_avg']
-pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
-
-pivot_table_gasifero.reset_index(inplace=True)
-pivot_table_petrolifero.reset_index(inplace=True)
-
-# Rename the columns to match your requirements
-pivot_table_gasifero.rename(columns={
-    'start_year': 'Campaña',
-    'gas_max': 'Caudal Pico de Gas - Máximo (km3/d)',
-    'gas_avg': 'Caudal Pico de Gas - Promedio (km3/d)'
-}, inplace=True)
-
-pivot_table_petrolifero.rename(columns={
-    'start_year': 'Campaña',
-    'oil_max': 'Caudal Pico de Petróleo - Máximo (m3/d)',
-    'oil_avg': 'Caudal Pico de Petróleo - Promedio (m3/d)'
-}, inplace=True)
-
-# Convert 'Campaña' to string, other columns to integers
-pivot_table_gasifero['Campaña'] = pivot_table_gasifero['Campaña'].map('{:.0f}'.format)
-pivot_table_petrolifero['Campaña'] = pivot_table_petrolifero['Campaña'].map('{:.0f}'.format)
-
-pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']] = \
-    pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']].astype(int)
-
-pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']] = \
-    pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']].astype(int)
-
-
-# Step 3: Display the tables using st.dataframe
-
-# Display Gasífero table
-st.write("**Tipo Gasífero: Caudales Pico por año (Máximos y Promedios)**")
-st.dataframe(pivot_table_gasifero, use_container_width=True)
-
-# Display Petrolífero table
-st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos y Promedios)**")
-st.dataframe(pivot_table_petrolifero, use_container_width=True)
-
-#------------------------------------
-
-st.divider()
-
-
-
-# Step 1: Process Data for Petrolífero to get max and average oil rate
-grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
-    ['start_year']
-).agg({
-    'Qo_peak': ['max', 'mean'],  # Get both max and mean oil rate
-}).reset_index()
-
-# Flatten column names
-grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate']
-
-# Step 2: Plot the data
-fig = go.Figure()
-
-# Plot maximum oil rate (dotted line)
-fig.add_trace(go.Scatter(
-    x=grouped_petrolifero['start_year'],
-    y=grouped_petrolifero['max_oil_rate'],
-    mode='lines+markers',
-    name='Caudal Pico de Petróleo (Máximo Anual)',
-    line=dict(dash='dot', color='green'),
-    marker=dict(symbol='circle', size=8, color='green')
-))
-
-# Plot average oil rate (solid line)
-fig.add_trace(go.Scatter(
-    x=grouped_petrolifero['start_year'],
-    y=grouped_petrolifero['avg_oil_rate'],
-    mode='lines+markers',
-    name='Caudal Pico de Petróleo (Promedio Anual)',
-    line=dict(color='green'),
-    marker=dict(symbol='circle', size=8, color='green')
-))
-
-# Add annotations for max oil rate
-for i, row in grouped_petrolifero.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['max_oil_rate'],
-        text=str(int(row['max_oil_rate'])),  # Convert to integer (no decimals)
-        showarrow=False,
-        arrowhead=2,
-        ax=0,
-        ay=-40,
-        font=dict(size=10, color='green'),
-        bgcolor='white'
+    st.divider()
+    # Only keep VMUT as the target formation and filter for SHALE resource type
+    data_filtered = df_merged_VMUT[
+        (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
+    ]
+    
+    # Step 1: Create Pivot Tables for Gasífero and Petrolífero separately
+    
+    # For Gasífero: Pivot table for max and avg gas_rate
+    pivot_table_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].pivot_table(
+        values='Qg_peak',
+        index='start_year',
+        aggfunc={'Qg_peak': ['max', 'mean']}
     )
-
-# Add annotations for average oil rate
-for i, row in grouped_petrolifero.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['avg_oil_rate'],
-        text=str(int(row['avg_oil_rate'])),  # Convert to integer (no decimals)
-        showarrow=False,
-        arrowhead=2,
-        ax=0,
-        ay=40,
-        font=dict(size=10, color='green'),
-        bgcolor='white'
+    
+    # For Petrolífero: Pivot table for max and avg oil_rate
+    pivot_table_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].pivot_table(
+        values='Qo_peak',
+        index='start_year',
+        aggfunc={'Qo_peak': ['max', 'mean']}
     )
-
-# Step 3: Customize Layout
-fig.update_layout(
-    title="Tipo Petrolífero: Evolución de Caudal Pico (Maximos y Promedios)",
-    xaxis_title="Campaña",
-    yaxis_title="Caudal de Petróleo (m3/d)",
-    template="plotly_white",
-    legend=dict(
-        orientation='h',  # Horizontal orientation
-        yanchor='bottom',  # Aligns the legend to the bottom of the plot
-        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
-        xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5 # Centers the legend horizontally
+    
+    # Step 2: Rename columns for clarity
+    pivot_table_gasifero.columns = ['gas_max', 'gas_avg']
+    pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
+    
+    pivot_table_gasifero.reset_index(inplace=True)
+    pivot_table_petrolifero.reset_index(inplace=True)
+    
+    # Rename the columns to match your requirements
+    pivot_table_gasifero.rename(columns={
+        'start_year': 'Campaña',
+        'gas_max': 'Caudal Pico de Gas - Máximo (km3/d)',
+        'gas_avg': 'Caudal Pico de Gas - Promedio (km3/d)'
+    }, inplace=True)
+    
+    pivot_table_petrolifero.rename(columns={
+        'start_year': 'Campaña',
+        'oil_max': 'Caudal Pico de Petróleo - Máximo (m3/d)',
+        'oil_avg': 'Caudal Pico de Petróleo - Promedio (m3/d)'
+    }, inplace=True)
+    
+    # Convert 'Campaña' to string, other columns to integers
+    pivot_table_gasifero['Campaña'] = pivot_table_gasifero['Campaña'].map('{:.0f}'.format)
+    pivot_table_petrolifero['Campaña'] = pivot_table_petrolifero['Campaña'].map('{:.0f}'.format)
+    
+    pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']] = \
+        pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']].astype(int)
+    
+    pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']] = \
+        pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']].astype(int)
+    
+    
+    # Step 3: Display the tables using st.dataframe
+    
+    # Display Gasífero table
+    st.write("**Tipo Gasífero: Caudales Pico por año (Máximos y Promedios)**")
+    st.dataframe(pivot_table_gasifero, use_container_width=True)
+    
+    # Display Petrolífero table
+    st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos y Promedios)**")
+    st.dataframe(pivot_table_petrolifero, use_container_width=True)
+    
+    #------------------------------------
+    
+    st.divider()
+    
+    
+    
+    # Step 1: Process Data for Petrolífero to get max and average oil rate
+    grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
+        ['start_year']
+    ).agg({
+        'Qo_peak': ['max', 'mean'],  # Get both max and mean oil rate
+    }).reset_index()
+    
+    # Flatten column names
+    grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate']
+    
+    # Step 2: Plot the data
+    fig = go.Figure()
+    
+    # Plot maximum oil rate (dotted line)
+    fig.add_trace(go.Scatter(
+        x=grouped_petrolifero['start_year'],
+        y=grouped_petrolifero['max_oil_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Petróleo (Máximo Anual)',
+        line=dict(dash='dot', color='green'),
+        marker=dict(symbol='circle', size=8, color='green')
+    ))
+    
+    # Plot average oil rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_petrolifero['start_year'],
+        y=grouped_petrolifero['avg_oil_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Petróleo (Promedio Anual)',
+        line=dict(color='green'),
+        marker=dict(symbol='circle', size=8, color='green')
+    ))
+    
+    # Add annotations for max oil rate
+    for i, row in grouped_petrolifero.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['max_oil_rate'],
+            text=str(int(row['max_oil_rate'])),  # Convert to integer (no decimals)
+            showarrow=False,
+            arrowhead=2,
+            ax=0,
+            ay=-40,
+            font=dict(size=10, color='green'),
+            bgcolor='white'
+        )
+    
+    # Add annotations for average oil rate
+    for i, row in grouped_petrolifero.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['avg_oil_rate'],
+            text=str(int(row['avg_oil_rate'])),  # Convert to integer (no decimals)
+            showarrow=False,
+            arrowhead=2,
+            ax=0,
+            ay=40,
+            font=dict(size=10, color='green'),
+            bgcolor='white'
+        )
+    
+    # Step 3: Customize Layout
+    fig.update_layout(
+        title="Tipo Petrolífero: Evolución de Caudal Pico (Maximos y Promedios)",
+        xaxis_title="Campaña",
+        yaxis_title="Caudal de Petróleo (m3/d)",
+        template="plotly_white",
+        legend=dict(
+            orientation='h',  # Horizontal orientation
+            yanchor='bottom',  # Aligns the legend to the bottom of the plot
+            y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+            xanchor='center',  # Aligns the legend to the center of the plot
+            x=0.5 # Centers the legend horizontally
+        )
     )
-)
-
-fig.show()
-st.plotly_chart(fig,use_container_width=True)
-
-
-# Step 1: Process Data for Gasífero to get max and average gas rate
-grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
-    ['start_year']
-).agg({
-    'Qg_peak': ['max', 'mean'],  # Get both max and mean gas rate
-}).reset_index()
-
-# Flatten column names
-grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate']
-
-# Step 2: Plot the data
-fig = go.Figure()
-
-# Plot maximum gas rate (dotted line)
-fig.add_trace(go.Scatter(
-    x=grouped_gasifero['start_year'],
-    y=grouped_gasifero['max_gas_rate'],
-    mode='lines+markers',
-    name='Caudal Pico de Gas (Máximo Anual)',
-    line=dict(dash='dot', color='red'),
-    marker=dict(symbol='circle', size=8, color='red')
-))
-
-# Plot average gas rate (solid line)
-fig.add_trace(go.Scatter(
-    x=grouped_gasifero['start_year'],
-    y=grouped_gasifero['avg_gas_rate'],
-    mode='lines+markers',
-    name='Caudal Pico de Gas (Promedio Anual)',
-    line=dict(color='red'),
-    marker=dict(symbol='circle', size=8, color='red')
-))
-
-# Add annotations for max gas rate
-for i, row in grouped_gasifero.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['max_gas_rate'],
-        text=str(int(row['max_gas_rate'])),  # Convert to integer (no decimals)
-        showarrow=False,
-        arrowhead=2,
-        ax=0,
-        ay=-40,
-        font=dict(size=10, color='red'),
-        bgcolor='white'
+    
+    fig.show()
+    st.plotly_chart(fig,use_container_width=True)
+    
+    
+    # Step 1: Process Data for Gasífero to get max and average gas rate
+    grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
+        ['start_year']
+    ).agg({
+        'Qg_peak': ['max', 'mean'],  # Get both max and mean gas rate
+    }).reset_index()
+    
+    # Flatten column names
+    grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate']
+    
+    # Step 2: Plot the data
+    fig = go.Figure()
+    
+    # Plot maximum gas rate (dotted line)
+    fig.add_trace(go.Scatter(
+        x=grouped_gasifero['start_year'],
+        y=grouped_gasifero['max_gas_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Gas (Máximo Anual)',
+        line=dict(dash='dot', color='red'),
+        marker=dict(symbol='circle', size=8, color='red')
+    ))
+    
+    # Plot average gas rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_gasifero['start_year'],
+        y=grouped_gasifero['avg_gas_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Gas (Promedio Anual)',
+        line=dict(color='red'),
+        marker=dict(symbol='circle', size=8, color='red')
+    ))
+    
+    # Add annotations for max gas rate
+    for i, row in grouped_gasifero.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['max_gas_rate'],
+            text=str(int(row['max_gas_rate'])),  # Convert to integer (no decimals)
+            showarrow=False,
+            arrowhead=2,
+            ax=0,
+            ay=-40,
+            font=dict(size=10, color='red'),
+            bgcolor='white'
+        )
+    
+    # Add annotations for average gas rate
+    for i, row in grouped_gasifero.iterrows():
+        fig.add_annotation(
+            x=row['start_year'],
+            y=row['avg_gas_rate'],
+            text=str(int(row['avg_gas_rate'])),  # Convert to integer (no decimals)
+            showarrow=False,
+            arrowhead=2,
+            ax=0,
+            ay=40,
+            font=dict(size=10, color='red'),
+            bgcolor='white'
+        )
+    
+    # Step 3: Customize Layout
+    fig.update_layout(
+        title="Tipo Gasífero: Evolución de Caudal Pico (Maximos y Promedios)",
+        xaxis_title="Campaña",
+        yaxis_title="Caudal de Gas (km3/d)",
+        template="plotly_white",
+        legend=dict(
+            orientation='h',  # Horizontal orientation
+            yanchor='bottom',  # Aligns the legend to the bottom of the plot
+            y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+            xanchor='center',  # Aligns the legend to the center of the plot
+            x=0.5 # Centers the legend horizontally
+        )
     )
-
-# Add annotations for average gas rate
-for i, row in grouped_gasifero.iterrows():
-    fig.add_annotation(
-        x=row['start_year'],
-        y=row['avg_gas_rate'],
-        text=str(int(row['avg_gas_rate'])),  # Convert to integer (no decimals)
-        showarrow=False,
-        arrowhead=2,
-        ax=0,
-        ay=40,
-        font=dict(size=10, color='red'),
-        bgcolor='white'
-    )
-
-# Step 3: Customize Layout
-fig.update_layout(
-    title="Tipo Gasífero: Evolución de Caudal Pico (Maximos y Promedios)",
-    xaxis_title="Campaña",
-    yaxis_title="Caudal de Gas (km3/d)",
-    template="plotly_white",
-    legend=dict(
-        orientation='h',  # Horizontal orientation
-        yanchor='bottom',  # Aligns the legend to the bottom of the plot
-        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
-        xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5 # Centers the legend horizontally
-    )
-)
-
-fig.show()
-st.plotly_chart(fig,use_container_width=True)
+    
+    fig.show()
+    st.plotly_chart(fig,use_container_width=True)
 
 # --------------------
 
