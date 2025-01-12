@@ -540,7 +540,7 @@ fig.update_layout(
     legend=dict(
     orientation='h',  # Horizontal orientation
     yanchor='bottom',  # Aligns the legend to the top of the plot (bottom of the legend box)
-    y=0.9,  # Adjusts the position of the legend (move it slightly above the plot)
+    y=1.0,  # Adjusts the position of the legend (move it slightly above the plot)
     xanchor='center',  # Aligns the legend to the center of the plot
     x=0.5  # Centers the legend horizontally
 )
@@ -851,8 +851,8 @@ df_gasifero.rename(columns={
 }, inplace=True)
 
 # Convert start_year to string without decimals
-df_petrolifero['Campaña'] = df_petrolifero['Campaña'].map('{:.0f}'.format).astype(str)
-df_gasifero['Campaña'] = df_gasifero['Campaña'].map('{:.0f}'.format).astype(str)
+df_petrolifero['Campaña'] = df_petrolifero['Campaña'].map('{:.0f}'.format)
+df_gasifero['Campaña'] = df_gasifero['Campaña'].map('{:.0f}'.format)
 
 # Display tables using st.dataframe
 st.write("**Tipo Petrolífero: Top 3 Pozos con Mayor Caudal Pico**")
