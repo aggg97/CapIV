@@ -881,7 +881,7 @@ fig.add_trace(go.Scatter(
     y=grouped_petrolifero['max_oil_rate'],
     mode='lines+markers',
     name='Caudal Pico de Petróleo (Máximo Anual)',
-    line=dict(dash='dot', color='red'),
+    line=dict(dash='dot', color='green'),
     marker=dict(symbol='circle', size=8, color='green')
 ))
 
@@ -891,7 +891,7 @@ fig.add_trace(go.Scatter(
     y=grouped_petrolifero['avg_oil_rate'],
     mode='lines+markers',
     name='Caudal Pico de Petróleo (Promedio Anual)',
-    line=dict(color='blue'),
+    line=dict(color='green'),
     marker=dict(symbol='circle', size=8, color='green')
 ))
 
@@ -971,7 +971,7 @@ fig.add_trace(go.Scatter(
     y=grouped_gasifero['avg_gas_rate'],
     mode='lines+markers',
     name='Caudal Pico de Gas (Promedio Anual)',
-    line=dict(color='blue'),
+    line=dict(color='red'),
     marker=dict(symbol='circle', size=8, color='red')
 ))
 
