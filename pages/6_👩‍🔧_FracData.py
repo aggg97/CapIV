@@ -581,7 +581,7 @@ for _, row in top_max_lenght.iterrows():
 df_max_lenght = pd.DataFrame(data_for_max_lenght_table, columns=["Campaña", "Sigla", "Empresa", "Longitud de Rama Maxima (metros)"])
 
 # Display the DataFrame in Streamlit
-st.write("Top 3 Pozos con Máxima Cantidad de Etapas")
+st.write("**Top 3 Pozos con Máxima Cantidad de Etapas**")
 # Display the dataframe in Streamlit
 st.dataframe(df_max_lenght,use_container_width=True)
 
@@ -611,7 +611,7 @@ for _, row in top_avg_lenght.iterrows():
 df_avg_lenght = pd.DataFrame(data_for_avg_lenght_table, columns=["Campaña", "Empresa", "Longitud de Rama Promedio (metros)"])
 
 # Display the DataFrame in Streamlit
-st.write("Top 3 Empresa con Máxima Cantidad Promedio de Etapas")
+st.write("**Top 3 Empresa con Máxima Cantidad Promedio de Etapas**")
 # Display the dataframe in Streamlit
 st.dataframe(df_avg_lenght,use_container_width=True)
 
@@ -718,12 +718,28 @@ pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
 pivot_table_gasifero.reset_index(inplace=True)
 pivot_table_petrolifero.reset_index(inplace=True)
 
+# Rename the columns to match your requirements
+pivot_table_gasifero.rename(columns={
+    'start_year': 'Campaña',
+    'gas_max': 'Caudal Pico de Gas - Máximo (km3/d)',
+    'gas_avg': 'Caudal Pico de Gas - Promedio (km3/d)'
+}, inplace=True)
+
+pivot_table_petrolifero.rename(columns={
+    'start_year': 'Campaña',
+    'oil_max': 'Caudal Pico de Petróleo - Máximo (m3/d)',
+    'oil_avg': 'Caudal Pico de Petróleo - Promedio (m3/d)'
+}, inplace=True)
+
+
 # Step 3: Display the tables using st.dataframe
 
 # Display Gasífero table
+st.write("**Tipo Gasífero: Caudales Pico por año (Máximos y Promedios)**")
 st.dataframe(pivot_table_gasifero, use_container_width=True)
 
 # Display Petrolífero table
+st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos y Promedios)**")
 st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
 
