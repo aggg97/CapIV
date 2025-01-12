@@ -689,10 +689,12 @@ fig.show()
 st.plotly_chart(fig, use_container_width=True)
 
 #----------------------------------
+
 # Only keep VMUT as the target formation and filter for SHALE resource type
 data_filtered = df_merged_VMUT[
     (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
 ]
+
 # Step 1: Create Pivot Tables for Gasífero and Petrolífero separately
 
 # For Gasífero: Pivot table for max and avg gas_rate
@@ -716,56 +718,13 @@ pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
 pivot_table_gasifero.reset_index(inplace=True)
 pivot_table_petrolifero.reset_index(inplace=True)
 
-# Step 3: Create Plotly tables for both Gasífero and Petrolífero
+# Step 3: Display the tables using st.dataframe
 
-# Gasífero Table
-fig_gasifero = go.Figure(data=[go.Table(
-    header=dict(
-        values=["Campaña", "Caudal Pico de Gas Maximo (km3/d)", "Caudal Pico de Gas Promedio (km3/d)"],
-        fill_color='lightgrey',
-        font=dict(size=12, color='black'),
-        align='center'
-    ),
-    cells=dict(
-        values=[pivot_table_gasifero[col].tolist() for col in pivot_table_gasifero.columns],
-        fill_color='white',
-        align='center',
-        format=["", ".0f", ".0f"]
-    )
-)])
+# Display Gasífero table
+st.dataframe(pivot_table_gasifero, use_container_width=True)
 
-fig_gasifero.update_layout(
-    title="Tipo Gasífero: Caudales Pico de Gas por año (Maximos y Promedios)",
-    template="plotly_white"
-)
+# Display Petrolífero table
+st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
-# Petrolífero Table
-fig_petrolifero = go.Figure(data=[go.Table(
-    header=dict(
-        values=["Campaña", "Caudal Pico de Petroleo Maximo (m3/d)", "Caudal Pico de Petroleo Promedio (m3/d)"],
-        fill_color='lightgrey',
-        font=dict(size=12, color='black'),
-        align='center'
-    ),
-    cells=dict(
-        values=[pivot_table_petrolifero[col].tolist() for col in pivot_table_petrolifero.columns],
-        fill_color='white',
-        align='center',
-        format=["", ".0f", ".0f"]
-    )
-)])
-
-fig_petrolifero.update_layout(
-    title="Tipo Petrolifero: Caudales Pico de Petroleo por año (Maximos y Promedios)",
-    template="plotly_white"
-)
-
-# Step 4: Show the Tables
-
-fig_gasifero.show()
-st.dataframe(fig_gasifero,use_container_width=True)
-
-fig_petrolifero.show()
-st.dataframe(fig_petrolifero,use_container_width=True)
 
 
