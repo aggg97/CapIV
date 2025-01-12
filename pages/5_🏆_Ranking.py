@@ -513,6 +513,8 @@ df_petrolifero.rename(columns={
 
 df_gasifero.rename(columns={
     'start_year': 'Campaña',
+    'sigla': 'Sigla',
+    'empresaNEW': 'Empresa',
     'Qg_peak': 'Caudal Pico de Gas (km3/d)',
     'cantidad_fracturas': 'Cantidad de Fracturas',
     'fracspacing': 'Fracspacing (m/etapa)',
