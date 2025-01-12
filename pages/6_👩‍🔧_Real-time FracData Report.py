@@ -515,8 +515,8 @@ with tab2:
     
     # Add Petrolífero wells - Max length
     fig.add_trace(go.Scatter(
-        x=statistics_petrolifero['start_year'],
-        y=statistics_petrolifero['max_lenght'],
+        x=statistics['start_year'],
+        y=statistics['max_lenght'],
         mode='lines+markers',
         name='Longitud Máxima',
         line=dict(color='blue', dash='dash'),
@@ -526,8 +526,8 @@ with tab2:
     
     # Add Petrolífero wells - Avg length
     fig.add_trace(go.Scatter(
-        x=statistics_petrolifero['start_year'],
-        y=statistics_petrolifero['avg_lenght'],
+        x=statistics['start_year'],
+        y=statistics['avg_lenght'],
         mode='lines+markers',
         name='Longitud Promedio',
         line=dict(color='magenta'),
