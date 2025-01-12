@@ -1047,6 +1047,8 @@ pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype
 pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
 
+pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(str).map(lambda x: x.replace(",", ""))
+
 # Display the DataFrame in Streamlit
 st.write("### Pivot Table: Arena por Año")
 st.dataframe(pivot_table_arena, use_container_width=True)
