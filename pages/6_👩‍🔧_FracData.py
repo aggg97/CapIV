@@ -1047,10 +1047,23 @@ pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype
 pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
 
-pivot_table_arena['start_year'] = int(pivot_table_arena['start_year'])
+# Convert 'start_year' to string (without commas), but keep it as an integer for display
+pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(str)
+
+
+# Rename columns to desired names
+pivot_table_arena = pivot_table_arena.rename(columns={
+    'start_year': 'Campaña',
+    'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
+    'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
+    'arena_total_tn': 'Arena Total (tn)',
+    'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
+    'perc_arena_importada': '% de Arena Importada'
+})
+
 
 # Display the DataFrame in Streamlit
-st.write("### Pivot Table: Arena por Año")
+st.write("### Evolución de Arena Bombeada")
 st.dataframe(pivot_table_arena, use_container_width=True)
 
 # Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
