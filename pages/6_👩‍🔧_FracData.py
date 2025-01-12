@@ -616,5 +616,68 @@ st.subheader("Top 3 Empresa con Máxima Cantidad Promedio de Etapas")
 st.dataframe(df_avg_lenght)
 
 
+#------------------------------------
 
+# Aggregate data to calculate max and avg by year
+statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
+    max_etapas=('cantidad_fracturas', 'max'),
+    avg_etapas=('cantidad_fracturas', 'mean')
+).reset_index()
 
+# Create the Plotly figure
+fig = go.Figure()
+
+# Add Max Etapas line
+fig.add_trace(go.Scatter(
+    x=statistics['start_year'],
+    y=statistics['max_etapas'],
+    mode='lines+markers',
+    name='Max Etapas',
+    line=dict(color='blue', dash='dash'),
+    marker=dict(size=8),
+))
+
+# Add Avg Etapas line
+fig.add_trace(go.Scatter(
+    x=statistics['start_year'],
+    y=statistics['avg_etapas'],
+    mode='lines+markers',
+    name='Avg Etapas',
+    line=dict(color='orange'),
+    marker=dict(size=8),
+))
+
+# Add annotations for Max Etapas
+for i, row in statistics.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['max_etapas'],
+        text=f"{row['max_etapas']:.0f}",  # Zero decimals
+        showarrow=False,
+        yshift=15,  # Position above the point
+        font=dict(color="blue", size=10)
+    )
+
+# Add annotations for Avg Etapas
+for i, row in statistics.iterrows():
+    fig.add_annotation(
+        x=row['start_year'],
+        y=row['avg_etapas'],
+        text=f"{row['avg_etapas']:.0f}",  # Zero decimals
+        showarrow=False,
+        yshift=15,  # Position above the point
+        font=dict(color="orange", size=10)
+    )
+
+# Update layout with labels and title
+fig.update_layout(
+    title='Evolución de Max y Promedio de Etapas (Fm. Vaca Muerta)',
+    xaxis_title='Campaña',
+    yaxis_title='Cantidad de Etapas',
+    legend_title='Estadística',
+    template='plotly_white'
+)
+
+# Show the plot
+fig.show()
+st.plotly_chart(fig, use_container_width=True)
