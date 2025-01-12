@@ -1026,6 +1026,7 @@ st.divider()
 
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 
 # Group by 'start_year' and aggregate the data
 pivot_table_arena = df_merged_VMUT.groupby('start_year').agg({
@@ -1040,16 +1041,15 @@ pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_i
 # Calculate average arena bombeada (average of national and imported)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
 
-# Round values to avoid decimals in the final output
+# Round values to avoid decimals in the final output for all numeric columns
 pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
 pivot_table_arena['arena_bombeada_importada_tn'] = pivot_table_arena['arena_bombeada_importada_tn'].astype(int)
 pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype(int)
 pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
 pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
 
-# Convert 'start_year' to string (without commas), but keep it as an integer for display
+# Convert 'start_year' to string for display purposes
 pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(str)
-
 
 # Rename columns to desired names
 pivot_table_arena = pivot_table_arena.rename(columns={
@@ -1060,7 +1060,6 @@ pivot_table_arena = pivot_table_arena.rename(columns={
     'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
     'perc_arena_importada': '% de Arena Importada'
 })
-
 
 # Display the DataFrame in Streamlit
 st.write("### Evolución de Arena Bombeada")
@@ -1077,7 +1076,6 @@ fig_arena_plot.add_trace(go.Scatter(
     name='Arena Total (tn)',
     line=dict(dash='solid', width=3)
 ))
-
 
 # Plot % Arena Importada on secondary axis
 fig_arena_plot.add_trace(go.Scatter(
@@ -1103,5 +1101,4 @@ fig_arena_plot.update_layout(
 
 fig_arena_plot.show()
 st.plotly_chart(fig_arena_plot)
-
 
