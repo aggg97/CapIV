@@ -270,6 +270,7 @@ df_merged_VMUT = df_merged_final[
     (df_merged_final['formprod'] == 'VMUT') & (df_merged_final['sub_tipo_recurso'] == 'SHALE')
 ]
 
+
 # ----------------------- Pivot Tables + Plots ------------
 
 # Create tabs
@@ -278,231 +279,308 @@ tab1, tab2, tab3 = st.tabs(["Indicadores de Actividad", "Estrategia de Completac
 # --- Tab 1: Indicadores de Actividad ---
 with tab1:
     st.subheader("Indicadores de Actividad")
+
+#------------------
+    # Group by 'start_year' and 'tipopozoNEW', then count the number of wells
+    table_wells_by_start_year = (
+        df_merged_VMUT.groupby(['start_year', 'tipopozoNEW'])['sigla']
+        .nunique()
+        .reset_index(name='count')
+    )
     
- 
+    # Pivot the table to display start years as rows and 'tipopozoNEW' as columns
+    table_wells_pivot = table_wells_by_start_year.pivot_table(
+        index='start_year', columns='tipopozoNEW', values='count', fill_value=0
+    )
+    
+    # Drop unwanted columns
+    table_wells_pivot = table_wells_pivot.drop(
+        columns=['Inyección de Agua', 'Inyección de Gas'], errors='ignore'
+    )
+    
+    # Create a Plotly figure for line plot
+    fig = go.Figure()
+    
+    # Add petrolífero wells (green line)
+    if 'Petrolífero' in table_wells_pivot.columns:
+        fig.add_trace(go.Scatter(
+            x=table_wells_pivot.index,
+            y=table_wells_pivot['Petrolífero'],
+            mode='lines+markers',
+            name='Petrolífero',
+            line=dict(color='green'),
+            marker=dict(size=8),
+        ))
+        # Add annotations for each point
+        for x, y in zip(table_wells_pivot.index, table_wells_pivot['Petrolífero']):
+            fig.add_annotation(
+                x=x,
+                y=y,
+                text=str(int(y)),  # Convert to integer and remove decimals
+                showarrow=False,  # Disable the arrow
+                yshift=15,  # Shift the annotation above the point
+                font=dict(size=10, color="green")
+            )
+    
+    # Add gasífero wells (red line)
+    if 'Gasífero' in table_wells_pivot.columns:
+        fig.add_trace(go.Scatter(
+            x=table_wells_pivot.index,
+            y=table_wells_pivot['Gasífero'],
+            mode='lines+markers',
+            name='Gasífero',
+            line=dict(color='red'),
+            marker=dict(size=8),
+        ))
+        # Add annotations for each point
+        for x, y in zip(table_wells_pivot.index, table_wells_pivot['Gasífero']):
+            fig.add_annotation(
+                x=x,
+                y=y,
+                text=str(int(y)),  # Convert to integer and remove decimals
+                showarrow=False,  # Disable the arrow
+                yshift=15,  # Shift the annotation above the point
+                font=dict(size=10, color="red")
+            )
+    
+    
+    # Update layout with labels and title
+    fig.update_layout(
+        title='Pozos enganchados por campaña (Fm. Vaca Muerta)',
+        xaxis_title='Año de Puesta en Marcha',
+        yaxis_title='Cantidad de Pozos',
+        legend_title='Tipo de Pozo',
+        template='plotly_white',
+    )
+    
+    # Show the plot
+    fig.show()
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+#------------------
+
+#---------------------------
+    st.divider()
+    
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    
+    # Group by 'start_year' and aggregate the data
+    pivot_table_arena = df_merged_VMUT.groupby('start_year').agg({
+        'arena_bombeada_nacional_tn': 'sum',
+        'arena_bombeada_importada_tn': 'sum',
+        'arena_total_tn': 'sum',
+    }).reset_index()
+    
+    # Calculate %Arena Importada
+    pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_importada_tn'] / pivot_table_arena['arena_total_tn']) * 100
+    
+    # Calculate average arena bombeada (average of national and imported)
+    pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
+    
+    pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(int).astype(str)
+    
+    # Round values to avoid decimals in the final output for all numeric columns
+    pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
+    pivot_table_arena['arena_bombeada_importada_tn'] = pivot_table_arena['arena_bombeada_importada_tn'].astype(int)
+    pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype(int)
+    pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
+    pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
+    
+    
+    # Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
+    fig_arena_plot = go.Figure()
+    
+    # Plot Total Arena Bombeada per Year
+    fig_arena_plot.add_trace(go.Scatter(
+        x=pivot_table_arena['start_year'],
+        y=pivot_table_arena['arena_total_tn'],
+        mode='lines+markers',
+        name='Arena Total (tn)',
+        line=dict(dash='solid', width=3)
+    ))
+    
+    # Plot % Arena Importada on secondary axis
+    fig_arena_plot.add_trace(go.Scatter(
+        x=pivot_table_arena['start_year'],
+        y=pivot_table_arena['perc_arena_importada'],
+        mode='lines+markers',
+        name='% Arena Importada',
+        line=dict(color='green', width=3),
+        yaxis='y2'
+    ))
+    
+    fig_arena_plot.update_layout(
+        title="Total Arena Bombeada vs % Arena Importada por Año",
+        xaxis_title="Campaña",
+        yaxis_title="Arena Bombeada (tn)",
+        yaxis2=dict(
+            title="% Arena Importada",
+            overlaying="y",
+            side="right"
+        ),
+        template="plotly_white",
+        legend=dict(
+            orientation='h',  # Horizontal orientation
+            yanchor='bottom',  # Aligns the legend to the bottom of the plot
+            y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
+            xanchor='center',  # Aligns the legend to the center of the plot
+            x=0.5 # Centers the legend horizontally
+        )
+    )
+    
+    
+    # Rename columns to desired names
+    pivot_table_arena = pivot_table_arena.rename(columns={
+        'start_year': 'Campaña',
+        'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
+        'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
+        'arena_total_tn': 'Arena Total (tn)',
+        'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
+        'perc_arena_importada': '% de Arena Importada'
+    })
+    
+    # Display the DataFrame in Streamlit
+    st.write("### Evolución de Arena Bombeada")
+    st.dataframe(pivot_table_arena, use_container_width=True)
+    
+    fig_arena_plot.show()
+    st.plotly_chart(fig_arena_plot)
 
 # --- Tab 2: Estrategia de Completación ---
 with tab2:
     st.subheader("Estrategia de Completación")
+
+# ----------------
+    # Filter rows where longitud_rama_horizontal_m > 0 and remove duplicates by 'sigla'
+    df_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
     
-
-
-# --- Tab 3: Productividad ---
-with tab3:
-    st.subheader("Productividad")
+    # Calculate statistics
+    statistics = df_filtered.groupby(['start_year']).agg(
+        min_lenght=('longitud_rama_horizontal_m', 'min'),
+        avg_lenght=('longitud_rama_horizontal_m', 'mean'),
+        max_lenght=('longitud_rama_horizontal_m', 'max'),
+        std_lenght=('longitud_rama_horizontal_m', 'std'),
+    ).reset_index()
     
-
-# ----------------------- 
-# Group by 'start_year' and 'tipopozoNEW', then count the number of wells
-table_wells_by_start_year = (
-    df_merged_VMUT.groupby(['start_year', 'tipopozoNEW'])['sigla']
-    .nunique()
-    .reset_index(name='count')
-)
-
-# Pivot the table to display start years as rows and 'tipopozoNEW' as columns
-table_wells_pivot = table_wells_by_start_year.pivot_table(
-    index='start_year', columns='tipopozoNEW', values='count', fill_value=0
-)
-
-# Drop unwanted columns
-table_wells_pivot = table_wells_pivot.drop(
-    columns=['Inyección de Agua', 'Inyección de Gas'], errors='ignore'
-)
-
-# Create a Plotly figure for line plot
-fig = go.Figure()
-
-# Add petrolífero wells (green line)
-if 'Petrolífero' in table_wells_pivot.columns:
-    fig.add_trace(go.Scatter(
-        x=table_wells_pivot.index,
-        y=table_wells_pivot['Petrolífero'],
-        mode='lines+markers',
-        name='Petrolífero',
-        line=dict(color='green'),
-        marker=dict(size=8),
-    ))
-    # Add annotations for each point
-    for x, y in zip(table_wells_pivot.index, table_wells_pivot['Petrolífero']):
-        fig.add_annotation(
-            x=x,
-            y=y,
-            text=str(int(y)),  # Convert to integer and remove decimals
-            showarrow=False,  # Disable the arrow
-            yshift=15,  # Shift the annotation above the point
-            font=dict(size=10, color="green")
-        )
-
-# Add gasífero wells (red line)
-if 'Gasífero' in table_wells_pivot.columns:
-    fig.add_trace(go.Scatter(
-        x=table_wells_pivot.index,
-        y=table_wells_pivot['Gasífero'],
-        mode='lines+markers',
-        name='Gasífero',
-        line=dict(color='red'),
-        marker=dict(size=8),
-    ))
-    # Add annotations for each point
-    for x, y in zip(table_wells_pivot.index, table_wells_pivot['Gasífero']):
-        fig.add_annotation(
-            x=x,
-            y=y,
-            text=str(int(y)),  # Convert to integer and remove decimals
-            showarrow=False,  # Disable the arrow
-            yshift=15,  # Shift the annotation above the point
-            font=dict(size=10, color="red")
-        )
-
-
-# Update layout with labels and title
-fig.update_layout(
-    title='Pozos enganchados por campaña (Fm. Vaca Muerta)',
-    xaxis_title='Año de Puesta en Marcha',
-    yaxis_title='Cantidad de Pozos',
-    legend_title='Tipo de Pozo',
-    template='plotly_white',
-)
-
-# Show the plot
-fig.show()
-
-st.plotly_chart(fig, use_container_width=True)
-
-# --------------------
-
-#-------------------
-
-# Filter rows where longitud_rama_horizontal_m > 0 and remove duplicates by 'sigla'
-df_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
-
-# Calculate statistics
-statistics = df_filtered.groupby(['start_year']).agg(
-    min_lenght=('longitud_rama_horizontal_m', 'min'),
-    avg_lenght=('longitud_rama_horizontal_m', 'mean'),
-    max_lenght=('longitud_rama_horizontal_m', 'max'),
-    std_lenght=('longitud_rama_horizontal_m', 'std'),
-).reset_index()
-
-# Round the values
-statistics['min_lenght'] = statistics['min_lenght'].round(0)
-statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
-statistics['max_lenght'] = statistics['max_lenght'].round(0)
-statistics['std_lenght'] = statistics['std_lenght'].round(0)
-
-# Convert 'start_year' to string without commas
-statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
-
-# Rename columns to match desired output format
-statistics.rename(columns={
-    'start_year': 'Campaña',
-    'min_lenght': 'Longitud de Rama Minima (metros)',
-    'avg_lenght': 'Longitud de Rama Promedio (metros)',
-    'max_lenght': 'Longitud de Rama Maxima (metros)',
-    'std_lenght': 'Desviación Estándar (metros)'
-}, inplace=True)
-
-
-# Display the DataFrame in Streamlit
-st.subheader("Estadística Anual de Longitud de Rama")
-
-# Center-align all columns in the DataFrame
-st.dataframe(statistics, use_container_width=True)
-
+    # Round the values
+    statistics['min_lenght'] = statistics['min_lenght'].round(0)
+    statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+    statistics['max_lenght'] = statistics['max_lenght'].round(0)
+    statistics['std_lenght'] = statistics['std_lenght'].round(0)
+    
+    # Convert 'start_year' to string without commas
+    statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
+    
+    # Rename columns to match desired output format
+    statistics.rename(columns={
+        'start_year': 'Campaña',
+        'min_lenght': 'Longitud de Rama Minima (metros)',
+        'avg_lenght': 'Longitud de Rama Promedio (metros)',
+        'max_lenght': 'Longitud de Rama Maxima (metros)',
+        'std_lenght': 'Desviación Estándar (metros)'
+    }, inplace=True)
+    
+    
+    # Display the DataFrame in Streamlit
+    st.subheader("Estadística Anual de Longitud de Rama")
+    
+    # Center-align all columns in the DataFrame
+    st.dataframe(statistics, use_container_width=True)
 
 # -----------------------
 
-import plotly.graph_objects as go
-import streamlit as st
-
-# Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
-df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
-
-# Aggregate data to calculate min, median, max, avg, and standard deviation by year and type of well (tipopozoNEW)
-statistics = df_merged_VMUT_filtered.groupby(['start_year', 'tipopozoNEW']).agg(
-    min_lenght=('longitud_rama_horizontal_m', 'min'),
-    avg_lenght=('longitud_rama_horizontal_m', 'mean'),
-    max_lenght=('longitud_rama_horizontal_m', 'max'),
-    std_lenght=('longitud_rama_horizontal_m', 'std'),
-).reset_index()
-
-# Round the values to 0 decimal places
-statistics['min_lenght'] = statistics['min_lenght'].round(0)
-statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
-statistics['max_lenght'] = statistics['max_lenght'].round(0)
-statistics['std_lenght'] = statistics['std_lenght'].round(0)
-
-# Create separate dataframes for Petrolífero and Gasífero wells
-statistics_petrolifero = statistics[statistics['tipopozoNEW'] == 'Petrolífero']
-statistics_gasifero = statistics[statistics['tipopozoNEW'] == 'Gasífero']
-
-# Plot the pivot tables and line plots for max_lenght and avg_lenght
-fig = go.Figure()
-
-# Add Petrolífero wells - Max length
-fig.add_trace(go.Scatter(
-    x=statistics_petrolifero['start_year'],
-    y=statistics_petrolifero['max_lenght'],
-    mode='lines+markers',
-    name='Longitud Máxima (Tipo Petrolífero)',
-    line=dict(color='green', dash='dash'),
-    marker=dict(size=8),
-))
-
-# Add Gasífero wells - Max length
-fig.add_trace(go.Scatter(
-    x=statistics_gasifero['start_year'],
-    y=statistics_gasifero['max_lenght'],
-    mode='lines+markers',
-    name='Longitud Máxima (Tipo Gasífero)',
-    line=dict(color='red', dash='dash'),
-    marker=dict(size=8),
-))
-
-# Add Petrolífero wells - Avg length
-fig.add_trace(go.Scatter(
-    x=statistics_petrolifero['start_year'],
-    y=statistics_petrolifero['avg_lenght'],
-    mode='lines+markers',
-    name='Longitud Promedio (Tipo Petrolífero)',
-    line=dict(color='green'),
-    marker=dict(size=8),
-))
-
-# Add Gasífero wells - Avg length
-fig.add_trace(go.Scatter(
-    x=statistics_gasifero['start_year'],
-    y=statistics_gasifero['avg_lenght'],
-    mode='lines+markers',
-    name='Longitud Promedio (Tipo Gasífero)',
-    line=dict(color='red'),
-    marker=dict(size=8),
-))
-
-# Update layout with labels, title, and legend below the plot
-fig.update_layout(
-    title='Evolución de la Rama Lateral (Fm Vaca Muerta)',
-    xaxis_title='Campaña',
-    yaxis_title='Longitud de Rama (metros)',
-    template='plotly_white',
-    legend=dict(
-    orientation='h',  # Horizontal orientation
-    yanchor='bottom',  # Aligns the legend to the top of the plot (bottom of the legend box)
-    y=1.0,  # Adjusts the position of the legend (move it slightly above the plot)
-    xanchor='center',  # Aligns the legend to the center of the plot
-    x=0.5  # Centers the legend horizontally
-)
-
-)
-
-# Show the plot
-st.plotly_chart(fig, use_container_width=True)
-
-# -----------------------------
+    import plotly.graph_objects as go
+    import streamlit as st
+    
+    # Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
+    df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
+    
+    # Aggregate data to calculate min, median, max, avg, and standard deviation by year and type of well (tipopozoNEW)
+    statistics = df_merged_VMUT_filtered.groupby(['start_year', 'tipopozoNEW']).agg(
+        min_lenght=('longitud_rama_horizontal_m', 'min'),
+        avg_lenght=('longitud_rama_horizontal_m', 'mean'),
+        max_lenght=('longitud_rama_horizontal_m', 'max'),
+        std_lenght=('longitud_rama_horizontal_m', 'std'),
+    ).reset_index()
+    
+    # Round the values to 0 decimal places
+    statistics['min_lenght'] = statistics['min_lenght'].round(0)
+    statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
+    statistics['max_lenght'] = statistics['max_lenght'].round(0)
+    statistics['std_lenght'] = statistics['std_lenght'].round(0)
+    
+    # Create separate dataframes for Petrolífero and Gasífero wells
+    statistics_petrolifero = statistics[statistics['tipopozoNEW'] == 'Petrolífero']
+    statistics_gasifero = statistics[statistics['tipopozoNEW'] == 'Gasífero']
+    
+    # Plot the pivot tables and line plots for max_lenght and avg_lenght
+    fig = go.Figure()
+    
+    # Add Petrolífero wells - Max length
+    fig.add_trace(go.Scatter(
+        x=statistics_petrolifero['start_year'],
+        y=statistics_petrolifero['max_lenght'],
+        mode='lines+markers',
+        name='Longitud Máxima (Tipo Petrolífero)',
+        line=dict(color='green', dash='dash'),
+        marker=dict(size=8),
+    ))
+    
+    # Add Gasífero wells - Max length
+    fig.add_trace(go.Scatter(
+        x=statistics_gasifero['start_year'],
+        y=statistics_gasifero['max_lenght'],
+        mode='lines+markers',
+        name='Longitud Máxima (Tipo Gasífero)',
+        line=dict(color='red', dash='dash'),
+        marker=dict(size=8),
+    ))
+    
+    # Add Petrolífero wells - Avg length
+    fig.add_trace(go.Scatter(
+        x=statistics_petrolifero['start_year'],
+        y=statistics_petrolifero['avg_lenght'],
+        mode='lines+markers',
+        name='Longitud Promedio (Tipo Petrolífero)',
+        line=dict(color='green'),
+        marker=dict(size=8),
+    ))
+    
+    # Add Gasífero wells - Avg length
+    fig.add_trace(go.Scatter(
+        x=statistics_gasifero['start_year'],
+        y=statistics_gasifero['avg_lenght'],
+        mode='lines+markers',
+        name='Longitud Promedio (Tipo Gasífero)',
+        line=dict(color='red'),
+        marker=dict(size=8),
+    ))
+    
+    # Update layout with labels, title, and legend below the plot
+    fig.update_layout(
+        title='Evolución de la Rama Lateral (Fm Vaca Muerta)',
+        xaxis_title='Campaña',
+        yaxis_title='Longitud de Rama (metros)',
+        template='plotly_white',
+        legend=dict(
+        orientation='h',  # Horizontal orientation
+        yanchor='bottom',  # Aligns the legend to the top of the plot (bottom of the legend box)
+        y=1.0,  # Adjusts the position of the legend (move it slightly above the plot)
+        xanchor='center',  # Aligns the legend to the center of the plot
+        x=0.5  # Centers the legend horizontally
+    )
+    
+    )
+    
+    # Show the plot
+    st.plotly_chart(fig, use_container_width=True)
 
 
-# Aggregate data to calculate max and avg by year
+#----------------
+    # Aggregate data to calculate max and avg by year
 statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
     max_etapas=('cantidad_fracturas', 'max'),
     avg_etapas=('cantidad_fracturas', 'mean')
@@ -572,7 +650,14 @@ fig.update_layout(
 fig.show()
 st.plotly_chart(fig, use_container_width=True)
 
-#----------------------------------
+
+# --- Tab 3: Productividad ---
+with tab3:
+    st.subheader("Productividad")
+    
+
+# ----------------------- 
+    #----------------------------------
 
 st.divider()
 # Only keep VMUT as the target formation and filter for SHALE resource type
@@ -802,92 +887,13 @@ fig.update_layout(
 fig.show()
 st.plotly_chart(fig,use_container_width=True)
 
-#---------------------------
-st.divider()
-
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-
-# Group by 'start_year' and aggregate the data
-pivot_table_arena = df_merged_VMUT.groupby('start_year').agg({
-    'arena_bombeada_nacional_tn': 'sum',
-    'arena_bombeada_importada_tn': 'sum',
-    'arena_total_tn': 'sum',
-}).reset_index()
-
-# Calculate %Arena Importada
-pivot_table_arena['perc_arena_importada'] = (pivot_table_arena['arena_bombeada_importada_tn'] / pivot_table_arena['arena_total_tn']) * 100
-
-# Calculate average arena bombeada (average of national and imported)
-pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena[['arena_total_tn']].mean(axis=1)
-
-pivot_table_arena['start_year'] = pivot_table_arena['start_year'].astype(int).astype(str)
-
-# Round values to avoid decimals in the final output for all numeric columns
-pivot_table_arena['arena_bombeada_nacional_tn'] = pivot_table_arena['arena_bombeada_nacional_tn'].astype(int)
-pivot_table_arena['arena_bombeada_importada_tn'] = pivot_table_arena['arena_bombeada_importada_tn'].astype(int)
-pivot_table_arena['arena_total_tn'] = pivot_table_arena['arena_total_tn'].astype(int)
-pivot_table_arena['perc_arena_importada'] = pivot_table_arena['perc_arena_importada'].round(0).astype(int)
-pivot_table_arena['avg_arena_bombeada'] = pivot_table_arena['avg_arena_bombeada'].round(0).astype(int)
+# --------------------
 
 
-# Plot for Total Arena Bombeada, Average Arena Bombeada per Year, and % Arena Importada
-fig_arena_plot = go.Figure()
-
-# Plot Total Arena Bombeada per Year
-fig_arena_plot.add_trace(go.Scatter(
-    x=pivot_table_arena['start_year'],
-    y=pivot_table_arena['arena_total_tn'],
-    mode='lines+markers',
-    name='Arena Total (tn)',
-    line=dict(dash='solid', width=3)
-))
-
-# Plot % Arena Importada on secondary axis
-fig_arena_plot.add_trace(go.Scatter(
-    x=pivot_table_arena['start_year'],
-    y=pivot_table_arena['perc_arena_importada'],
-    mode='lines+markers',
-    name='% Arena Importada',
-    line=dict(color='green', width=3),
-    yaxis='y2'
-))
-
-fig_arena_plot.update_layout(
-    title="Total Arena Bombeada vs % Arena Importada por Año",
-    xaxis_title="Campaña",
-    yaxis_title="Arena Bombeada (tn)",
-    yaxis2=dict(
-        title="% Arena Importada",
-        overlaying="y",
-        side="right"
-    ),
-    template="plotly_white",
-    legend=dict(
-        orientation='h',  # Horizontal orientation
-        yanchor='bottom',  # Aligns the legend to the bottom of the plot
-        y=1.0,  # Adjusts the position of the legend (negative value places it below the plot)
-        xanchor='center',  # Aligns the legend to the center of the plot
-        x=0.5 # Centers the legend horizontally
-    )
-)
 
 
-# Rename columns to desired names
-pivot_table_arena = pivot_table_arena.rename(columns={
-    'start_year': 'Campaña',
-    'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
-    'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
-    'arena_total_tn': 'Arena Total (tn)',
-    'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
-    'perc_arena_importada': '% de Arena Importada'
-})
 
-# Display the DataFrame in Streamlit
-st.write("### Evolución de Arena Bombeada")
-st.dataframe(pivot_table_arena, use_container_width=True)
 
-fig_arena_plot.show()
-st.plotly_chart(fig_arena_plot)
+
+
 
