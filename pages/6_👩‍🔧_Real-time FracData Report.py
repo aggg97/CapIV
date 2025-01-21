@@ -743,6 +743,9 @@ with tab3:
     
     for col in ['oil_max', 'oil_median', 'oil_p90', 'oil_p10']:
         pivot_table_petrolifero[col] = pivot_table_petrolifero[col].round(0)
+
+    pivot_table_gasifero['start_year'] = pivot_table_gasifero['start_year'].astype(int).astype(str)
+    pivot_table_petrolifero['start_year'] = pivot_table_petrolifero['start_year'].astype(int).astype(str)
     
     # Rename columns for clarity
     pivot_table_gasifero.rename(columns={
