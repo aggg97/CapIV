@@ -430,19 +430,9 @@ with tab1:
     )
     
     
-    # Rename columns to desired names
-    pivot_table_arena = pivot_table_arena.rename(columns={
-        'start_year': 'Campaña',
-        'arena_bombeada_nacional_tn': 'Arena Nacional Bombeada (tn)',
-        'arena_bombeada_importada_tn': 'Arena Importada Bombeada (tn)',
-        'arena_total_tn': 'Arena Total (tn)',
-        'avg_arena_bombeada': 'Promedio de Arena Bombeada (tn)',
-        'perc_arena_importada': '% de Arena Importada'
-    })
-    
     # Display the DataFrame in Streamlit
     st.write("### Evolución de Arena Bombeada")
-    st.dataframe(pivot_table_arena, use_container_width=True)
+
     
     # fig_arena_plot.show()
     st.plotly_chart(fig_arena_plot)
@@ -451,81 +441,6 @@ with tab1:
 with tab2:
   
     # ----------------
-    # Filter rows where longitud_rama_horizontal_m > 0 and remove duplicates by 'sigla'
-    df_filtered = df_merged_VMUT[df_merged_VMUT['longitud_rama_horizontal_m'] > 0].drop_duplicates(subset='sigla')
-    
-    # Calculate statistics
-    statistics = df_filtered.groupby(['start_year']).agg(
-        min_lenght=('longitud_rama_horizontal_m', 'min'),
-        avg_lenght=('longitud_rama_horizontal_m', 'mean'),
-        max_lenght=('longitud_rama_horizontal_m', 'max'),
-        std_lenght=('longitud_rama_horizontal_m', 'std'),
-    ).reset_index()
-    
-    # Round the values
-    statistics['min_lenght'] = statistics['min_lenght'].round(0)
-    statistics['avg_lenght'] = statistics['avg_lenght'].round(0)
-    statistics['max_lenght'] = statistics['max_lenght'].round(0)
-    statistics['std_lenght'] = statistics['std_lenght'].round(0)
-    
-    # Convert 'start_year' to string without commas
-    statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
-    
-    # Rename columns to match desired output format
-    statistics.rename(columns={
-        'start_year': 'Campaña',
-        'min_lenght': 'Longitud de Rama Minima (metros)',
-        'avg_lenght': 'Longitud de Rama Promedio (metros)',
-        'max_lenght': 'Longitud de Rama Maxima (metros)',
-        'std_lenght': 'Desviación Estándar (metros)'
-    }, inplace=True)
-    
-    
-    # Display the DataFrame in Streamlit
-    st.subheader("Estadística Anual de Longitud de Rama")
-    
-    # Center-align all columns in the DataFrame
-    st.dataframe(statistics, use_container_width=True)
-
-    # -----------------------
-    # Remove rows where longitud_rama_horizontal_m is zero and drop duplicates based on 'sigla'
-    df_merged_VMUT_filtered = df_merged_VMUT[df_merged_VMUT['cantidad_fracturas'] > 0].drop_duplicates(subset='sigla')
-    
-    # Example: Calculate statistics for a specific column (longitud_rama_horizontal_m)
-    # Aggregate data to calculate min, median, max, and standard deviation for each year
-    statistics = df_merged_VMUT_filtered.groupby(['start_year']).agg(
-        min_etapas=('cantidad_fracturas', 'min'),
-        avg_etapas=('cantidad_fracturas', 'mean'),
-        max_etapas=('cantidad_fracturas', 'max'),
-        std_etapas=('cantidad_fracturas', 'std'),
-    ).reset_index()
-    
-    # Round the values to 0 decimal places
-    statistics['min_etapas'] = statistics['min_etapas'].round(0)
-    statistics['avg_etapas'] = statistics['avg_etapas'].round(0)
-    statistics['max_etapas'] = statistics['max_etapas'].round(0)
-    statistics['std_etapas'] = statistics['std_etapas'].round(0)
-    
-    # Convert 'start_year' to string without commas
-    statistics['start_year'] = statistics['start_year'].map('{:.0f}'.format)
-    
-    # Rename columns to match desired output format
-    statistics.rename(columns={
-        'start_year': 'Campaña',
-        'min_etapas': 'Cantidad de Etapas Mínima',
-        'avg_etapas': 'Cantidad de Etapas Promedio',
-        'max_etapas': 'Cantidad de Etapas Máxima',
-        'std_etapas': 'Desviación Estándar'
-    }, inplace=True)
-    
-    
-    # Display the DataFrame in Streamlit
-    st.subheader("Estadística Anual de Cantidad de Etapas")
-    
-    # Center-align all columns in the DataFrame
-    st.dataframe(statistics, use_container_width=True)
-
-    # ---------------
 
     import plotly.graph_objects as go
     import streamlit as st
@@ -689,87 +604,6 @@ with tab2:
 
 # --- Tab 3: Productividad ---
 with tab3:
-
-    
-
-    #----------------------------------
-
-    import numpy as np
-    
-    # Filter for VMUT and SHALE
-    data_filtered = df_merged_VMUT[
-        (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
-    ]
-    
-    # For Gasífero: Pivot table with max, mean, P90, and P10 gas_rate
-    pivot_table_gasifero = data_filtered[data_filtered['tipopozoNEW'] == 'Gasífero'].pivot_table(
-        values='Qg_peak',
-        index='start_year',
-        aggfunc={
-            'Qg_peak': [
-                'max',
-                lambda x: np.percentile(x, 50),
-                lambda x: np.percentile(x, 90),
-                lambda x: np.percentile(x, 10)
-            ]
-        }
-    )
-    
-    # For Petrolífero: Pivot table with max, mean, P90, and P10 oil_rate
-    pivot_table_petrolifero = data_filtered[data_filtered['tipopozoNEW'] == 'Petrolífero'].pivot_table(
-        values='Qo_peak',
-        index='start_year',
-        aggfunc={
-            'Qo_peak': [
-                'max',
-                lambda x: np.percentile(x, 50),
-                lambda x: np.percentile(x, 90),
-                lambda x: np.percentile(x, 10)
-            ]
-        }
-    )
-    
-    # Flatten multi-level columns and rename for clarity
-    pivot_table_gasifero.columns = ['gas_max', 'gas_median', 'gas_p10', 'gas_p90']
-    pivot_table_petrolifero.columns = ['oil_max', 'oil_median', 'oil_p10', 'oil_p90']
-    
-    # Reset index to make 'start_year' a column
-    pivot_table_gasifero.reset_index(inplace=True)
-    pivot_table_petrolifero.reset_index(inplace=True)
-    
-    # Round the values to 0 decimal places
-    for col in ['gas_max', 'gas_median', 'gas_p10', 'gas_p90']:
-        pivot_table_gasifero[col] = pivot_table_gasifero[col].round(0)
-    
-    for col in ['oil_max', 'oil_median', 'oil_p10', 'oil_p90']:
-        pivot_table_petrolifero[col] = pivot_table_petrolifero[col].round(0)
-
-    pivot_table_gasifero['start_year'] = pivot_table_gasifero['start_year'].astype(int).astype(str)
-    pivot_table_petrolifero['start_year'] = pivot_table_petrolifero['start_year'].astype(int).astype(str)
-    
-    # Rename columns for clarity
-    pivot_table_gasifero.rename(columns={
-        'start_year': 'Campaña',
-        'gas_max': 'Caudal Pico de Gas Máximo (km3/d)',
-        'gas_median': 'Caudal Pico de Gas Promedio (km3/d)',
-        'gas_p10': 'P10 de Gas (km3/d)',
-        'gas_p90': 'P90 de Gas (km3/d)'
-    }, inplace=True)
-    
-    pivot_table_petrolifero.rename(columns={
-        'start_year': 'Campaña',
-        'oil_max': 'Caudal Pico de Petróleo Máximo (m3/d)',
-        'oil_median': 'Caudal Pico de Petróleo Promedio (m3/d)',
-        'oil_p10': 'P10 de Petróleo (m3/d)',
-        'oil_p90': 'P90 de Petróleo (m3/d)'
-    }, inplace=True)
-    
-    # Display the tables using Streamlit
-    st.write("**Tipo Gasífero: Caudales Pico por año (Máximos, Promedios, P90, y P10)**")
-    st.dataframe(pivot_table_gasifero, use_container_width=True)
-    
-    st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos, Promedios, P90, y P10)**")
-    st.dataframe(pivot_table_petrolifero, use_container_width=True)
 
     
     #------------------------------------
