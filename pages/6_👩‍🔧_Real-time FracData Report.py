@@ -609,7 +609,6 @@ with tab3:
     #------------------------------------
 
     import numpy as np
-    st.divider()
     
     
     # Step 1: Process Data for Petrolífero to get max and average oil rate
