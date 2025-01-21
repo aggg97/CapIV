@@ -781,11 +781,16 @@ with tab3:
     grouped_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].groupby(
         ['start_year']
     ).agg({
-        'Qo_peak': ['max', 'mean'],  # Get both max and mean oil rate
+        'Qo_peak': [
+                'max',
+                lambda x: np.percentile(x, 50),
+                lambda x: np.percentile(x, 90),
+                lambda x: np.percentile(x, 10)
+            ]
     }).reset_index()
     
     # Flatten column names
-    grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate']
+    grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate', 'p90_oil_rate', 'p10_oil_rate']
     
     # Step 2: Plot the data
     fig = go.Figure()
@@ -807,6 +812,26 @@ with tab3:
         mode='lines+markers',
         name='Caudal Pico de Petróleo (Promedio Anual)',
         line=dict(color='green'),
+        marker=dict(symbol='circle', size=8, color='green')
+    ))
+
+    # Plot P90 oil rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_petrolifero['start_year'],
+        y=grouped_petrolifero['p90_oil_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Petróleo (P90)',
+        line=dict(color='lightgreen'),
+        marker=dict(symbol='circle', size=8, color='green')
+    ))
+
+    # Plot P10 oil rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_petrolifero['start_year'],
+        y=grouped_petrolifero['p10_oil_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Petróleo (P10)',
+        line=dict(color='lightgreen'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
     
