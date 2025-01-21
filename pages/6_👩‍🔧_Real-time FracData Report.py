@@ -886,11 +886,16 @@ with tab3:
     grouped_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].groupby(
         ['start_year']
     ).agg({
-        'Qg_peak': ['max', 'mean'],  # Get both max and mean gas rate
+        'Qg_peak': [
+                'max',
+                lambda x: np.percentile(x, 50),
+                lambda x: np.percentile(x, 90),
+                lambda x: np.percentile(x, 10)
+            ]
     }).reset_index()
     
     # Flatten column names
-    grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate']
+    grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate', 'p90_gas_rate', 'p10_gas_rate']
     
     # Step 2: Plot the data
     fig = go.Figure()
@@ -914,7 +919,27 @@ with tab3:
         line=dict(color='red'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
-    
+
+    # Plot average gas rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_gasifero['start_year'],
+        y=grouped_gasifero['p90_gas_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Gas (P90)',
+        line=dict(color='orange'),
+        marker=dict(symbol='circle', size=8, color='red')
+    ))
+
+    # Plot average gas rate (solid line)
+    fig.add_trace(go.Scatter(
+        x=grouped_gasifero['start_year'],
+        y=grouped_gasifero['p10_gas_rate'],
+        mode='lines+markers',
+        name='Caudal Pico de Gas (P10)',
+        line=dict(color='orange'),
+        marker=dict(symbol='circle', size=8, color='red')
+    ))
+ 
     # Add annotations for max gas rate
     for i, row in grouped_gasifero.iterrows():
         fig.add_annotation(
