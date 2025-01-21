@@ -607,7 +607,8 @@ with tab3:
 
     
     #------------------------------------
-    
+
+    import numpy as np
     st.divider()
     
     
