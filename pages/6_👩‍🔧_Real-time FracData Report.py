@@ -752,16 +752,16 @@ with tab3:
         'start_year': 'Campaña',
         'gas_max': 'Caudal Pico de Gas Máximo (km3/d)',
         'gas_median': 'Caudal Pico de Gas Promedio (km3/d)',
-        'gas_p90': 'P90 de Gas (km3/d)',
-        'gas_p10': 'P10 de Gas (km3/d)'
+        'gas_p10': 'P10 de Gas (km3/d)',
+        'gas_p90': 'P90 de Gas (km3/d)'
     }, inplace=True)
     
     pivot_table_petrolifero.rename(columns={
         'start_year': 'Campaña',
         'oil_max': 'Caudal Pico de Petróleo Máximo (m3/d)',
         'oil_median': 'Caudal Pico de Petróleo Promedio (m3/d)',
-        'oil_p90': 'P90 de Petróleo (m3/d)',
-        'oil_p10': 'P10 de Petróleo (m3/d)'
+        'oil_p10': 'P10 de Petróleo (m3/d)',
+        'oil_p90': 'P90 de Petróleo (m3/d)'
     }, inplace=True)
     
     # Display the tables using Streamlit
@@ -821,7 +821,7 @@ with tab3:
         y=grouped_petrolifero['p10_oil_rate'],
         mode='lines+markers',
         name='Caudal Pico de Petróleo (P10)',
-        line=dict(color='pink'),
+        line=dict(color='black'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
 
@@ -831,7 +831,7 @@ with tab3:
         y=grouped_petrolifero['p90_oil_rate'],
         mode='lines+markers',
         name='Caudal Pico de Petróleo (P90)',
-        line=dict(color='lightgreen'),
+        line=dict(color='black'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
     
@@ -926,7 +926,7 @@ with tab3:
         y=grouped_gasifero['p90_gas_rate'],
         mode='lines+markers',
         name='Caudal Pico de Gas (P10)',
-        line=dict(color='pink'),
+        line=dict(color='black'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
 
@@ -936,7 +936,7 @@ with tab3:
         y=grouped_gasifero['p10_gas_rate'],
         mode='lines+markers',
         name='Caudal Pico de Gas (P90)',
-        line=dict(color='orange'),
+        line=dict(color='black'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
  
