@@ -730,18 +730,18 @@ with tab3:
     )
     
     # Flatten multi-level columns and rename for clarity
-    pivot_table_gasifero.columns = ['gas_max', 'gas_median', 'gas_p90', 'gas_p10']
-    pivot_table_petrolifero.columns = ['oil_max', 'oil_median', 'oil_p90', 'oil_p10']
+    pivot_table_gasifero.columns = ['gas_max', 'gas_median', 'gas_p10', 'gas_p90']
+    pivot_table_petrolifero.columns = ['oil_max', 'oil_median', 'oil_p10', 'oil_p90']
     
     # Reset index to make 'start_year' a column
     pivot_table_gasifero.reset_index(inplace=True)
     pivot_table_petrolifero.reset_index(inplace=True)
     
     # Round the values to 0 decimal places
-    for col in ['gas_max', 'gas_median', 'gas_p90', 'gas_p10']:
+    for col in ['gas_max', 'gas_median', 'gas_p10', 'gas_p90']:
         pivot_table_gasifero[col] = pivot_table_gasifero[col].round(0)
     
-    for col in ['oil_max', 'oil_median', 'oil_p90', 'oil_p10']:
+    for col in ['oil_max', 'oil_median', 'oil_p10', 'oil_p90']:
         pivot_table_petrolifero[col] = pivot_table_petrolifero[col].round(0)
 
     pivot_table_gasifero['start_year'] = pivot_table_gasifero['start_year'].astype(int).astype(str)
@@ -790,7 +790,7 @@ with tab3:
     }).reset_index()
     
     # Flatten column names
-    grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate', 'p90_oil_rate', 'p10_oil_rate']
+    grouped_petrolifero.columns = ['start_year', 'max_oil_rate', 'avg_oil_rate', 'p10_oil_rate', 'p90_oil_rate']
     
     # Step 2: Plot the data
     fig = go.Figure()
@@ -818,9 +818,9 @@ with tab3:
     # Plot P90 oil rate (solid line)
     fig.add_trace(go.Scatter(
         x=grouped_petrolifero['start_year'],
-        y=grouped_petrolifero['p90_oil_rate'],
+        y=grouped_petrolifero['p10_oil_rate'],
         mode='lines+markers',
-        name='Caudal Pico de Petróleo (P90)',
+        name='Caudal Pico de Petróleo (P10)',
         line=dict(color='pink'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
@@ -828,9 +828,9 @@ with tab3:
     # Plot P10 oil rate (solid line)
     fig.add_trace(go.Scatter(
         x=grouped_petrolifero['start_year'],
-        y=grouped_petrolifero['p10_oil_rate'],
+        y=grouped_petrolifero['p90_oil_rate'],
         mode='lines+markers',
-        name='Caudal Pico de Petróleo (P10)',
+        name='Caudal Pico de Petróleo (P90)',
         line=dict(color='lightgreen'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
@@ -895,7 +895,7 @@ with tab3:
     }).reset_index()
     
     # Flatten column names
-    grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate', 'p90_gas_rate', 'p10_gas_rate']
+    grouped_gasifero.columns = ['start_year', 'max_gas_rate', 'avg_gas_rate', 'p10_gas_rate', 'p90_gas_rate']
     
     # Step 2: Plot the data
     fig = go.Figure()
@@ -925,7 +925,7 @@ with tab3:
         x=grouped_gasifero['start_year'],
         y=grouped_gasifero['p90_gas_rate'],
         mode='lines+markers',
-        name='Caudal Pico de Gas (P90)',
+        name='Caudal Pico de Gas (P10)',
         line=dict(color='pink'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
@@ -935,7 +935,7 @@ with tab3:
         x=grouped_gasifero['start_year'],
         y=grouped_gasifero['p10_gas_rate'],
         mode='lines+markers',
-        name='Caudal Pico de Gas (P10)',
+        name='Caudal Pico de Gas (P90)',
         line=dict(color='orange'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
