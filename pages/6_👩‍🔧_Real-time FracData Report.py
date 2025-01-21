@@ -699,7 +699,7 @@ with tab3:
     
     # Step 3: Customize Layout
     fig.update_layout(
-        title="Tipo Petrolífero: Evolución de Caudal Pico (Maximos y Promedios)",
+        title="Tipo Petrolífero: Evolución de Caudal Pico (Maximo y Percentiles)",
         xaxis_title="Campaña",
         yaxis_title="Caudal de Petróleo (m3/d)",
         template="plotly_white",
@@ -804,7 +804,7 @@ with tab3:
     
     # Step 3: Customize Layout
     fig.update_layout(
-        title="Tipo Gasífero: Evolución de Caudal Pico (Maximos y Promedios)",
+        title="Tipo Gasífero: Evolución de Caudal Pico (Maximo y Percentiles)",
         xaxis_title="Campaña",
         yaxis_title="Caudal de Gas (km3/d)",
         template="plotly_white",
