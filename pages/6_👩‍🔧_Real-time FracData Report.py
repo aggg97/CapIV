@@ -821,7 +821,7 @@ with tab3:
         y=grouped_petrolifero['p90_oil_rate'],
         mode='lines+markers',
         name='Caudal Pico de Petróleo (P90)',
-        line=dict(color='lightgreen'),
+        line=dict(color='pink'),
         marker=dict(symbol='circle', size=8, color='green')
     ))
 
@@ -926,7 +926,7 @@ with tab3:
         y=grouped_gasifero['p90_gas_rate'],
         mode='lines+markers',
         name='Caudal Pico de Gas (P90)',
-        line=dict(color='orange'),
+        line=dict(color='pink'),
         marker=dict(symbol='circle', size=8, color='red')
     ))
 
