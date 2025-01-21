@@ -694,10 +694,8 @@ with tab3:
 
     #----------------------------------
 
-    st.divider()
-
     import numpy as np
-
+    
     # Filter for VMUT and SHALE
     data_filtered = df_merged_VMUT[
         (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
@@ -708,10 +706,12 @@ with tab3:
         values='Qg_peak',
         index='start_year',
         aggfunc={
-            'Qg_peak': ['max', 
-                        lambda x: np.percentile(x, 50),
-                        lambda x: np.percentile(x, 90), 
-                        lambda x: np.percentile(x, 10)]
+            'Qg_peak': [
+                'max',
+                lambda x: np.percentile(x, 50),
+                lambda x: np.percentile(x, 90),
+                lambda x: np.percentile(x, 10)
+            ]
         }
     )
     
@@ -720,62 +720,54 @@ with tab3:
         values='Qo_peak',
         index='start_year',
         aggfunc={
-            'Qo_peak': ['max', 
-                        lambda x: np.percentile(x, 50),
-                        lambda x: np.percentile(x, 90), 
-                        lambda x: np.percentile(x, 10)]
+            'Qo_peak': [
+                'max',
+                lambda x: np.percentile(x, 50),
+                lambda x: np.percentile(x, 90),
+                lambda x: np.percentile(x, 10)
+            ]
         }
     )
-
+    
+    # Flatten multi-level columns and rename for clarity
+    pivot_table_gasifero.columns = ['gas_max', 'gas_median', 'gas_p90', 'gas_p10']
+    pivot_table_petrolifero.columns = ['oil_max', 'oil_median', 'oil_p90', 'oil_p10']
+    
+    # Reset index to make 'start_year' a column
+    pivot_table_gasifero.reset_index(inplace=True)
+    pivot_table_petrolifero.reset_index(inplace=True)
+    
     # Round the values to 0 decimal places
-    pivot_table_gasifero['gas_max'] = pivot_table_gasifero['gas_max'].round(0)
-    pivot_table_gasifero['gas_avg'] = pivot_table_gasifero['gas_avg'].round(0)
-    pivot_table_gasifero['gas_p90'] = pivot_table_gasifero['gas_p90'].round(0)
-    pivot_table_gasiferos['gas_p10'] = pivot_table_gasifero['gas_p10'].round(0)
+    for col in ['gas_max', 'gas_median', 'gas_p90', 'gas_p10']:
+        pivot_table_gasifero[col] = pivot_table_gasifero[col].round(0)
     
-    # Convert 'start_year' to string without commas
-    pivot_table_gasifero['start_year'] = pivot_table_gasifero['start_year'].map('{:.0f}'.format)
-
-    # Round the values to 0 decimal places
-    pivot_table_petrolifero['oil_max'] = pivot_table_petrolifero['oil_max'].round(0)
-    pivot_table_petrolifero['oil_avg'] = pivot_table_petrolifero['oil_avg'].round(0)
-    pivot_table_petrolifero['oil_p90'] = pivot_table_petrolifero['oil_p90'].round(0)
-    pivot_table_petrolifero['oil_p10'] = pivot_table_petrolifero['oil_p10'].round(0)
+    for col in ['oil_max', 'oil_median', 'oil_p90', 'oil_p10']:
+        pivot_table_petrolifero[col] = pivot_table_petrolifero[col].round(0)
     
-    # Convert 'start_year' to string without commas
-    pivot_table_petrolifero['start_year'] = pivot_table_petrolifero['start_year'].map('{:.0f}'.format)
-    
-    # Step 2: Rename columns for clarity
+    # Rename columns for clarity
     pivot_table_gasifero.rename(columns={
         'start_year': 'Campaña',
         'gas_max': 'Caudal Pico de Gas Máximo (km3/d)',
-        'gas_avg': 'Caudal Pico de Gas Promedio (km3/d)',
+        'gas_median': 'Caudal Pico de Gas Promedio (km3/d)',
         'gas_p90': 'P90 de Gas (km3/d)',
-        'gas_p10': 'P10 de Gas (km3/d)',
-       
-    })
+        'gas_p10': 'P10 de Gas (km3/d)'
+    }, inplace=True)
     
     pivot_table_petrolifero.rename(columns={
         'start_year': 'Campaña',
         'oil_max': 'Caudal Pico de Petróleo Máximo (m3/d)',
-        'oil_avg': 'Caudal Pico de Petróleo Promedio (m3/d)',
+        'oil_median': 'Caudal Pico de Petróleo Promedio (m3/d)',
         'oil_p90': 'P90 de Petróleo (m3/d)',
-        'oil_p10': 'P10 de Petróleo (m3/d)',
-       
-    })
-   
-    pivot_table_gasifero.reset_index(inplace=True)
-    pivot_table_petrolifero.reset_index(inplace=True)
+        'oil_p10': 'P10 de Petróleo (m3/d)'
+    }, inplace=True)
     
-    # Step 3: Display the tables using st.dataframe
-    
-    # Display Gasífero table
+    # Display the tables using Streamlit
     st.write("**Tipo Gasífero: Caudales Pico por año (Máximos, Promedios, P90, y P10)**")
     st.dataframe(pivot_table_gasifero, use_container_width=True)
     
-    # Display Petrolífero table
     st.write("**Tipo Petrolífero: Caudales Pico por año (Máximos, Promedios, P90, y P10)**")
     st.dataframe(pivot_table_petrolifero, use_container_width=True)
+
     
     #------------------------------------
     
