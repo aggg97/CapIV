@@ -695,57 +695,44 @@ with tab3:
     #----------------------------------
 
     st.divider()
-    # Only keep VMUT as the target formation and filter for SHALE resource type
+
+    import numpy as np
+
+    # Filter for VMUT and SHALE
     data_filtered = df_merged_VMUT[
         (df_merged_VMUT['formprod'] == 'VMUT') & (df_merged_VMUT['sub_tipo_recurso'] == 'SHALE')
     ]
     
-    # Step 1: Create Pivot Tables for Gasífero and Petrolífero separately
-    
-    # For Gasífero: Pivot table for max and avg gas_rate
-    pivot_table_gasifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Gasífero'].pivot_table(
+    # For Gasífero: Pivot table with max, mean, P90, and P10 gas_rate
+    pivot_table_gasifero = data_filtered[data_filtered['tipopozoNEW'] == 'Gasífero'].pivot_table(
         values='Qg_peak',
         index='start_year',
-        aggfunc={'Qg_peak': ['max', 'mean']}
+        aggfunc={
+            'Qg_peak': ['max', 
+                        lambda x: np.percentile(x, 50),
+                        lambda x: np.percentile(x, 90), 
+                        lambda x: np.percentile(x, 10)]
+        }
     )
     
-    # For Petrolífero: Pivot table for max and avg oil_rate
-    pivot_table_petrolifero = df_merged_VMUT[df_merged_VMUT['tipopozoNEW'] == 'Petrolífero'].pivot_table(
+    # For Petrolífero: Pivot table with max, mean, P90, and P10 oil_rate
+    pivot_table_petrolifero = data_filtered[data_filtered['tipopozoNEW'] == 'Petrolífero'].pivot_table(
         values='Qo_peak',
         index='start_year',
-        aggfunc={'Qo_peak': ['max', 'mean']}
+        aggfunc={
+            'Qo_peak': ['max', 
+                        lambda x: np.percentile(x, 50),
+                        lambda x: np.percentile(x, 90), 
+                        lambda x: np.percentile(x, 10)]
+        }
     )
     
     # Step 2: Rename columns for clarity
-    pivot_table_gasifero.columns = ['gas_max', 'gas_avg']
-    pivot_table_petrolifero.columns = ['oil_max', 'oil_avg']
+    pivot_table_gasifero.columns = ['gas_max', 'gas_avg', 'gas_p90', 'gas_p10']
+    pivot_table_petrolifero.columns = ['oil_max', 'oil_avg', 'oil_p90', 'oil_p10']
     
     pivot_table_gasifero.reset_index(inplace=True)
     pivot_table_petrolifero.reset_index(inplace=True)
-    
-    # Rename the columns to match your requirements
-    pivot_table_gasifero.rename(columns={
-        'start_year': 'Campaña',
-        'gas_max': 'Caudal Pico de Gas - Máximo (km3/d)',
-        'gas_avg': 'Caudal Pico de Gas - Promedio (km3/d)'
-    }, inplace=True)
-    
-    pivot_table_petrolifero.rename(columns={
-        'start_year': 'Campaña',
-        'oil_max': 'Caudal Pico de Petróleo - Máximo (m3/d)',
-        'oil_avg': 'Caudal Pico de Petróleo - Promedio (m3/d)'
-    }, inplace=True)
-    
-    # Convert 'Campaña' to string, other columns to integers
-    pivot_table_gasifero['Campaña'] = pivot_table_gasifero['Campaña'].map('{:.0f}'.format)
-    pivot_table_petrolifero['Campaña'] = pivot_table_petrolifero['Campaña'].map('{:.0f}'.format)
-    
-    pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']] = \
-        pivot_table_gasifero[['Caudal Pico de Gas - Máximo (km3/d)', 'Caudal Pico de Gas - Promedio (km3/d)']].astype(int)
-    
-    pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']] = \
-        pivot_table_petrolifero[['Caudal Pico de Petróleo - Máximo (m3/d)', 'Caudal Pico de Petróleo - Promedio (m3/d)']].astype(int)
-    
     
     # Step 3: Display the tables using st.dataframe
     
